@@ -1104,7 +1104,7 @@
 
 <script>
   // ============================================
-  // ENICAN MINES - COMPLETE FRONTEND
+  // ENICAN MINES - COMPLETE FRONTEND v2.1
   // ============================================
 
   (function() {
@@ -1126,7 +1126,7 @@
     let currentModalInvoiceId = null;
     let pendingWrites = [];
     let isProcessingQueue = false;
-    let syncInterval = null;
+    let isSyncing = false;
 
     // ─── DOM REFS ───
     const $ = id => document.getElementById(id);
@@ -1134,6 +1134,7 @@
     // ─── TOAST SYSTEM ───
     function showToast(message, type = 'success', title = '') {
       const container = $('toastContainer');
+      if (!container) return;
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
       const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle' };
@@ -1153,25 +1154,34 @@
     // ─── LOADING OVERLAY ───
     function showLoading(show, text = 'Loading...', sub = 'Please wait', progress = 0) {
       const overlay = $('loadingOverlay');
+      if (!overlay) return;
       if (show) {
         overlay.classList.add('active');
-        $('loadingText').textContent = text;
-        $('loadingSub').textContent = sub;
-        $('loadingProgress').style.width = progress + '%';
+        const textEl = $('loadingText');
+        const subEl = $('loadingSub');
+        const progressEl = $('loadingProgress');
+        if (textEl) textEl.textContent = text;
+        if (subEl) subEl.textContent = sub;
+        if (progressEl) progressEl.style.width = progress + '%';
       } else {
         overlay.classList.remove('active');
       }
     }
 
     function updateLoading(text, sub, progress) {
-      $('loadingText').textContent = text;
-      if (sub) $('loadingSub').textContent = sub;
-      if (progress !== undefined) $('loadingProgress').style.width = progress + '%';
+      const textEl = $('loadingText');
+      const subEl = $('loadingSub');
+      const progressEl = $('loadingProgress');
+      if (textEl) textEl.textContent = text;
+      if (sub && subEl) subEl.textContent = sub;
+      if (progress !== undefined && progressEl) progressEl.style.width = progress + '%';
     }
 
     // ─── SYNC STATUS ───
     function setSyncStatus(status, text) {
-      const dot = $('syncDot'), label = $('syncText');
+      const dot = $('syncDot');
+      const label = $('syncText');
+      if (!dot || !label) return;
       dot.className = 'dot';
       if (status === 'synced') { dot.classList.add('synced'); label.textContent = text || 'Synced'; }
       else if (status === 'syncing') { dot.classList.add('syncing'); label.textContent = text || 'Syncing...'; }
@@ -1181,6 +1191,7 @@
 
     function updateQueueCount(count) {
       const el = $('queueCount');
+      if (!el) return;
       if (count > 0) {
         el.style.display = 'inline';
         el.textContent = count;
@@ -1208,6 +1219,7 @@
         params.append('data', JSON.stringify(data));
         params.append('writeId', writeId);
         const url = `${API_URL}?${params.toString()}`;
+        
         const response = await fetch(url);
         const result = await response.json();
 
@@ -1285,6 +1297,9 @@
 
     // ─── SYNC FUNCTIONS ───
     async function syncData(type, params = {}) {
+      if (isSyncing) return;
+      isSyncing = true;
+
       const actionMap = {
         'dashboard': 'syncDashboard',
         'tanks': 'syncTanks',
@@ -1326,36 +1341,45 @@
 
         updateLoading('Complete', '', 100);
         setTimeout(() => showLoading(false), 300);
+        isSyncing = false;
         return result;
       } catch (err) {
+        console.error('Sync error:', err);
         showLoading(false);
         showToast('Sync failed: ' + err.message, 'error', 'Error');
         // Try to use cached data
-        const cached = localStorage.getItem('enican_tanks');
-        if (cached) {
-          currentTanks = JSON.parse(cached);
-          renderDashboard(currentTanks);
-        }
+        try {
+          const cached = localStorage.getItem('enican_tanks');
+          if (cached) {
+            currentTanks = JSON.parse(cached);
+            renderDashboard(currentTanks);
+            showToast('Using cached data', 'warning', 'Offline Mode');
+          }
+        } catch (e) {}
+        isSyncing = false;
         throw err;
       }
     }
 
     // ─── DASHBOARD RENDER ───
     function renderDashboard(tanks) {
-      currentTanks = tanks;
-      localStorage.setItem('enican_tanks', JSON.stringify(tanks));
+      currentTanks = tanks || [];
+      localStorage.setItem('enican_tanks', JSON.stringify(currentTanks));
 
-      const occupied = tanks.filter(t => t.status === 'occupied');
-      const vacant = tanks.filter(t => t.status === 'vacant');
+      const occupied = currentTanks.filter(t => t.status === 'occupied');
+      const vacant = currentTanks.filter(t => t.status === 'vacant');
 
-      $('occupiedCount').textContent = occupied.length;
-      $('vacantCount').textContent = vacant.length;
-      $('vacantBadge').textContent = vacant.length;
+      const occupiedEl = $('occupiedCount');
+      const vacantEl = $('vacantCount');
+      const badgeEl = $('vacantBadge');
+      if (occupiedEl) occupiedEl.textContent = occupied.length;
+      if (vacantEl) vacantEl.textContent = vacant.length;
+      if (badgeEl) badgeEl.textContent = vacant.length;
 
       // Calculate monthly revenue and profit
       let monthlyRevenue = 0, monthlyProfit = 0;
       const now = new Date();
-      tanks.forEach(t => {
+      currentTanks.forEach(t => {
         (t.sessions || []).forEach(s => {
           if (s.status === 'completed' && s.emptiedDate) {
             const d = new Date(s.emptiedDate);
@@ -1366,33 +1390,36 @@
           }
         });
       });
-      $('revenueCount').textContent = '$' + monthlyRevenue.toFixed(2);
-      $('profitCount').textContent = '$' + monthlyProfit.toFixed(2);
+      const revenueEl = $('revenueCount');
+      const profitEl = $('profitCount');
+      if (revenueEl) revenueEl.textContent = '$' + monthlyRevenue.toFixed(2);
+      if (profitEl) profitEl.textContent = '$' + monthlyProfit.toFixed(2);
 
       // Render tank grid
       const grid = $('tankGrid');
+      if (!grid) return;
       grid.innerHTML = '';
 
-      tanks.sort((a, b) => a.id - b.id).forEach(tank => {
+      if (currentTanks.length === 0) {
+        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;padding:40px;"><i class="fas fa-flask" style="font-size:2rem;opacity:0.3;"></i><div class="text" style="margin-top:8px;font-size:0.7rem;">No tanks available</div></div>';
+        return;
+      }
+
+      currentTanks.sort((a, b) => a.id - b.id).forEach(tank => {
         const isOccupied = tank.status === 'occupied';
         const daysLeft = computeDaysLeft(tank);
-        const progress = isOccupied ? Math.min((daysLeft / CYCLE_DAYS) * 100, 100) : 0;
+        const progress = isOccupied ? Math.min((daysLeft / (tank.durationDays || CYCLE_DAYS)) * 100, 100) : 0;
         const displayName = isOccupied ? tank.customer || 'Unknown' : 'Vacant';
         const activeSession = (tank.sessions || []).find(s => s.status === 'active');
         const invoiceNum = activeSession ? activeSession.invoiceNumber : '';
 
         let progressColor = 'green';
-        if (isOccupied) {
-          if (progress < 30) progressColor = 'green';
-          else if (progress < 70) progressColor = 'yellow';
-          else progressColor = 'red';
-        }
-
         let badgeClass = 'vacant';
         let badgeText = 'Vac';
         if (isOccupied) {
-          badgeClass = progress < 30 ? 'occupied' : 'overdue';
-          badgeText = progress < 30 ? 'Occ' : 'Due';
+          if (progress < 30) { progressColor = 'green'; badgeClass = 'occupied'; badgeText = 'Occ'; }
+          else if (progress < 70) { progressColor = 'yellow'; badgeClass = 'occupied'; badgeText = 'Occ'; }
+          else { progressColor = 'red'; badgeClass = 'overdue'; badgeText = 'Due'; }
         }
 
         const card = document.createElement('div');
@@ -1434,7 +1461,10 @@
     // ─── MODAL ───
     async function openModal(tank) {
       const overlay = $('modalOverlay');
-      $('modalTitle').textContent = `Tank #${String(tank.id).padStart(2, '0')}`;
+      if (!overlay) return;
+      
+      const titleEl = $('modalTitle');
+      if (titleEl) titleEl.textContent = `Tank #${String(tank.id).padStart(2, '0')}`;
 
       // Get full invoice details if there's an active session
       const activeSession = (tank.sessions || []).find(s => s.status === 'active');
@@ -1448,62 +1478,77 @@
       const isOccupied = tank.status === 'occupied';
       const daysLeft = computeDaysLeft(tank);
 
-      $('modalStatus').textContent = isOccupied ? 'Occupied' : 'Vacant';
-      $('modalStatus').className = 'value ' + (isOccupied ? 'occupied' : 'vacant');
-      $('modalInvoice').textContent = activeSession ? activeSession.invoiceNumber : '—';
-      $('modalCustomer').textContent = tank.customer || '—';
-      $('modalDaysLeft').textContent = isOccupied ? `${daysLeft} days` : '—';
+      const statusEl = $('modalStatus');
+      if (statusEl) {
+        statusEl.textContent = isOccupied ? 'Occupied' : 'Vacant';
+        statusEl.className = 'value ' + (isOccupied ? 'occupied' : 'vacant');
+      }
+      const invoiceEl = $('modalInvoice');
+      if (invoiceEl) invoiceEl.textContent = activeSession ? activeSession.invoiceNumber : '—';
+      const customerEl = $('modalCustomer');
+      if (customerEl) customerEl.textContent = tank.customer || '—';
+      const daysEl = $('modalDaysLeft');
+      if (daysEl) daysEl.textContent = isOccupied ? `${daysLeft} days` : '—';
 
       // Sessions
       const sessionList = $('sessionList');
-      sessionList.innerHTML = '';
-      const sessions = tank.sessions || [];
-      if (sessions.length === 0) {
-        sessionList.innerHTML = '<div class="empty-state"><div class="text">No session history</div></div>';
-      } else {
-        sessions.slice().reverse().forEach(s => {
-          const item = document.createElement('div');
-          item.className = 'session-item';
-          item.innerHTML = `
-            <div>
-              <div class="date">${s.date} ${s.emptiedDate ? '→ ' + s.emptiedDate : ''}</div>
-              <div style="font-size:0.4rem;color:var(--text-light);">${s.customer} · ${s.invoiceNumber}</div>
-            </div>
-            <div>
-              <span class="status ${s.status}">${s.status}</span>
-              <span class="revenue">$${(s.revenue || 0).toFixed(2)}</span>
-            </div>
-          `;
-          sessionList.appendChild(item);
-        });
+      if (sessionList) {
+        sessionList.innerHTML = '';
+        const sessions = tank.sessions || [];
+        if (sessions.length === 0) {
+          sessionList.innerHTML = '<div class="empty-state" style="padding:8px;"><div class="text">No session history</div></div>';
+        } else {
+          sessions.slice().reverse().forEach(s => {
+            const item = document.createElement('div');
+            item.className = 'session-item';
+            item.innerHTML = `
+              <div>
+                <div class="date">${s.date || '—'} ${s.emptiedDate ? '→ ' + s.emptiedDate : ''}</div>
+                <div style="font-size:0.4rem;color:var(--text-light);">${s.customer || '—'} · ${s.invoiceNumber || '—'}</div>
+              </div>
+              <div>
+                <span class="status ${s.status || 'active'}">${s.status || 'active'}</span>
+                <span class="revenue">$${(s.revenue || 0).toFixed(2)}</span>
+              </div>
+            `;
+            sessionList.appendChild(item);
+          });
+        }
       }
 
       // Payments
       const paymentList = $('paymentList');
-      paymentList.innerHTML = '';
-      const invPayments = (invoiceData?.payments || []).filter(p => p.invoiceId === activeSession?.invoiceId);
-      if (invPayments.length === 0) {
-        paymentList.innerHTML = '<div class="empty-state" style="padding:8px;"><div class="text">No payments recorded</div></div>';
-      } else {
-        invPayments.forEach(p => {
-          const item = document.createElement('div');
-          item.className = 'payment-row';
-          item.innerHTML = `
-            <span class="receipt"><i class="fas fa-receipt"></i> ${p.receiptNumber}</span>
-            <span class="amount">$${p.amount.toFixed(2)}</span>
-            <span class="date">${new Date(p.paymentDate).toLocaleDateString()}</span>
-          `;
-          paymentList.appendChild(item);
-        });
+      if (paymentList) {
+        paymentList.innerHTML = '';
+        const invPayments = (invoiceData?.payments || []).filter(p => p.invoiceId === activeSession?.invoiceId);
+        if (invPayments.length === 0) {
+          paymentList.innerHTML = '<div class="empty-state" style="padding:8px;"><div class="text">No payments recorded</div></div>';
+        } else {
+          invPayments.forEach(p => {
+            const item = document.createElement('div');
+            item.className = 'payment-row';
+            item.innerHTML = `
+              <span class="receipt"><i class="fas fa-receipt"></i> ${p.receiptNumber || 'REC-' + p.id}</span>
+              <span class="amount">$${(p.amount || 0).toFixed(2)}</span>
+              <span class="date">${p.paymentDate ? new Date(p.paymentDate).toLocaleDateString() : '—'}</span>
+            `;
+            paymentList.appendChild(item);
+          });
+        }
       }
 
       // Total
+      const sessions = tank.sessions || [];
       const totalRevenue = sessions.reduce((sum, s) => sum + (s.revenue || 0), 0);
-      const totalPaid = invPayments.reduce((sum, p) => sum + p.amount, 0);
+      const invPayments = (invoiceData?.payments || []).filter(p => p.invoiceId === activeSession?.invoiceId);
+      const totalPaid = invPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
 
-      $('modalTotalRevenue').textContent = '$' + totalRevenue.toFixed(2);
-      $('modalPaid').textContent = '$' + totalPaid.toFixed(2);
-      $('modalRemaining').textContent = '$' + (totalRevenue - totalPaid).toFixed(2);
+      const totalRevEl = $('modalTotalRevenue');
+      const paidEl = $('modalPaid');
+      const remainingEl = $('modalRemaining');
+      if (totalRevEl) totalRevEl.textContent = '$' + totalRevenue.toFixed(2);
+      if (paidEl) paidEl.textContent = '$' + totalPaid.toFixed(2);
+      if (remainingEl) remainingEl.textContent = '$' + (totalRevenue - totalPaid).toFixed(2);
 
       // Store for payment
       currentModalInvoiceId = activeSession?.invoiceId || null;
@@ -1513,8 +1558,12 @@
 
     // ─── PAYMENT ───
     async function addPayment() {
-      const amount = parseFloat($('paymentAmount').value);
-      const method = $('paymentMethod').value || 'Cash';
+      const amountEl = $('paymentAmount');
+      const methodEl = $('paymentMethod');
+      if (!amountEl || !methodEl) return;
+      
+      const amount = parseFloat(amountEl.value);
+      const method = methodEl.value || 'Cash';
 
       if (!currentModalInvoiceId) {
         showToast('No active invoice found for this tank', 'error');
@@ -1535,12 +1584,12 @@
 
         if (result.success) {
           showToast(`Payment of $${amount.toFixed(2)} recorded (${result.receiptNumber})`, 'success', 'Payment Added');
-          $('paymentAmount').value = '';
-          $('paymentMethod').value = '';
+          amountEl.value = '';
+          methodEl.value = '';
           // Refresh modal data
           await syncData('dashboard');
           // Re-open modal with updated data
-          const tank = currentTanks.find(t => t.id === currentTanks.find(t => t.sessions?.some(s => s.invoiceId === currentModalInvoiceId))?.id);
+          const tank = currentTanks.find(t => t.sessions?.some(s => s.invoiceId === currentModalInvoiceId));
           if (tank) openModal(tank);
         }
       } catch (err) {
@@ -1552,16 +1601,17 @@
     function renderLoadScreen() {
       const invoiceInput = $('loadInvoiceInput');
       const customerInput = $('loadCustomerInput');
-      invoiceInput.value = loadBatch.invoice;
-      customerInput.value = loadBatch.customer;
+      if (invoiceInput) invoiceInput.value = loadBatch.invoice;
+      if (customerInput) customerInput.value = loadBatch.customer;
 
       // Vacant picker
       const vacantPicker = $('vacantPicker');
+      if (!vacantPicker) return;
       vacantPicker.innerHTML = '';
       const vacantTanks = currentTanks.filter(t => t.status === 'vacant');
 
       if (vacantTanks.length === 0) {
-        vacantPicker.innerHTML = '<div class="empty-state"><i class="fas fa-flask"></i><div class="text">No empty tanks available</div></div>';
+        vacantPicker.innerHTML = '<div class="empty-state" style="grid-column:1/-1;padding:20px;"><i class="fas fa-flask"></i><div class="text" style="margin-top:4px;">No empty tanks available</div></div>';
       } else {
         vacantTanks.forEach(t => {
           const btn = document.createElement('div');
@@ -1577,16 +1627,19 @@
         });
       }
 
-      $('selectedTankCount').textContent = loadBatch.tankIds.length;
+      const countEl = $('selectedTankCount');
+      if (countEl) countEl.textContent = loadBatch.tankIds.length;
 
       // Expenses
       const wrap = $('expenseFormWrap');
+      if (!wrap) return;
       if (loadBatch.tankIds.length > 0) {
         wrap.style.display = 'block';
         const form = $('expenseForm');
+        if (!form) return;
         form.innerHTML = '';
         if (costItems.length === 0) {
-          form.innerHTML = '<div class="empty-state"><div class="text">No expenses configured. Add in Settings.</div></div>';
+          form.innerHTML = '<div class="empty-state" style="padding:12px;"><div class="text">No expenses configured. Add in Settings.</div></div>';
         } else {
           if (expenseCheckStates.length !== costItems.length) {
             expenseCheckStates = costItems.map(c => ({
@@ -1614,9 +1667,9 @@
             const cb = row.querySelector('input[type="checkbox"]');
             const costInput = row.querySelectorAll('input[type="number"]')[0];
             const sellInput = row.querySelectorAll('input[type="number"]')[1];
-            cb.addEventListener('change', () => { expenseCheckStates[idx].checked = cb.checked; });
-            costInput.addEventListener('input', () => { expenseCheckStates[idx].costPrice = parseFloat(costInput.value) || 0; });
-            sellInput.addEventListener('input', () => { expenseCheckStates[idx].sellPrice = parseFloat(sellInput.value) || 0; });
+            if (cb) cb.addEventListener('change', () => { expenseCheckStates[idx].checked = cb.checked; });
+            if (costInput) costInput.addEventListener('input', () => { expenseCheckStates[idx].costPrice = parseFloat(costInput.value) || 0; });
+            if (sellInput) sellInput.addEventListener('input', () => { expenseCheckStates[idx].sellPrice = parseFloat(sellInput.value) || 0; });
             form.appendChild(row);
           });
         }
@@ -1626,9 +1679,10 @@
 
       // Batch list
       const batchList = $('batchList');
+      if (!batchList) return;
       batchList.innerHTML = '';
       if (loadBatch.tankIds.length === 0) {
-        batchList.innerHTML = '<div class="empty-state"><div class="text">No tanks selected</div></div>';
+        batchList.innerHTML = '<div class="empty-state" style="padding:12px;"><div class="text">No tanks selected</div></div>';
       } else {
         const totalPerTank = expenseCheckStates.filter(e => e.checked).reduce((s, e) => s + e.sellPrice, 0);
         const totalCostPerTank = expenseCheckStates.filter(e => e.checked).reduce((s, e) => s + e.costPrice, 0);
@@ -1648,10 +1702,13 @@
               <button class="remove" data-id="${id}"><i class="fas fa-times-circle"></i></button>
             </div>
           `;
-          item.querySelector('.remove').addEventListener('click', () => {
-            loadBatch.tankIds = loadBatch.tankIds.filter(x => x !== id);
-            renderLoadScreen();
-          });
+          const removeBtn = item.querySelector('.remove');
+          if (removeBtn) {
+            removeBtn.addEventListener('click', () => {
+              loadBatch.tankIds = loadBatch.tankIds.filter(x => x !== id);
+              renderLoadScreen();
+            });
+          }
           batchList.appendChild(item);
         });
 
@@ -1672,6 +1729,7 @@
     // ─── LOAD ACTIONS ───
     function fetchTanksByCount() {
       const countInput = $('tankCountInput');
+      if (!countInput) return;
       let count = parseInt(countInput.value) || 1;
       if (count < 1) count = 1;
       if (count > 20) count = 20;
@@ -1686,8 +1744,11 @@
     }
 
     async function completeLoad() {
-      const invoice = $('loadInvoiceInput').value.trim();
-      const customer = $('loadCustomerInput').value.trim();
+      const invoiceInput = $('loadInvoiceInput');
+      const customerInput = $('loadCustomerInput');
+      
+      const invoice = invoiceInput ? invoiceInput.value.trim() : '';
+      const customer = customerInput ? customerInput.value.trim() : '';
 
       if (!invoice) { showToast('Enter an invoice number', 'error'); return; }
       if (!customer) { showToast('Enter a customer name', 'error'); return; }
@@ -1730,11 +1791,15 @@
 
     // ─── EMPTY SCREEN ───
     function renderEmptyScreen() {
-      $('emptyGroupListWrap').style.display = 'block';
-      $('emptyGroupDetailWrap').style.display = 'none';
-      $('emptyConfirmWrap').style.display = 'none';
+      const groupWrap = $('emptyGroupListWrap');
+      const detailWrap = $('emptyGroupDetailWrap');
+      const confirmWrap = $('emptyConfirmWrap');
+      if (groupWrap) groupWrap.style.display = 'block';
+      if (detailWrap) detailWrap.style.display = 'none';
+      if (confirmWrap) confirmWrap.style.display = 'none';
 
       const list = $('invoiceGroupList');
+      if (!list) return;
       list.innerHTML = '';
       const groups = {};
 
@@ -1758,7 +1823,7 @@
 
       const groupArr = Object.values(groups);
       if (groupArr.length === 0) {
-        list.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle"></i><div class="text">No occupied tanks to empty</div></div>';
+        list.innerHTML = '<div class="empty-state" style="padding:20px;"><i class="fas fa-check-circle"></i><div class="text" style="margin-top:4px;">No occupied tanks to empty</div></div>';
         return;
       }
 
@@ -1780,15 +1845,20 @@
     function selectGroupForEmpty(g) {
       emptySelectedGroup = g;
       emptySelectedTankIds = [...g.tankIds];
-      $('emptyGroupListWrap').style.display = 'none';
-      $('emptyGroupDetailWrap').style.display = 'block';
-      $('emptyConfirmWrap').style.display = 'none';
+      const groupWrap = $('emptyGroupListWrap');
+      const detailWrap = $('emptyGroupDetailWrap');
+      const confirmWrap = $('emptyConfirmWrap');
+      if (groupWrap) groupWrap.style.display = 'none';
+      if (detailWrap) detailWrap.style.display = 'block';
+      if (confirmWrap) confirmWrap.style.display = 'none';
       renderGroupDetail();
     }
 
     function renderGroupDetail() {
-      $('emptyGroupLabel').textContent = `${emptySelectedGroup.customer} — ${emptySelectedGroup.invoice}`;
+      const labelEl = $('emptyGroupLabel');
+      if (labelEl) labelEl.textContent = `${emptySelectedGroup.customer} — ${emptySelectedGroup.invoice}`;
       const list = $('tankSelectList');
+      if (!list) return;
       list.innerHTML = '';
 
       emptySelectedGroup.tankIds.forEach(id => {
@@ -1800,17 +1870,19 @@
           <input type="checkbox" id="ts_${id}" ${emptySelectedTankIds.includes(id) ? 'checked' : ''} />
           <div class="info">
             <div class="name">T#${String(id).padStart(2, '0')}</div>
-            <div class="sub">Loaded ${tank.loadedDate || '—'} · $${(activeSession?.revenue || 0).toFixed(2)}</div>
+            <div class="sub">Loaded ${tank?.loadedDate || '—'} · $${(activeSession?.revenue || 0).toFixed(2)}</div>
           </div>
         `;
         const cb = row.querySelector('input');
-        cb.addEventListener('change', () => {
-          if (cb.checked) {
-            if (!emptySelectedTankIds.includes(id)) emptySelectedTankIds.push(id);
-          } else {
-            emptySelectedTankIds = emptySelectedTankIds.filter(x => x !== id);
-          }
-        });
+        if (cb) {
+          cb.addEventListener('change', () => {
+            if (cb.checked) {
+              if (!emptySelectedTankIds.includes(id)) emptySelectedTankIds.push(id);
+            } else {
+              emptySelectedTankIds = emptySelectedTankIds.filter(x => x !== id);
+            }
+          });
+        }
         list.appendChild(row);
       });
     }
@@ -1820,10 +1892,13 @@
         showToast('Select at least one tank', 'error');
         return;
       }
-      $('emptyGroupDetailWrap').style.display = 'none';
-      $('emptyConfirmWrap').style.display = 'block';
+      const detailWrap = $('emptyGroupDetailWrap');
+      const confirmWrap = $('emptyConfirmWrap');
+      if (detailWrap) detailWrap.style.display = 'none';
+      if (confirmWrap) confirmWrap.style.display = 'block';
 
       const summary = $('confirmSummary');
+      if (!summary) return;
       let total = 0, rows = '';
       const today = new Date().toLocaleDateString();
 
@@ -1858,95 +1933,107 @@
     // ─── REPORTS ───
     async function renderReports(data) {
       if (!data) {
-        data = await syncData('reports', { month: $('reportMonthFilter').value });
+        try {
+          data = await syncData('reports', { month: $('reportMonthFilter')?.value || 'all' });
+        } catch (e) {
+          return;
+        }
         if (!data) return;
       }
 
       // Populate month filter
       const months = Object.keys(data.monthlyData || {}).sort();
       const filter = $('reportMonthFilter');
-      const currentVal = filter.value;
-      filter.innerHTML = '<option value="all">All</option>';
-      months.forEach(m => {
-        const [y, mo] = m.split('-');
-        const label = new Date(y, parseInt(mo) - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        filter.innerHTML += `<option value="${m}">${label}</option>`;
-      });
-      if (months.includes(currentVal)) filter.value = currentVal;
+      if (filter) {
+        const currentVal = filter.value;
+        filter.innerHTML = '<option value="all">All</option>';
+        months.forEach(m => {
+          const [y, mo] = m.split('-');
+          const label = new Date(y, parseInt(mo) - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+          filter.innerHTML += `<option value="${m}">${label}</option>`;
+        });
+        if (months.includes(currentVal)) filter.value = currentVal;
+      }
 
       // Monthly chart
       const chart = $('monthlyChart');
-      chart.innerHTML = '';
-      const monthData = data.monthlyData || {};
-      const sortedMonths = Object.keys(monthData).sort();
-      const maxVal = Math.max(...sortedMonths.map(k => monthData[k].revenue || 0), 1);
+      if (chart) {
+        chart.innerHTML = '';
+        const monthData = data.monthlyData || {};
+        const sortedMonths = Object.keys(monthData).sort();
+        const maxVal = Math.max(...sortedMonths.map(k => monthData[k].revenue || 0), 1);
 
-      sortedMonths.forEach(k => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'chart-bar-wrapper';
-        const d = monthData[k];
+        if (sortedMonths.length === 0) {
+          chart.innerHTML = '<div class="empty-state" style="width:100%;padding:20px;"><div class="text">No data available</div></div>';
+        } else {
+          sortedMonths.forEach(k => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'chart-bar-wrapper';
+            const d = monthData[k];
 
-        const revenueBar = document.createElement('div');
-        revenueBar.className = 'chart-bar revenue';
-        revenueBar.style.height = Math.max(4, ((d.revenue || 0) / maxVal) * 80) + '%';
+            const revenueBar = document.createElement('div');
+            revenueBar.className = 'chart-bar revenue';
+            revenueBar.style.height = Math.max(4, ((d.revenue || 0) / maxVal) * 80) + '%';
 
-        const profitBar = document.createElement('div');
-        profitBar.className = 'chart-bar profit';
-        profitBar.style.height = Math.max(4, ((d.profit || 0) / maxVal) * 60) + '%';
+            const profitBar = document.createElement('div');
+            profitBar.className = 'chart-bar profit';
+            profitBar.style.height = Math.max(4, ((d.profit || 0) / maxVal) * 60) + '%';
 
-        const label = document.createElement('div');
-        label.className = 'chart-label';
-        const [y, mo] = k.split('-');
-        label.textContent = new Date(y, parseInt(mo) - 1).toLocaleDateString('en-US', { month: 'short' });
+            const label = document.createElement('div');
+            label.className = 'chart-label';
+            const [y, mo] = k.split('-');
+            label.textContent = new Date(y, parseInt(mo) - 1).toLocaleDateString('en-US', { month: 'short' });
 
-        wrapper.appendChild(revenueBar);
-        wrapper.appendChild(profitBar);
-        wrapper.appendChild(label);
-        chart.appendChild(wrapper);
-      });
-
-      if (sortedMonths.length === 0) {
-        chart.innerHTML = '<div class="empty-state" style="width:100%;"><div class="text">No data available</div></div>';
+            wrapper.appendChild(revenueBar);
+            wrapper.appendChild(profitBar);
+            wrapper.appendChild(label);
+            chart.appendChild(wrapper);
+          });
+        }
       }
 
       // Pending payments
       const pendingList = $('pendingList');
-      pendingList.innerHTML = '';
-      const pending = {};
+      if (pendingList) {
+        pendingList.innerHTML = '';
+        const pending = {};
 
-      currentTanks.forEach(t => {
-        (t.sessions || []).forEach(s => {
-          if (s.status === 'active') {
-            const key = s.invoiceNumber + '||' + s.customer;
-            if (!pending[key]) pending[key] = { invoice: s.invoiceNumber, customer: s.customer, total: 0 };
-            pending[key].total += s.revenue || 0;
-          }
+        currentTanks.forEach(t => {
+          (t.sessions || []).forEach(s => {
+            if (s.status === 'active') {
+              const key = s.invoiceNumber + '||' + s.customer;
+              if (!pending[key]) pending[key] = { invoice: s.invoiceNumber, customer: s.customer, total: 0 };
+              pending[key].total += s.revenue || 0;
+            }
+          });
         });
-      });
 
-      const pendingArr = Object.values(pending);
-      if (pendingArr.length === 0) {
-        pendingList.innerHTML = '<div class="empty-state" style="padding:8px;"><div class="text">No pending payments</div></div>';
-      } else {
-        pendingArr.forEach(p => {
-          const div = document.createElement('div');
-          div.className = 'pending-item';
-          div.innerHTML = `<span class="name">${p.customer}</span><span class="amount">$${p.total.toFixed(2)}</span>`;
-          pendingList.appendChild(div);
-        });
+        const pendingArr = Object.values(pending);
+        if (pendingArr.length === 0) {
+          pendingList.innerHTML = '<div class="empty-state" style="padding:8px;"><div class="text">No pending payments</div></div>';
+        } else {
+          pendingArr.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'pending-item';
+            div.innerHTML = `<span class="name">${p.customer}</span><span class="amount">$${p.total.toFixed(2)}</span>`;
+            pendingList.appendChild(div);
+          });
+        }
       }
 
       // Summary
       const summary = $('reportSummary');
-      const s = data.summary || { totalRevenue: 0, totalCost: 0, totalProfit: 0, sessionCount: 0 };
-      summary.innerHTML = `
-        <div class="report-summary-grid">
-          <div class="stat"><div class="value" style="color:var(--accent);">$${s.totalRevenue.toFixed(2)}</div><div class="label">Revenue</div></div>
-          <div class="stat"><div class="value" style="color:var(--warning);">$${s.totalCost.toFixed(2)}</div><div class="label">Cost</div></div>
-          <div class="stat"><div class="value" style="color:var(--success);">$${s.totalProfit.toFixed(2)}</div><div class="label">Profit</div></div>
-          <div class="stat"><div class="value">${s.sessionCount}</div><div class="label">Completed</div></div>
-        </div>
-      `;
+      if (summary) {
+        const s = data.summary || { totalRevenue: 0, totalCost: 0, totalProfit: 0, sessionCount: 0 };
+        summary.innerHTML = `
+          <div class="report-summary-grid">
+            <div class="stat"><div class="value" style="color:var(--accent);">$${s.totalRevenue.toFixed(2)}</div><div class="label">Revenue</div></div>
+            <div class="stat"><div class="value" style="color:var(--warning);">$${s.totalCost.toFixed(2)}</div><div class="label">Cost</div></div>
+            <div class="stat"><div class="value" style="color:var(--success);">$${s.totalProfit.toFixed(2)}</div><div class="label">Profit</div></div>
+            <div class="stat"><div class="value">${s.sessionCount}</div><div class="label">Completed</div></div>
+          </div>
+        `;
+      }
     }
 
     function downloadStatement() {
@@ -1958,7 +2045,7 @@
       currentTanks.sort((a, b) => a.id - b.id).forEach(t => {
         text += `Tank #${String(t.id).padStart(2, '0')} | ${t.status.toUpperCase()} | ${t.customer || '—'}\n`;
         (t.sessions || []).forEach(s => {
-          text += `  ${s.date} | ${s.customer} | $${(s.revenue || 0).toFixed(2)} | Cost $${(s.cost || 0).toFixed(2)} | Profit $${((s.revenue || 0) - (s.cost || 0)).toFixed(2)} | ${s.status}\n`;
+          text += `  ${s.date || '—'} | ${s.customer || '—'} | $${(s.revenue || 0).toFixed(2)} | Cost $${(s.cost || 0).toFixed(2)} | Profit $${((s.revenue || 0) - (s.cost || 0)).toFixed(2)} | ${s.status || 'active'}\n`;
         });
       });
       text += '\nEXPENSES\n';
@@ -1994,91 +2081,118 @@
     // ─── SETTINGS ───
     function renderSettings() {
       const list = $('settingsCostList');
-      list.innerHTML = '';
-      costItems.forEach((c, idx) => {
-        const div = document.createElement('div');
-        div.className = 'settings-item';
-        div.innerHTML = `
-          <div class="name">${c.name} <span class="sub">Cost $${(c.costPrice || 0).toFixed(2)} · Sell $${(c.sellPrice || 0).toFixed(2)}</span></div>
-          <div class="actions"><button data-idx="${idx}"><i class="fas fa-trash"></i></button></div>
-        `;
-        div.querySelector('button').addEventListener('click', async () => {
-          if (!settingsUnlocked) { showToast('Unlock settings first', 'warning'); return; }
-          if (!confirm(`Delete "${c.name}"?`)) return;
-          try {
-            await apiCall('deleteExpense', { id: c.id });
-            await syncData('dashboard');
-            renderSettings();
-            showToast('Expense deleted', 'success');
-          } catch (e) {
-            showToast('Error: ' + e.message, 'error');
-          }
+      if (list) {
+        list.innerHTML = '';
+        costItems.forEach((c, idx) => {
+          const div = document.createElement('div');
+          div.className = 'settings-item';
+          div.innerHTML = `
+            <div class="name">${c.name} <span class="sub">Cost $${(c.costPrice || 0).toFixed(2)} · Sell $${(c.sellPrice || 0).toFixed(2)}</span></div>
+            <div class="actions"><button data-idx="${idx}"><i class="fas fa-trash"></i></button></div>
+          `;
+          div.querySelector('button').addEventListener('click', async () => {
+            if (!settingsUnlocked) { showToast('Unlock settings first', 'warning'); return; }
+            if (!confirm(`Delete "${c.name}"?`)) return;
+            try {
+              await apiCall('deleteExpense', { id: c.id });
+              await syncData('dashboard');
+              renderSettings();
+              showToast('Expense deleted', 'success');
+            } catch (e) {
+              showToast('Error: ' + e.message, 'error');
+            }
+          });
+          list.appendChild(div);
         });
-        list.appendChild(div);
-      });
+      }
 
       const tankList = $('tankAdminList');
-      tankList.innerHTML = '';
-      currentTanks.sort((a, b) => a.id - b.id).forEach(t => {
-        const div = document.createElement('div');
-        div.className = 'tank-admin-item';
-        div.innerHTML = `
-          <div class="info">
-            T#${String(t.id).padStart(2, '0')}
-            <span class="status ${t.status}">${t.status}</span>
-            <span style="font-size:0.4rem;color:var(--text-light);">${t.durationDays || 10}d</span>
-          </div>
-          <button data-id="${t.id}"><i class="fas fa-trash"></i></button>
-        `;
-        div.querySelector('button').addEventListener('click', async () => {
-          if (!settingsUnlocked) { showToast('Unlock settings first', 'warning'); return; }
-          if (!confirm(`Delete Tank #${t.id}?`)) return;
-          try {
-            await apiCall('deleteTank', { id: t.id });
-            await syncData('dashboard');
-            renderSettings();
-            showToast('Tank deleted', 'success');
-          } catch (e) {
-            showToast('Error: ' + e.message, 'error');
-          }
+      if (tankList) {
+        tankList.innerHTML = '';
+        currentTanks.sort((a, b) => a.id - b.id).forEach(t => {
+          const div = document.createElement('div');
+          div.className = 'tank-admin-item';
+          div.innerHTML = `
+            <div class="info">
+              T#${String(t.id).padStart(2, '0')}
+              <span class="status ${t.status}">${t.status}</span>
+              <span style="font-size:0.4rem;color:var(--text-light);">${t.durationDays || 10}d</span>
+            </div>
+            <button data-id="${t.id}"><i class="fas fa-trash"></i></button>
+          `;
+          div.querySelector('button').addEventListener('click', async () => {
+            if (!settingsUnlocked) { showToast('Unlock settings first', 'warning'); return; }
+            if (!confirm(`Delete Tank #${t.id}?`)) return;
+            try {
+              await apiCall('deleteTank', { id: t.id });
+              await syncData('dashboard');
+              renderSettings();
+              showToast('Tank deleted', 'success');
+            } catch (e) {
+              showToast('Error: ' + e.message, 'error');
+            }
+          });
+          tankList.appendChild(div);
         });
-        tankList.appendChild(div);
-      });
+      }
     }
 
     // ─── SCREEN NAVIGATION ───
     function showDashboard() {
       currentScreen = 'dashboard';
-      ['loadScreen', 'emptyScreen', 'reportsScreen'].forEach(id => $ (id).classList.remove('active'));
-      $('kpiGrid').style.display = 'grid';
-      $('tankGridWrapper').style.display = 'block';
+      ['loadScreen', 'emptyScreen', 'reportsScreen'].forEach(id => {
+        const el = $(id);
+        if (el) el.classList.remove('active');
+      });
+      const kpiGrid = $('kpiGrid');
+      const gridWrapper = $('tankGridWrapper');
+      if (kpiGrid) kpiGrid.style.display = 'grid';
+      if (gridWrapper) gridWrapper.style.display = 'block';
       document.querySelectorAll('.footer-btn').forEach(b => b.classList.remove('active'));
-      $('footerDashboard').classList.add('active');
-      $('breadcrumbLabel').textContent = 'Dashboard';
+      const footerDash = $('footerDashboard');
+      if (footerDash) footerDash.classList.add('active');
+      const breadcrumb = $('breadcrumbLabel');
+      if (breadcrumb) breadcrumb.textContent = 'Dashboard';
       syncData('dashboard').catch(() => {});
     }
 
     function openLoadScreen() {
       currentScreen = 'load';
-      $('kpiGrid').style.display = 'none';
-      $('tankGridWrapper').style.display = 'none';
-      ['emptyScreen', 'reportsScreen'].forEach(id => $(id).classList.remove('active'));
-      $('loadScreen').classList.add('active');
+      const kpiGrid = $('kpiGrid');
+      const gridWrapper = $('tankGridWrapper');
+      if (kpiGrid) kpiGrid.style.display = 'none';
+      if (gridWrapper) gridWrapper.style.display = 'none';
+      ['emptyScreen', 'reportsScreen'].forEach(id => {
+        const el = $(id);
+        if (el) el.classList.remove('active');
+      });
+      const loadScreen = $('loadScreen');
+      if (loadScreen) loadScreen.classList.add('active');
       document.querySelectorAll('.footer-btn').forEach(b => b.classList.remove('active'));
-      $('footerLoad').classList.add('active');
-      $('breadcrumbLabel').textContent = 'Load';
+      const footerLoad = $('footerLoad');
+      if (footerLoad) footerLoad.classList.add('active');
+      const breadcrumb = $('breadcrumbLabel');
+      if (breadcrumb) breadcrumb.textContent = 'Load';
       renderLoadScreen();
     }
 
     function openEmptyScreen() {
       currentScreen = 'empty';
-      $('kpiGrid').style.display = 'none';
-      $('tankGridWrapper').style.display = 'none';
-      ['loadScreen', 'reportsScreen'].forEach(id => $(id).classList.remove('active'));
-      $('emptyScreen').classList.add('active');
+      const kpiGrid = $('kpiGrid');
+      const gridWrapper = $('tankGridWrapper');
+      if (kpiGrid) kpiGrid.style.display = 'none';
+      if (gridWrapper) gridWrapper.style.display = 'none';
+      ['loadScreen', 'reportsScreen'].forEach(id => {
+        const el = $(id);
+        if (el) el.classList.remove('active');
+      });
+      const emptyScreen = $('emptyScreen');
+      if (emptyScreen) emptyScreen.classList.add('active');
       document.querySelectorAll('.footer-btn').forEach(b => b.classList.remove('active'));
-      $('footerEmpty').classList.add('active');
-      $('breadcrumbLabel').textContent = 'Empty';
+      const footerEmpty = $('footerEmpty');
+      if (footerEmpty) footerEmpty.classList.add('active');
+      const breadcrumb = $('breadcrumbLabel');
+      if (breadcrumb) breadcrumb.textContent = 'Empty';
       emptySelectedGroup = null;
       emptySelectedTankIds = [];
       renderEmptyScreen();
@@ -2086,232 +2200,364 @@
 
     function openReportsScreen() {
       currentScreen = 'reports';
-      $('kpiGrid').style.display = 'none';
-      $('tankGridWrapper').style.display = 'none';
-      ['loadScreen', 'emptyScreen'].forEach(id => $(id).classList.remove('active'));
-      $('reportsScreen').classList.add('active');
+      const kpiGrid = $('kpiGrid');
+      const gridWrapper = $('tankGridWrapper');
+      if (kpiGrid) kpiGrid.style.display = 'none';
+      if (gridWrapper) gridWrapper.style.display = 'none';
+      ['loadScreen', 'emptyScreen'].forEach(id => {
+        const el = $(id);
+        if (el) el.classList.remove('active');
+      });
+      const reportsScreen = $('reportsScreen');
+      if (reportsScreen) reportsScreen.classList.add('active');
       document.querySelectorAll('.footer-btn').forEach(b => b.classList.remove('active'));
-      $('footerReports').classList.add('active');
-      $('breadcrumbLabel').textContent = 'Reports';
-      syncData('reports', { month: $('reportMonthFilter').value }).catch(() => {});
+      const footerReports = $('footerReports');
+      if (footerReports) footerReports.classList.add('active');
+      const breadcrumb = $('breadcrumbLabel');
+      if (breadcrumb) breadcrumb.textContent = 'Reports';
+      syncData('reports', { month: $('reportMonthFilter')?.value || 'all' }).catch(() => {});
     }
 
     // ─── INIT ───
     async function init() {
       // Load cached data
-      const cached = localStorage.getItem('enican_tanks');
-      if (cached) {
-        try {
+      try {
+        const cached = localStorage.getItem('enican_tanks');
+        if (cached) {
           currentTanks = JSON.parse(cached);
           renderDashboard(currentTanks);
-        } catch (e) {}
-      }
+          showToast('Loaded cached data', 'warning', 'Offline Mode');
+        }
+      } catch (e) {}
 
-      // Initial sync
-      await syncData('dashboard');
+      // Initial sync with timeout fallback
+      try {
+        await Promise.race([
+          syncData('dashboard'),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Sync timeout')), 15000))
+        ]);
+      } catch (err) {
+        console.warn('Initial sync timeout, using cached data');
+        showToast('Using cached data - check connection', 'warning', 'Offline');
+      }
 
       // Event Listeners
       // Modal
-      $('modalClose').addEventListener('click', () => $('modalOverlay').classList.remove('active'));
-      $('modalOverlay').addEventListener('click', (e) => {
-        if (e.target === $('modalOverlay')) $('modalOverlay').classList.remove('active');
-      });
+      const modalClose = $('modalClose');
+      const modalOverlay = $('modalOverlay');
+      if (modalClose) modalClose.addEventListener('click', () => { if (modalOverlay) modalOverlay.classList.remove('active'); });
+      if (modalOverlay) {
+        modalOverlay.addEventListener('click', (e) => {
+          if (e.target === modalOverlay) modalOverlay.classList.remove('active');
+        });
+      }
 
       // Settings
-      $('menuIcon').addEventListener('click', () => {
-        $('settingsOverlay').classList.add('active');
-        renderSettings();
-        settingsUnlocked = false;
-        $('settingsContent').style.display = 'none';
-        $('settingsPwd').value = '';
-        $('expenseAddForm').style.display = 'none';
-        $('tankAddForm').style.display = 'none';
-      });
-      $('settingsClose').addEventListener('click', () => $('settingsOverlay').classList.remove('active'));
-      $('settingsOverlay').addEventListener('click', (e) => {
-        if (e.target === $('settingsOverlay')) $('settingsOverlay').classList.remove('active');
-      });
-
-      $('settingsUnlock').addEventListener('click', () => {
-        const pwd = $('settingsPwd').value;
-        if (pwd === 'admin') {
-          settingsUnlocked = true;
-          $('settingsContent').style.display = 'block';
+      const menuIcon = $('menuIcon');
+      const settingsOverlay = $('settingsOverlay');
+      const settingsClose = $('settingsClose');
+      if (menuIcon) {
+        menuIcon.addEventListener('click', () => {
+          if (settingsOverlay) settingsOverlay.classList.add('active');
           renderSettings();
-          showToast('Settings unlocked', 'success');
-        } else {
-          showToast('Wrong password', 'error');
-        }
-      });
+          settingsUnlocked = false;
+          const settingsContent = $('settingsContent');
+          const settingsPwd = $('settingsPwd');
+          if (settingsContent) settingsContent.style.display = 'none';
+          if (settingsPwd) settingsPwd.value = '';
+          const expenseAddForm = $('expenseAddForm');
+          const tankAddForm = $('tankAddForm');
+          if (expenseAddForm) expenseAddForm.style.display = 'none';
+          if (tankAddForm) tankAddForm.style.display = 'none';
+        });
+      }
+      if (settingsClose) {
+        settingsClose.addEventListener('click', () => { if (settingsOverlay) settingsOverlay.classList.remove('active'); });
+      }
+      if (settingsOverlay) {
+        settingsOverlay.addEventListener('click', (e) => {
+          if (e.target === settingsOverlay) settingsOverlay.classList.remove('active');
+        });
+      }
+
+      const settingsUnlock = $('settingsUnlock');
+      if (settingsUnlock) {
+        settingsUnlock.addEventListener('click', () => {
+          const pwd = $('settingsPwd');
+          if (!pwd) return;
+          if (pwd.value === 'admin') {
+            settingsUnlocked = true;
+            const settingsContent = $('settingsContent');
+            if (settingsContent) settingsContent.style.display = 'block';
+            renderSettings();
+            showToast('Settings unlocked', 'success');
+          } else {
+            showToast('Wrong password', 'error');
+          }
+        });
+      }
 
       // Add Expense
-      $('addExpenseBtn').addEventListener('click', () => {
-        if (!settingsUnlocked) { showToast('Unlock settings first', 'warning'); return; }
-        $('expenseAddForm').style.display = 'flex';
-      });
-      $('cancelExpenseBtn').addEventListener('click', () => {
-        $('expenseAddForm').style.display = 'none';
-        $('newCostName').value = '';
-        $('newCostPrice').value = '';
-        $('newSellPrice').value = '';
-      });
-      $('saveExpenseBtn').addEventListener('click', async () => {
-        if (!settingsUnlocked) { showToast('Unlock settings first', 'warning'); return; }
-        const name = $('newCostName').value.trim();
-        const costPrice = parseFloat($('newCostPrice').value);
-        const sellPrice = parseFloat($('newSellPrice').value) || costPrice * 1.4;
-        if (!name || isNaN(costPrice) || costPrice <= 0) {
-          showToast('Enter valid name and cost', 'error');
-          return;
-        }
-        try {
-          await apiCall('addExpense', { name, costPrice, sellPrice });
-          await syncData('dashboard');
-          renderSettings();
-          $('newCostName').value = '';
-          $('newCostPrice').value = '';
-          $('newSellPrice').value = '';
-          $('expenseAddForm').style.display = 'none';
-          showToast('Expense added', 'success');
-        } catch (e) {
-          showToast('Error: ' + e.message, 'error');
-        }
-      });
+      const addExpenseBtn = $('addExpenseBtn');
+      if (addExpenseBtn) {
+        addExpenseBtn.addEventListener('click', () => {
+          if (!settingsUnlocked) { showToast('Unlock settings first', 'warning'); return; }
+          const expenseAddForm = $('expenseAddForm');
+          if (expenseAddForm) expenseAddForm.style.display = 'flex';
+        });
+      }
+      const cancelExpenseBtn = $('cancelExpenseBtn');
+      if (cancelExpenseBtn) {
+        cancelExpenseBtn.addEventListener('click', () => {
+          const expenseAddForm = $('expenseAddForm');
+          const newCostName = $('newCostName');
+          const newCostPrice = $('newCostPrice');
+          const newSellPrice = $('newSellPrice');
+          if (expenseAddForm) expenseAddForm.style.display = 'none';
+          if (newCostName) newCostName.value = '';
+          if (newCostPrice) newCostPrice.value = '';
+          if (newSellPrice) newSellPrice.value = '';
+        });
+      }
+      const saveExpenseBtn = $('saveExpenseBtn');
+      if (saveExpenseBtn) {
+        saveExpenseBtn.addEventListener('click', async () => {
+          if (!settingsUnlocked) { showToast('Unlock settings first', 'warning'); return; }
+          const nameInput = $('newCostName');
+          const costInput = $('newCostPrice');
+          const sellInput = $('newSellPrice');
+          if (!nameInput || !costInput) return;
+          const name = nameInput.value.trim();
+          const costPrice = parseFloat(costInput.value);
+          const sellPrice = parseFloat(sellInput?.value) || costPrice * 1.4;
+          if (!name || isNaN(costPrice) || costPrice <= 0) {
+            showToast('Enter valid name and cost', 'error');
+            return;
+          }
+          try {
+            await apiCall('addExpense', { name, costPrice, sellPrice });
+            await syncData('dashboard');
+            renderSettings();
+            nameInput.value = '';
+            costInput.value = '';
+            if (sellInput) sellInput.value = '';
+            const expenseAddForm = $('expenseAddForm');
+            if (expenseAddForm) expenseAddForm.style.display = 'none';
+            showToast('Expense added', 'success');
+          } catch (e) {
+            showToast('Error: ' + e.message, 'error');
+          }
+        });
+      }
 
       // Add Tank
-      $('addTankBtn').addEventListener('click', () => {
-        if (!settingsUnlocked) { showToast('Unlock settings first', 'warning'); return; }
-        $('tankAddForm').style.display = 'flex';
-      });
-      $('cancelTankBtn').addEventListener('click', () => {
-        $('tankAddForm').style.display = 'none';
-        $('newTankId').value = '';
-        $('newTankDuration').value = '10';
-      });
-      $('saveTankBtn').addEventListener('click', async () => {
-        if (!settingsUnlocked) { showToast('Unlock settings first', 'warning'); return; }
-        const id = parseInt($('newTankId').value);
-        const duration = parseInt($('newTankDuration').value) || 10;
-        if (isNaN(id) || id < 1) { showToast('Enter valid tank number', 'error'); return; }
-        if (currentTanks.find(t => t.id === id)) { showToast('Tank already exists', 'error'); return; }
-        try {
-          await apiCall('addTank', { id, durationDays: duration });
-          await syncData('dashboard');
-          renderSettings();
-          $('newTankId').value = '';
-          $('newTankDuration').value = '10';
-          $('tankAddForm').style.display = 'none';
-          showToast(`Tank #${id} added`, 'success');
-        } catch (e) {
-          showToast('Error: ' + e.message, 'error');
-        }
-      });
+      const addTankBtn = $('addTankBtn');
+      if (addTankBtn) {
+        addTankBtn.addEventListener('click', () => {
+          if (!settingsUnlocked) { showToast('Unlock settings first', 'warning'); return; }
+          const tankAddForm = $('tankAddForm');
+          if (tankAddForm) tankAddForm.style.display = 'flex';
+        });
+      }
+      const cancelTankBtn = $('cancelTankBtn');
+      if (cancelTankBtn) {
+        cancelTankBtn.addEventListener('click', () => {
+          const tankAddForm = $('tankAddForm');
+          const newTankId = $('newTankId');
+          const newTankDuration = $('newTankDuration');
+          if (tankAddForm) tankAddForm.style.display = 'none';
+          if (newTankId) newTankId.value = '';
+          if (newTankDuration) newTankDuration.value = '10';
+        });
+      }
+      const saveTankBtn = $('saveTankBtn');
+      if (saveTankBtn) {
+        saveTankBtn.addEventListener('click', async () => {
+          if (!settingsUnlocked) { showToast('Unlock settings first', 'warning'); return; }
+          const idInput = $('newTankId');
+          const durationInput = $('newTankDuration');
+          if (!idInput) return;
+          const id = parseInt(idInput.value);
+          const duration = parseInt(durationInput?.value) || 10;
+          if (isNaN(id) || id < 1) { showToast('Enter valid tank number', 'error'); return; }
+          if (currentTanks.find(t => t.id === id)) { showToast('Tank already exists', 'error'); return; }
+          try {
+            await apiCall('addTank', { id, durationDays: duration });
+            await syncData('dashboard');
+            renderSettings();
+            idInput.value = '';
+            if (durationInput) durationInput.value = '10';
+            const tankAddForm = $('tankAddForm');
+            if (tankAddForm) tankAddForm.style.display = 'none';
+            showToast(`Tank #${id} added`, 'success');
+          } catch (e) {
+            showToast('Error: ' + e.message, 'error');
+          }
+        });
+      }
 
       // Payment
-      $('addPaymentBtn').addEventListener('click', addPayment);
-      $('paymentAmount').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') addPayment();
-      });
+      const addPaymentBtn = $('addPaymentBtn');
+      if (addPaymentBtn) addPaymentBtn.addEventListener('click', addPayment);
+      const paymentAmount = $('paymentAmount');
+      if (paymentAmount) {
+        paymentAmount.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') addPayment();
+        });
+      }
 
       // KPI clicks
-      $('kpiOccupied').addEventListener('click', () => openEmptyScreen());
-      $('kpiVacant').addEventListener('click', () => openLoadScreen());
-      $('kpiRevenue').addEventListener('click', () => openReportsScreen());
-      $('kpiProfit').addEventListener('click', () => openReportsScreen());
+      const kpiOccupied = $('kpiOccupied');
+      const kpiVacant = $('kpiVacant');
+      const kpiRevenue = $('kpiRevenue');
+      const kpiProfit = $('kpiProfit');
+      if (kpiOccupied) kpiOccupied.addEventListener('click', () => openEmptyScreen());
+      if (kpiVacant) kpiVacant.addEventListener('click', () => openLoadScreen());
+      if (kpiRevenue) kpiRevenue.addEventListener('click', () => openReportsScreen());
+      if (kpiProfit) kpiProfit.addEventListener('click', () => openReportsScreen());
 
       // Sync
-      $('syncBtn').addEventListener('click', () => {
-        syncData('dashboard').catch(() => {});
-      });
+      const syncBtn = $('syncBtn');
+      if (syncBtn) {
+        syncBtn.addEventListener('click', () => {
+          syncData('dashboard').catch(() => {});
+        });
+      }
 
       // Footer
-      $('footerDashboard').addEventListener('click', () => {
-        if (currentScreen === 'dashboard') return;
-        showDashboard();
-      });
-      $('footerLoad').addEventListener('click', () => {
-        if (currentScreen === 'load') {
+      const footerDashboard = $('footerDashboard');
+      const footerLoad = $('footerLoad');
+      const footerEmpty = $('footerEmpty');
+      const footerReports = $('footerReports');
+
+      if (footerDashboard) {
+        footerDashboard.addEventListener('click', () => {
+          if (currentScreen === 'dashboard') return;
+          showDashboard();
+        });
+      }
+      if (footerLoad) {
+        footerLoad.addEventListener('click', () => {
+          if (currentScreen === 'load') {
+            if (loadBatch.tankIds.length > 0 || loadBatch.invoice.trim() || loadBatch.customer.trim()) {
+              if (!confirm('Discard this load batch?')) return;
+            }
+            loadBatch = { invoice: '', customer: '', tankIds: [], expenses: [] };
+            expenseCheckStates = [];
+            showDashboard();
+          } else {
+            openLoadScreen();
+          }
+        });
+      }
+      if (footerEmpty) {
+        footerEmpty.addEventListener('click', () => {
+          if (currentScreen === 'empty') {
+            emptySelectedGroup = null;
+            emptySelectedTankIds = [];
+            showDashboard();
+          } else {
+            openEmptyScreen();
+          }
+        });
+      }
+      if (footerReports) {
+        footerReports.addEventListener('click', () => {
+          if (currentScreen === 'reports') {
+            showDashboard();
+          } else {
+            openReportsScreen();
+          }
+        });
+      }
+
+      // Load screen
+      const loadBackBtn = $('loadBackBtn');
+      if (loadBackBtn) {
+        loadBackBtn.addEventListener('click', () => {
           if (loadBatch.tankIds.length > 0 || loadBatch.invoice.trim() || loadBatch.customer.trim()) {
             if (!confirm('Discard this load batch?')) return;
           }
           loadBatch = { invoice: '', customer: '', tankIds: [], expenses: [] };
           expenseCheckStates = [];
           showDashboard();
-        } else {
-          openLoadScreen();
-        }
-      });
-      $('footerEmpty').addEventListener('click', () => {
-        if (currentScreen === 'empty') {
+        });
+      }
+      const fetchTanksBtn = $('fetchTanksBtn');
+      if (fetchTanksBtn) fetchTanksBtn.addEventListener('click', fetchTanksByCount);
+      const applyExpensesBtn = $('applyExpensesBtn');
+      if (applyExpensesBtn) {
+        applyExpensesBtn.addEventListener('click', () => {
+          if (loadBatch.tankIds.length === 0) { showToast('Select at least one tank', 'warning'); return; }
+          const checked = expenseCheckStates.filter(e => e.checked);
+          if (checked.length === 0) { showToast('Select at least one expense', 'warning'); return; }
+          const total = checked.reduce((s, e) => s + e.sellPrice, 0);
+          showToast(`Applied expenses to ${loadBatch.tankIds.length} tanks. Total per tank: $${total.toFixed(2)}`, 'success');
+        });
+      }
+      const clearExpensesBtn = $('clearExpensesBtn');
+      if (clearExpensesBtn) {
+        clearExpensesBtn.addEventListener('click', () => {
+          expenseCheckStates.forEach(e => e.checked = false);
+          renderLoadScreen();
+        });
+      }
+      const completeLoadBtn = $('completeLoadBtn');
+      if (completeLoadBtn) completeLoadBtn.addEventListener('click', completeLoad);
+
+      // Empty screen
+      const emptyBackBtn = $('emptyBackBtn');
+      if (emptyBackBtn) {
+        emptyBackBtn.addEventListener('click', () => {
           emptySelectedGroup = null;
           emptySelectedTankIds = [];
           showDashboard();
-        } else {
-          openEmptyScreen();
-        }
-      });
-      $('footerReports').addEventListener('click', () => {
-        if (currentScreen === 'reports') {
-          showDashboard();
-        } else {
-          openReportsScreen();
-        }
-      });
-
-      // Load screen
-      $('loadBackBtn').addEventListener('click', () => {
-        if (loadBatch.tankIds.length > 0 || loadBatch.invoice.trim() || loadBatch.customer.trim()) {
-          if (!confirm('Discard this load batch?')) return;
-        }
-        loadBatch = { invoice: '', customer: '', tankIds: [], expenses: [] };
-        expenseCheckStates = [];
-        showDashboard();
-      });
-      $('fetchTanksBtn').addEventListener('click', fetchTanksByCount);
-      $('applyExpensesBtn').addEventListener('click', () => {
-        if (loadBatch.tankIds.length === 0) { showToast('Select at least one tank', 'warning'); return; }
-        const checked = expenseCheckStates.filter(e => e.checked);
-        if (checked.length === 0) { showToast('Select at least one expense', 'warning'); return; }
-        const total = checked.reduce((s, e) => s + e.sellPrice, 0);
-        showToast(`Applied expenses to ${loadBatch.tankIds.length} tanks. Total per tank: $${total.toFixed(2)}`, 'success');
-      });
-      $('clearExpensesBtn').addEventListener('click', () => {
-        expenseCheckStates.forEach(e => e.checked = false);
-        renderLoadScreen();
-      });
-      $('completeLoadBtn').addEventListener('click', completeLoad);
-
-      // Empty screen
-      $('emptyBackBtn').addEventListener('click', () => {
-        emptySelectedGroup = null;
-        emptySelectedTankIds = [];
-        showDashboard();
-      });
-      $('recordEmptyBtn').addEventListener('click', recordEmptying);
-      $('cancelEmptyGroupBtn').addEventListener('click', () => {
-        emptySelectedGroup = null;
-        $('emptyGroupDetailWrap').style.display = 'none';
-        $('emptyGroupListWrap').style.display = 'block';
-        renderEmptyScreen();
-      });
-      $('confirmPaymentBtn').addEventListener('click', confirmPayment);
-      $('cancelConfirmBtn').addEventListener('click', () => {
-        $('emptyConfirmWrap').style.display = 'none';
-        $('emptyGroupDetailWrap').style.display = 'block';
-      });
+        });
+      }
+      const recordEmptyBtn = $('recordEmptyBtn');
+      if (recordEmptyBtn) recordEmptyBtn.addEventListener('click', recordEmptying);
+      const cancelEmptyGroupBtn = $('cancelEmptyGroupBtn');
+      if (cancelEmptyGroupBtn) {
+        cancelEmptyGroupBtn.addEventListener('click', () => {
+          emptySelectedGroup = null;
+          const detailWrap = $('emptyGroupDetailWrap');
+          const groupWrap = $('emptyGroupListWrap');
+          if (detailWrap) detailWrap.style.display = 'none';
+          if (groupWrap) groupWrap.style.display = 'block';
+          renderEmptyScreen();
+        });
+      }
+      const confirmPaymentBtn = $('confirmPaymentBtn');
+      if (confirmPaymentBtn) confirmPaymentBtn.addEventListener('click', confirmPayment);
+      const cancelConfirmBtn = $('cancelConfirmBtn');
+      if (cancelConfirmBtn) {
+        cancelConfirmBtn.addEventListener('click', () => {
+          const confirmWrap = $('emptyConfirmWrap');
+          const detailWrap = $('emptyGroupDetailWrap');
+          if (confirmWrap) confirmWrap.style.display = 'none';
+          if (detailWrap) detailWrap.style.display = 'block';
+        });
+      }
 
       // Reports
-      $('reportsBackBtn').addEventListener('click', showDashboard);
-      $('reportMonthFilter').addEventListener('change', () => {
-        syncData('reports', { month: $('reportMonthFilter').value }).catch(() => {});
-      });
-      $('downloadReportBtn').addEventListener('click', downloadStatement);
+      const reportsBackBtn = $('reportsBackBtn');
+      if (reportsBackBtn) reportsBackBtn.addEventListener('click', showDashboard);
+      const reportMonthFilter = $('reportMonthFilter');
+      if (reportMonthFilter) {
+        reportMonthFilter.addEventListener('change', () => {
+          syncData('reports', { month: reportMonthFilter.value }).catch(() => {});
+        });
+      }
+      const downloadReportBtn = $('downloadReportBtn');
+      if (downloadReportBtn) downloadReportBtn.addEventListener('click', downloadStatement);
 
       // Keyboard shortcuts
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-          $('modalOverlay').classList.remove('active');
-          $('settingsOverlay').classList.remove('active');
+          const modalOverlay = $('modalOverlay');
+          const settingsOverlay = $('settingsOverlay');
+          if (modalOverlay) modalOverlay.classList.remove('active');
+          if (settingsOverlay) settingsOverlay.classList.remove('active');
         }
       });
 
@@ -2325,12 +2571,16 @@
         }
       }, 60000);
 
-      console.log('Enican Mines v2.0 initialized');
+      console.log('Enican Mines v2.1 initialized');
       showToast('Welcome to Enican Mines', 'success', 'Ready');
     }
 
-    // Start the app
-    document.addEventListener('DOMContentLoaded', init);
+    // Start the app when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   })();
 </script>
 </body>

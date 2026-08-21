@@ -814,6 +814,7 @@
     <div class="screen-body">
       <div class="filter-row">
         <button class="btn-download" id="downloadReportBtn"><i class="fas fa-download"></i> Download Statement</button>
+        <button class="btn-primary" id="refreshReportsBtn" style="padding:6px 16px;border:none;border-radius:20px;font-size:0.6rem;cursor:pointer;font-weight:600;"><i class="fas fa-sync-alt"></i> Refresh</button>
       </div>
       <div class="reports-grid">
         <div class="report-card">
@@ -948,6 +949,7 @@
     let settingsUnlocked = false;
     let pendingWrites = [];
     let writeRetryInterval = null;
+    let reportsData = null;
 
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -1062,6 +1064,21 @@
       }, RETRY_INTERVAL);
     }
 
+    async function updateDashboard() {
+      try {
+        const data = await apiCall('getDashboardData');
+        document.getElementById('occupiedCount').textContent = data.occupied || 0;
+        document.getElementById('vacantCount').textContent = data.vacant || 0;
+        document.getElementById('vacantBadge').textContent = data.vacant || 0;
+        document.getElementById('totalRevenue').textContent = formatCurrency(data.monthlyRevenue || 0);
+        document.getElementById('totalProfit').textContent = formatCurrency(data.monthlyProfit || 0);
+        return data;
+      } catch (err) {
+        console.error('Failed to update dashboard:', err);
+        return null;
+      }
+    }
+
     async function syncTanksStatus() {
       try {
         showLoading(true, 'Loading tanks...', 'Fetching occupancy status');
@@ -1099,6 +1116,7 @@
         }))));
         
         renderDashboard(currentTanks);
+        await updateDashboard();
         return currentTanks;
       } catch (err) {
         const cached = localStorage.getItem('enican_tanks_status');
@@ -1139,6 +1157,7 @@
         localStorage.setItem('enican_payments', JSON.stringify(payments));
         
         renderDashboard(currentTanks);
+        await updateDashboard();
         return result;
       } catch (err) {
         const cachedTanks = localStorage.getItem('enican_tanks_full');
@@ -1156,6 +1175,19 @@
       }
     }
 
+    async function loadReportsData() {
+      try {
+        showLoading(true, 'Loading reports...', 'Fetching data');
+        reportsData = await apiCall('getReportsData');
+        return reportsData;
+      } catch (err) {
+        console.error('Failed to load reports:', err);
+        return null;
+      } finally {
+        showLoading(false);
+      }
+    }
+
     function renderDashboard(tanks) {
       currentTanks = tanks;
       const occupied = tanks.filter(t => t.status === 'occupied');
@@ -1164,22 +1196,6 @@
       document.getElementById('occupiedCount').textContent = occupied.length;
       document.getElementById('vacantCount').textContent = vacant.length;
       document.getElementById('vacantBadge').textContent = vacant.length;
-      
-      const now = new Date();
-      let monthlyRevenue = 0, monthlyProfit = 0;
-      tanks.forEach(t => {
-        (t.sessions || []).forEach(s => {
-          if (s.status === 'completed' && s.emptiedDate) {
-            const d = new Date(s.emptiedDate);
-            if ((now - d) / 86400000 <= 30) {
-              monthlyRevenue += s.revenue || 0;
-              monthlyProfit += (s.revenue || 0) - (s.cost || 0);
-            }
-          }
-        });
-      });
-      document.getElementById('totalRevenue').textContent = formatCurrency(monthlyRevenue);
-      document.getElementById('totalProfit').textContent = formatCurrency(monthlyProfit);
       
       const grid = document.getElementById('tankGrid');
       grid.innerHTML = '';
@@ -1414,7 +1430,7 @@
       document.getElementById('reportsScreen').classList.add('active');
       document.getElementById('breadcrumbLabel').textContent = 'Reports';
       
-      syncFull().then(() => {
+      loadReportsData().then(() => {
         renderReports();
       }).catch(() => {
         renderReports();
@@ -1725,127 +1741,93 @@
     }
 
     function renderReports() {
-      const monthData = {};
-      let totalRevenue = 0;
-      let totalCost = 0;
-      let totalProfit = 0;
-      let completedSessions = 0;
+      if (!reportsData) {
+        document.getElementById('reportSummary').innerHTML = '<div class="empty-state-msg">No data available. Please refresh.</div>';
+        document.getElementById('monthlyChart').innerHTML = '<div class="empty-state-msg">No data available</div>';
+        document.getElementById('pendingList').innerHTML = '<div class="empty-state-msg">No pending payments</div>';
+        return;
+      }
+
+      const { summary, monthlyData, pendingInvoices } = reportsData;
       
-      currentTanks.forEach(t => {
-        (t.sessions || []).forEach(s => {
-          const rev = s.revenue || 0;
-          const cost = s.cost || 0;
-          const profit = rev - cost;
-          
-          totalRevenue += rev;
-          totalCost += cost;
-          totalProfit += profit;
-          if (s.status === 'completed') completedSessions++;
-          
-          if (s.status === 'completed' && s.date) {
-            const d = new Date(s.date);
-            const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-            if (!monthData[key]) monthData[key] = { revenue: 0, cost: 0, profit: 0 };
-            monthData[key].revenue += rev;
-            monthData[key].cost += cost;
-            monthData[key].profit += profit;
-          }
-        });
-      });
-      
-      const summary = document.getElementById('reportSummary');
-      summary.innerHTML = `
+      // Summary
+      const summaryEl = document.getElementById('reportSummary');
+      summaryEl.innerHTML = `
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;">
           <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
             <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Total Revenue</div>
-            <div style="font-size:1.2rem;font-weight:700;color:var(--accent);">${formatCurrency(totalRevenue)}</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--accent);">${formatCurrency(summary.totalRevenue)}</div>
           </div>
           <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
             <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Total Cost</div>
-            <div style="font-size:1.2rem;font-weight:700;color:var(--warning);">${formatCurrency(totalCost)}</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--warning);">${formatCurrency(summary.totalCost)}</div>
           </div>
           <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
             <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Total Profit</div>
-            <div style="font-size:1.2rem;font-weight:700;color:var(--success);">${formatCurrency(totalProfit)}</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--success);">${formatCurrency(summary.totalProfit)}</div>
           </div>
           <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
             <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Completed Sessions</div>
-            <div style="font-size:1.2rem;font-weight:700;">${completedSessions}</div>
+            <div style="font-size:1.2rem;font-weight:700;">${summary.completedSessions}</div>
+          </div>
+          <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
+            <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Total Invoices</div>
+            <div style="font-size:1.2rem;font-weight:700;">${summary.totalInvoices}</div>
           </div>
         </div>
       `;
       
+      // Monthly Chart
       const chart = document.getElementById('monthlyChart');
       chart.innerHTML = '';
-      const sorted = Object.keys(monthData).sort();
+      const sorted = Object.keys(monthlyData).sort();
       
       if (sorted.length === 0) {
         chart.innerHTML = '<div class="empty-state-msg">No completed sessions data available</div>';
-        return;
+      } else {
+        const maxVal = Math.max(...sorted.map(k => monthlyData[k].revenue), 1);
+        
+        sorted.forEach(k => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'bar-wrapper';
+          wrapper.style.cssText = 'display:flex;flex-direction:column;align-items:center;flex:1;height:100%;justify-content:flex-end;';
+          
+          const revBar = document.createElement('div');
+          revBar.className = 'bar-revenue';
+          const revPct = Math.max(2, (monthlyData[k].revenue / maxVal) * 80);
+          revBar.style.cssText = `width:100%;border-radius:3px 3px 0 0;background:linear-gradient(180deg,var(--accent),var(--accent-light));height:${revPct}px;min-height:2px;transition:height 0.5s ease;`;
+          
+          const profitBar = document.createElement('div');
+          profitBar.className = 'bar-profit';
+          const profitPct = Math.max(1, (Math.abs(monthlyData[k].profit) / maxVal) * 50);
+          profitBar.style.cssText = `width:70%;border-radius:3px 3px 0 0;background:${monthlyData[k].profit >= 0 ? 'linear-gradient(180deg,var(--success),var(--success-light))' : 'linear-gradient(180deg,var(--danger),#ef4444)'};height:${profitPct}px;min-height:1px;transition:height 0.5s ease;margin-top:2px;`;
+          
+          const label = document.createElement('div');
+          label.className = 'bar-label';
+          const d = new Date(k + '-01');
+          label.textContent = d.toLocaleDateString('en-US', { month: 'short' });
+          label.style.cssText = 'font-size:0.4rem;color:var(--gray-500);text-align:center;margin-top:4px;font-weight:600;';
+          
+          wrapper.appendChild(revBar);
+          wrapper.appendChild(profitBar);
+          wrapper.appendChild(label);
+          chart.appendChild(wrapper);
+        });
+        
+        const legend = document.createElement('div');
+        legend.style.cssText = 'display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:0.5rem;color:var(--gray-600);';
+        legend.innerHTML = `
+          <span><span style="display:inline-block;width:12px;height:4px;border-radius:2px;background:var(--accent);margin-right:4px;"></span> Revenue</span>
+          <span><span style="display:inline-block;width:12px;height:4px;border-radius:2px;background:var(--success);margin-right:4px;"></span> Profit</span>
+        `;
+        chart.appendChild(legend);
       }
       
-      const maxVal = Math.max(...sorted.map(k => monthData[k].revenue), 1);
-      
-      sorted.forEach(k => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'bar-wrapper';
-        wrapper.style.cssText = 'display:flex;flex-direction:column;align-items:center;flex:1;height:100%;justify-content:flex-end;';
-        
-        const revBar = document.createElement('div');
-        revBar.className = 'bar-revenue';
-        const revPct = Math.max(2, (monthData[k].revenue / maxVal) * 80);
-        revBar.style.cssText = `width:100%;border-radius:3px 3px 0 0;background:linear-gradient(180deg,var(--accent),var(--accent-light));height:${revPct}px;min-height:2px;transition:height 0.5s ease;`;
-        
-        const profitBar = document.createElement('div');
-        profitBar.className = 'bar-profit';
-        const profitPct = Math.max(1, (Math.abs(monthData[k].profit) / maxVal) * 50);
-        profitBar.style.cssText = `width:70%;border-radius:3px 3px 0 0;background:${monthData[k].profit >= 0 ? 'linear-gradient(180deg,var(--success),var(--success-light))' : 'linear-gradient(180deg,var(--danger),#ef4444)'};height:${profitPct}px;min-height:1px;transition:height 0.5s ease;margin-top:2px;`;
-        
-        const label = document.createElement('div');
-        label.className = 'bar-label';
-        const d = new Date(k + '-01');
-        label.textContent = d.toLocaleDateString('en-US', { month: 'short' });
-        label.style.cssText = 'font-size:0.4rem;color:var(--gray-500);text-align:center;margin-top:4px;font-weight:600;';
-        
-        wrapper.appendChild(revBar);
-        wrapper.appendChild(profitBar);
-        wrapper.appendChild(label);
-        chart.appendChild(wrapper);
-      });
-      
-      const legend = document.createElement('div');
-      legend.style.cssText = 'display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:0.5rem;color:var(--gray-600);';
-      legend.innerHTML = `
-        <span><span style="display:inline-block;width:12px;height:4px;border-radius:2px;background:var(--accent);margin-right:4px;"></span> Revenue</span>
-        <span><span style="display:inline-block;width:12px;height:4px;border-radius:2px;background:var(--success);margin-right:4px;"></span> Profit</span>
-      `;
-      chart.appendChild(legend);
-      
+      // Pending Payments
       const pendingList = document.getElementById('pendingList');
       pendingList.innerHTML = '';
-      const pending = {};
       
-      currentTanks.forEach(t => {
-        (t.sessions || []).forEach(s => {
-          if (s.status === 'active') {
-            const key = s.invoiceNumber + '||' + s.customer + '||' + s.invoiceId;
-            if (!pending[key]) {
-              pending[key] = { 
-                invoice: s.invoiceNumber, 
-                customer: s.customer, 
-                total: 0, 
-                invoiceId: s.invoiceId,
-                tankCount: 0
-              };
-            }
-            pending[key].total += s.revenue || 0;
-            pending[key].tankCount++;
-          }
-        });
-      });
-      
-      const pendingArr = Object.values(pending);
-      if (pendingArr.length === 0) {
+      if (pendingInvoices.length === 0) {
         pendingList.innerHTML = `
           <div class="empty-state-msg">
             <i class="fas fa-check-circle" style="font-size:1.2rem;display:block;margin-bottom:4px;color:var(--success);"></i>
@@ -1853,16 +1835,17 @@
           </div>
         `;
       } else {
-        pendingArr.forEach(p => {
+        pendingInvoices.forEach(p => {
           const div = document.createElement('div');
           div.className = 'pending-item';
           div.style.cssText = 'display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-100);font-size:0.6rem;cursor:pointer;transition:all 0.2s ease;';
           div.innerHTML = `
             <div>
               <span class="name" style="font-weight:600;color:var(--gray-800);">${p.customer}</span>
-              <span style="font-size:0.45rem;color:var(--gray-500);margin-left:6px;">${p.invoice} · ${p.tankCount} tanks</span>
+              <span style="font-size:0.45rem;color:var(--gray-500);margin-left:6px;">${p.invoiceNumber} · ${p.tankCount} tanks</span>
+              ${p.paid > 0 ? `<span style="font-size:0.4rem;color:var(--success);margin-left:4px;">(${formatCurrency(p.paid)} paid)</span>` : ''}
             </div>
-            <span class="amount" style="font-weight:700;color:var(--warning);">${formatCurrency(p.total)}</span>
+            <span class="amount" style="font-weight:700;color:${p.balance > 0 ? 'var(--warning)' : 'var(--success)'};">${formatCurrency(p.balance)}</span>
           `;
           div.addEventListener('mouseenter', () => { div.style.background = 'var(--gray-50)'; });
           div.addEventListener('mouseleave', () => { div.style.background = 'transparent'; });
@@ -1889,20 +1872,16 @@
       costItems.forEach(c => {
         text += `${c.name} | Cost ${formatCurrency(c.costPrice || 0)} | Sell ${formatCurrency(c.sellPrice || 0)}\n`;
       });
-      let totalRev = 0, totalCost = 0, totalProfit = 0;
-      currentTanks.forEach(t => {
-        (t.sessions || []).forEach(s => {
-          if (s.status === 'completed') {
-            totalRev += s.revenue || 0;
-            totalCost += s.cost || 0;
-            totalProfit += (s.revenue || 0) - (s.cost || 0);
-          }
-        });
-      });
-      text += `\nSUMMARY\n`;
-      text += `Total Revenue: ${formatCurrency(totalRev)}\n`;
-      text += `Total Cost: ${formatCurrency(totalCost)}\n`;
-      text += `Total Profit: ${formatCurrency(totalProfit)}\n`;
+      
+      if (reportsData) {
+        const { summary } = reportsData;
+        text += `\nSUMMARY\n`;
+        text += `Total Revenue: ${formatCurrency(summary.totalRevenue)}\n`;
+        text += `Total Cost: ${formatCurrency(summary.totalCost)}\n`;
+        text += `Total Profit: ${formatCurrency(summary.totalProfit)}\n`;
+        text += `Completed Sessions: ${summary.completedSessions}\n`;
+        text += `Total Invoices: ${summary.totalInvoices}\n`;
+      }
       
       const blob = new Blob([text], { type: 'text/plain' });
       const a = document.createElement('a');
@@ -2137,6 +2116,10 @@
       
       document.getElementById('reportsBackBtn').addEventListener('click', showDashboard);
       document.getElementById('downloadReportBtn').addEventListener('click', downloadStatement);
+      document.getElementById('refreshReportsBtn').addEventListener('click', async () => {
+        await loadReportsData();
+        renderReports();
+      });
       
       document.getElementById('invoiceDetailBack').addEventListener('click', showDashboard);
       

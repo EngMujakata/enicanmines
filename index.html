@@ -1098,54 +1098,113 @@
     }
 
     // ─── SYNC FUNCTIONS ───
-    async function syncTanksStatus() {
-      try {
-        showLoading(true, 'Loading tanks...', 'Fetching occupancy status');
-        const result = await apiCall('syncTanks');
-        currentTanks = result.map(t => ({ ...t, sessions: [] }));
-        renderDashboard(currentTanks);
-        return currentTanks;
-      } catch (err) {
-        const cached = localStorage.getItem('enican_tanks_status');
-        if (cached) {
-          currentTanks = JSON.parse(cached);
-          renderDashboard(currentTanks);
-        }
-        return currentTanks || [];
-      } finally {
-        showLoading(false);
+ // ─── SYNC FUNCTIONS ───
+async function syncTanksStatus() {
+  try {
+    showLoading(true, 'Loading tanks...', 'Fetching occupancy status');
+    const result = await apiCall('syncTanks');
+    // We need to fetch sessions for occupied tanks to show them in empty screen
+    // So we need to get full data for occupied tanks
+    currentTanks = result.map(t => ({ ...t, sessions: [] }));
+    
+    // Fetch full data to get sessions for occupied tanks
+    try {
+      const fullResult = await apiCall('syncAll');
+      // Merge sessions into tanks
+      const fullTanks = fullResult.tanks || [];
+      currentTanks = currentTanks.map(t => {
+        const fullTank = fullTanks.find(ft => ft.id === t.id);
+        return { ...t, sessions: fullTank ? fullTank.sessions || [] : [] };
+      });
+      invoices = fullResult.invoices || [];
+      costItems = fullResult.expenses || [];
+      payments = fullResult.payments || [];
+      localStorage.setItem('enican_tanks_full', JSON.stringify(currentTanks));
+      localStorage.setItem('enican_invoices', JSON.stringify(invoices));
+      localStorage.setItem('enican_expenses', JSON.stringify(costItems));
+      localStorage.setItem('enican_payments', JSON.stringify(payments));
+    } catch (e) {
+      // If full sync fails, try cached
+      const cachedTanks = localStorage.getItem('enican_tanks_full');
+      if (cachedTanks) {
+        const fullTanks = JSON.parse(cachedTanks);
+        currentTanks = currentTanks.map(t => {
+          const fullTank = fullTanks.find(ft => ft.id === t.id);
+          return { ...t, sessions: fullTank ? fullTank.sessions || [] : [] };
+        });
       }
     }
+    
+    renderDashboard(currentTanks);
+    return currentTanks;
+  } catch (err) {
+    const cached = localStorage.getItem('enican_tanks_status');
+    if (cached) {
+      currentTanks = JSON.parse(cached).map(t => ({ ...t, sessions: [] }));
+      // Try to get sessions from cache
+      const cachedFull = localStorage.getItem('enican_tanks_full');
+      if (cachedFull) {
+        const fullTanks = JSON.parse(cachedFull);
+        currentTanks = currentTanks.map(t => {
+          const fullTank = fullTanks.find(ft => ft.id === t.id);
+          return { ...t, sessions: fullTank ? fullTank.sessions || [] : [] };
+        });
+      }
+      renderDashboard(currentTanks);
+    }
+    return currentTanks || [];
+  } finally {
+    showLoading(false);
+  }
+}
 
-    async function syncFull() {
-      try {
-        showLoading(true, 'Loading full data...', 'Fetching all records');
-        const result = await apiCall('syncAll');
-        currentTanks = result.tanks || [];
-        invoices = result.invoices || [];
-        costItems = result.expenses || [];
-        payments = result.payments || [];
-        
-        localStorage.setItem('enican_tanks_full', JSON.stringify(currentTanks));
-        localStorage.setItem('enican_invoices', JSON.stringify(invoices));
-        localStorage.setItem('enican_expenses', JSON.stringify(costItems));
-        localStorage.setItem('enican_payments', JSON.stringify(payments));
-        
-        renderDashboard(currentTanks);
-        return result;
-      } catch (err) {
-        const cachedTanks = localStorage.getItem('enican_tanks_full');
-        const cachedInvoices = localStorage.getItem('enican_invoices');
-        const cachedExpenses = localStorage.getItem('enican_expenses');
-        if (cachedTanks) currentTanks = JSON.parse(cachedTanks);
-        if (cachedInvoices) invoices = JSON.parse(cachedInvoices);
-        if (cachedExpenses) costItems = JSON.parse(cachedExpenses);
-        renderDashboard(currentTanks);
-        throw err;
-      } finally {
-        showLoading(false);
-      }
+async function syncFull() {
+  try {
+    showLoading(true, 'Loading full data...', 'Fetching all records');
+    const result = await apiCall('syncAll');
+    currentTanks = result.tanks || [];
+    invoices = result.invoices || [];
+    costItems = result.expenses || [];
+    payments = result.payments || [];
+    
+    // Ensure each tank has sessions array
+    currentTanks = currentTanks.map(t => ({
+      ...t,
+      sessions: t.sessions || []
+    }));
+    
+    localStorage.setItem('enican_tanks_full', JSON.stringify(currentTanks));
+    localStorage.setItem('enican_tanks_status', JSON.stringify(currentTanks.map(t => ({
+      id: t.id,
+      status: t.status,
+      customer: t.customer,
+      loadedDate: t.loadedDate,
+      loadedDateISO: t.loadedDateISO
+    }))));
+    localStorage.setItem('enican_invoices', JSON.stringify(invoices));
+    localStorage.setItem('enican_expenses', JSON.stringify(costItems));
+    localStorage.setItem('enican_payments', JSON.stringify(payments));
+    
+    renderDashboard(currentTanks);
+    return result;
+  } catch (err) {
+    const cachedTanks = localStorage.getItem('enican_tanks_full');
+    const cachedInvoices = localStorage.getItem('enican_invoices');
+    const cachedExpenses = localStorage.getItem('enican_expenses');
+    if (cachedTanks) {
+      currentTanks = JSON.parse(cachedTanks).map(t => ({
+        ...t,
+        sessions: t.sessions || []
+      }));
     }
+    if (cachedInvoices) invoices = JSON.parse(cachedInvoices);
+    if (cachedExpenses) costItems = JSON.parse(cachedExpenses);
+    renderDashboard(currentTanks);
+    throw err;
+  } finally {
+    showLoading(false);
+  }
+}
 
     // ─── RENDER FUNCTIONS ───
     function renderDashboard(tanks) {
@@ -1380,20 +1439,25 @@
       renderLoadScreen();
     }
 
-    function openEmptyScreen() {
-      currentScreen = 'empty';
-      document.getElementById('kpiGrid').style.display = 'none';
-      document.getElementById('tankGridWrapper').style.display = 'none';
-      ['loadScreen', 'reportsScreen', 'invoiceDetailScreen'].forEach(id => 
-        document.getElementById(id).classList.remove('active')
-      );
-      document.getElementById('emptyScreen').classList.add('active');
-      document.getElementById('breadcrumbLabel').textContent = 'Empty';
-      emptySelectedGroup = null;
-      emptySelectedTankIds = [];
-      renderEmptyScreen();
-    }
-
+function openEmptyScreen() {
+  currentScreen = 'empty';
+  document.getElementById('kpiGrid').style.display = 'none';
+  document.getElementById('tankGridWrapper').style.display = 'none';
+  ['loadScreen', 'reportsScreen', 'invoiceDetailScreen'].forEach(id => 
+    document.getElementById(id).classList.remove('active')
+  );
+  document.getElementById('emptyScreen').classList.add('active');
+  document.getElementById('breadcrumbLabel').textContent = 'Empty';
+  emptySelectedGroup = null;
+  emptySelectedTankIds = [];
+  
+  // Need full data to get sessions
+  syncFull().then(() => {
+    renderEmptyScreen();
+  }).catch(() => {
+    renderEmptyScreen();
+  });
+}
     function openReportsScreen() {
       currentScreen = 'reports';
       document.getElementById('kpiGrid').style.display = 'none';
@@ -1579,49 +1643,75 @@
     }
 
     // ─── EMPTY SCREEN ───
-    function renderEmptyScreen() {
-      document.getElementById('emptyGroupListWrap').style.display = 'block';
-      document.getElementById('emptyGroupDetailWrap').style.display = 'none';
-      document.getElementById('emptyConfirmWrap').style.display = 'none';
-      
-      const list = document.getElementById('invoiceGroupList');
-      list.innerHTML = '';
-      const groups = {};
-      
-      currentTanks.filter(t => t.status === 'occupied').forEach(t => {
-        const activeSession = (t.sessions || []).find(s => s.status === 'active');
-        if (activeSession) {
-          const key = activeSession.invoiceNumber + '||' + activeSession.customer + '||' + activeSession.invoiceId;
-          if (!groups[key]) groups[key] = { 
-            invoice: activeSession.invoiceNumber, 
-            customer: activeSession.customer, 
-            tankIds: [], 
-            invoiceId: activeSession.invoiceId 
-          };
-          groups[key].tankIds.push(t.id);
-        }
-      });
-      
-      const groupArr = Object.values(groups);
-      if (groupArr.length === 0) {
-        list.innerHTML = '<div class="empty-state-msg">No occupied tanks to empty</div>';
-        return;
+// ─── EMPTY SCREEN ───
+function renderEmptyScreen() {
+  document.getElementById('emptyGroupListWrap').style.display = 'block';
+  document.getElementById('emptyGroupDetailWrap').style.display = 'none';
+  document.getElementById('emptyConfirmWrap').style.display = 'none';
+  
+  const list = document.getElementById('invoiceGroupList');
+  list.innerHTML = '';
+  const groups = {};
+  
+  // Debug: Log tank statuses
+  console.log('All tanks:', currentTanks);
+  
+  // Find occupied tanks with active sessions
+  const occupiedTanks = currentTanks.filter(t => t.status === 'occupied');
+  console.log('Occupied tanks:', occupiedTanks);
+  
+  occupiedTanks.forEach(t => {
+    // Check if tank has sessions array
+    const sessions = t.sessions || [];
+    console.log(`Tank #${t.id} sessions:`, sessions);
+    
+    const activeSession = sessions.find(s => s.status === 'active');
+    console.log(`Tank #${t.id} active session:`, activeSession);
+    
+    if (activeSession) {
+      const key = activeSession.invoiceNumber + '||' + activeSession.customer + '||' + activeSession.invoiceId;
+      if (!groups[key]) {
+        groups[key] = { 
+          invoice: activeSession.invoiceNumber, 
+          customer: activeSession.customer, 
+          tankIds: [], 
+          invoiceId: activeSession.invoiceId 
+        };
       }
-      
-      groupArr.forEach(g => {
-        const card = document.createElement('div');
-        card.className = 'invoice-group-card';
-        card.innerHTML = `
-          <div>
-            <div class="ig-customer">${g.customer}</div>
-            <div class="ig-invoice">${g.invoice}</div>
-          </div>
-          <div class="ig-count">${g.tankIds.length}</div>
-        `;
-        card.addEventListener('click', () => selectGroupForEmpty(g));
-        list.appendChild(card);
-      });
+      groups[key].tankIds.push(t.id);
     }
+  });
+  
+  const groupArr = Object.values(groups);
+  console.log('Groups found:', groupArr);
+  
+  if (groupArr.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state-msg">
+        <i class="fas fa-info-circle" style="font-size:1.5rem;display:block;margin-bottom:8px;color:var(--gray-400);"></i>
+        No occupied tanks to empty
+        <div style="font-size:0.5rem;color:var(--gray-400);margin-top:4px;">
+          Make sure you have loaded tanks with active sessions
+        </div>
+      </div>
+    `;
+    return;
+  }
+  
+  groupArr.forEach(g => {
+    const card = document.createElement('div');
+    card.className = 'invoice-group-card';
+    card.innerHTML = `
+      <div>
+        <div class="ig-customer"><i class="fas fa-user"></i> ${g.customer}</div>
+        <div class="ig-invoice"><i class="fas fa-file-invoice"></i> ${g.invoice}</div>
+      </div>
+      <div class="ig-count"><i class="fas fa-flask"></i> ${g.tankIds.length}</div>
+    `;
+    card.addEventListener('click', () => selectGroupForEmpty(g));
+    list.appendChild(card);
+  });
+}
 
     function selectGroupForEmpty(g) {
       emptySelectedGroup = g;
@@ -1697,76 +1787,163 @@
     }
 
     // ─── REPORTS ───
-    function renderReports() {
-      // Monthly chart
-      const monthData = {};
-      currentTanks.forEach(t => {
-        (t.sessions || []).forEach(s => {
-          if (s.status === 'completed' && s.date) {
-            const d = new Date(s.date);
-            const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-            if (!monthData[key]) monthData[key] = { revenue: 0, cost: 0, profit: 0 };
-            monthData[key].revenue += s.revenue || 0;
-            monthData[key].cost += s.cost || 0;
-            monthData[key].profit += (s.revenue || 0) - (s.cost || 0);
-          }
-        });
-      });
+// ─── REPORTS ───
+function renderReports() {
+  // Monthly chart - gather data from all sessions
+  const monthData = {};
+  let totalRevenue = 0;
+  let totalCost = 0;
+  let totalProfit = 0;
+  let completedSessions = 0;
+  
+  currentTanks.forEach(t => {
+    (t.sessions || []).forEach(s => {
+      // Track totals
+      const rev = s.revenue || 0;
+      const cost = s.cost || 0;
+      const profit = rev - cost;
       
-      const chart = document.getElementById('monthlyChart');
-      chart.innerHTML = '';
-      const sorted = Object.keys(monthData).sort();
-      const maxVal = Math.max(...sorted.map(k => monthData[k].revenue), 1);
+      totalRevenue += rev;
+      totalCost += cost;
+      totalProfit += profit;
+      if (s.status === 'completed') completedSessions++;
       
-      sorted.forEach(k => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'bar-wrapper';
-        const revBar = document.createElement('div');
-        revBar.className = 'bar-revenue';
-        revBar.style.height = Math.max(4, (monthData[k].revenue / maxVal) * 80) + 'px';
-        const profitBar = document.createElement('div');
-        profitBar.className = 'bar-profit';
-        profitBar.style.height = Math.max(2, (Math.abs(monthData[k].profit) / maxVal) * 50) + 'px';
-        if (monthData[k].profit < 0) profitBar.style.background = 'linear-gradient(180deg, var(--danger), #ef4444)';
-        const label = document.createElement('div');
-        label.className = 'bar-label';
-        const d = new Date(k + '-01');
-        label.textContent = d.toLocaleDateString('en-US', { month: 'short' });
-        wrapper.appendChild(revBar);
-        wrapper.appendChild(profitBar);
-        wrapper.appendChild(label);
-        chart.appendChild(wrapper);
-      });
-      
-      // Pending payments
-      const pendingList = document.getElementById('pendingList');
-      pendingList.innerHTML = '';
-      const pending = {};
-      currentTanks.forEach(t => {
-        (t.sessions || []).forEach(s => {
-          if (s.status === 'active') {
-            const key = s.invoiceNumber + '||' + s.customer + '||' + s.invoiceId;
-            if (!pending[key]) pending[key] = { invoice: s.invoiceNumber, customer: s.customer, total: 0, invoiceId: s.invoiceId };
-            pending[key].total += s.revenue || 0;
-          }
-        });
-      });
-      const pendingArr = Object.values(pending);
-      if (pendingArr.length === 0) {
-        pendingList.innerHTML = '<div class="empty-state-msg">No pending payments</div>';
-      } else {
-        pendingArr.forEach(p => {
-          const div = document.createElement('div');
-          div.className = 'pending-item';
-          div.style.cursor = 'pointer';
-          div.innerHTML = `
-            <span class="name">${p.customer} (${p.invoice})</span>
-            <span class="amount">${formatCurrency(p.total)}</span>
-          `;
-          div.addEventListener('click', () => openInvoiceDetail(p.invoiceId));
-          pendingList.appendChild(div);
-        });
+      // Monthly grouping
+      if (s.status === 'completed' && s.date) {
+        const d = new Date(s.date);
+        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+        if (!monthData[key]) monthData[key] = { revenue: 0, cost: 0, profit: 0 };
+        monthData[key].revenue += rev;
+        monthData[key].cost += cost;
+        monthData[key].profit += profit;
       }
+    });
+  });
+  
+  // Update summary
+  const summary = document.getElementById('reportSummary');
+  summary.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;">
+      <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
+        <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Total Revenue</div>
+        <div style="font-size:1.2rem;font-weight:700;color:var(--accent);">${formatCurrency(totalRevenue)}</div>
+      </div>
+      <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
+        <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Total Cost</div>
+        <div style="font-size:1.2rem;font-weight:700;color:var(--warning);">${formatCurrency(totalCost)}</div>
+      </div>
+      <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
+        <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Total Profit</div>
+        <div style="font-size:1.2rem;font-weight:700;color:var(--success);">${formatCurrency(totalProfit)}</div>
+      </div>
+      <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
+        <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Completed Sessions</div>
+        <div style="font-size:1.2rem;font-weight:700;">${completedSessions}</div>
+      </div>
+    </div>
+  `;
+  
+  // Render chart
+  const chart = document.getElementById('monthlyChart');
+  chart.innerHTML = '';
+  const sorted = Object.keys(monthData).sort();
+  
+  if (sorted.length === 0) {
+    chart.innerHTML = '<div class="empty-state-msg">No completed sessions data available</div>';
+    return;
+  }
+  
+  const maxVal = Math.max(...sorted.map(k => monthData[k].revenue), 1);
+  
+  sorted.forEach(k => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'bar-wrapper';
+    wrapper.style.cssText = 'display:flex;flex-direction:column;align-items:center;flex:1;height:100%;justify-content:flex-end;';
+    
+    // Revenue bar
+    const revBar = document.createElement('div');
+    revBar.className = 'bar-revenue';
+    const revPct = Math.max(2, (monthData[k].revenue / maxVal) * 80);
+    revBar.style.cssText = `width:100%;border-radius:3px 3px 0 0;background:linear-gradient(180deg,var(--accent),var(--accent-light));height:${revPct}px;min-height:2px;transition:height 0.5s ease;`;
+    
+    // Profit bar (smaller, on top)
+    const profitBar = document.createElement('div');
+    profitBar.className = 'bar-profit';
+    const profitPct = Math.max(1, (Math.abs(monthData[k].profit) / maxVal) * 50);
+    profitBar.style.cssText = `width:70%;border-radius:3px 3px 0 0;background:${monthData[k].profit >= 0 ? 'linear-gradient(180deg,var(--success),var(--success-light))' : 'linear-gradient(180deg,var(--danger),#ef4444)'};height:${profitPct}px;min-height:1px;transition:height 0.5s ease;margin-top:2px;`;
+    
+    const label = document.createElement('div');
+    label.className = 'bar-label';
+    const d = new Date(k + '-01');
+    label.textContent = d.toLocaleDateString('en-US', { month: 'short' });
+    label.style.cssText = 'font-size:0.4rem;color:var(--gray-500);text-align:center;margin-top:4px;font-weight:600;';
+    
+    wrapper.appendChild(revBar);
+    wrapper.appendChild(profitBar);
+    wrapper.appendChild(label);
+    chart.appendChild(wrapper);
+  });
+  
+  // Add legend
+  const legend = document.createElement('div');
+  legend.style.cssText = 'display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:0.5rem;color:var(--gray-600);';
+  legend.innerHTML = `
+    <span><span style="display:inline-block;width:12px;height:4px;border-radius:2px;background:var(--accent);margin-right:4px;"></span> Revenue</span>
+    <span><span style="display:inline-block;width:12px;height:4px;border-radius:2px;background:var(--success);margin-right:4px;"></span> Profit</span>
+  `;
+  chart.appendChild(legend);
+  
+  // Pending payments
+  const pendingList = document.getElementById('pendingList');
+  pendingList.innerHTML = '';
+  const pending = {};
+  
+  currentTanks.forEach(t => {
+    (t.sessions || []).forEach(s => {
+      if (s.status === 'active') {
+        const key = s.invoiceNumber + '||' + s.customer + '||' + s.invoiceId;
+        if (!pending[key]) {
+          pending[key] = { 
+            invoice: s.invoiceNumber, 
+            customer: s.customer, 
+            total: 0, 
+            invoiceId: s.invoiceId,
+            tankCount: 0
+          };
+        }
+        pending[key].total += s.revenue || 0;
+        pending[key].tankCount++;
+      }
+    });
+  });
+  
+  const pendingArr = Object.values(pending);
+  if (pendingArr.length === 0) {
+    pendingList.innerHTML = `
+      <div class="empty-state-msg">
+        <i class="fas fa-check-circle" style="font-size:1.2rem;display:block;margin-bottom:4px;color:var(--success);"></i>
+        No pending payments
+      </div>
+    `;
+  } else {
+    pendingArr.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'pending-item';
+      div.style.cssText = 'display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-100);font-size:0.6rem;cursor:pointer;transition:all 0.2s ease;';
+      div.innerHTML = `
+        <div>
+          <span class="name" style="font-weight:600;color:var(--gray-800);">${p.customer}</span>
+          <span style="font-size:0.45rem;color:var(--gray-500);margin-left:6px;">${p.invoice} · ${p.tankCount} tanks</span>
+        </div>
+        <span class="amount" style="font-weight:700;color:var(--warning);">${formatCurrency(p.total)}</span>
+      `;
+      div.addEventListener('mouseenter', () => { div.style.background = 'var(--gray-50)'; });
+      div.addEventListener('mouseleave', () => { div.style.background = 'transparent'; });
+      div.addEventListener('click', () => openInvoiceDetail(p.invoiceId));
+      pendingList.appendChild(div);
+    });
+  }
+}
       
       // Summary
       const summary = document.getElementById('reportSummary');

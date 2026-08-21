@@ -56,7 +56,6 @@
     }
     .dashboard { max-width: 1600px; margin: 0 auto; width: 100%; height: 100%; display: flex; flex-direction: column; flex: 1; min-height: 0; padding: 8px; gap: 6px; }
     
-    /* Loading Overlay */
     .loading-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(10,22,40,0.75); backdrop-filter: blur(12px);
@@ -80,7 +79,6 @@
       color: rgba(255,255,255,0.5); font-size: 0.7rem;
     }
 
-    /* Top Bar */
     .top-bar {
       display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
       background: white; padding: 8px 16px; border-radius: var(--radius);
@@ -126,7 +124,6 @@
     .menu-icon:hover { background: var(--gray-200); }
     .menu-icon:active { transform: scale(0.95); }
 
-    /* KPI Grid */
     .kpi-grid {
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
       flex-shrink: 0;
@@ -159,7 +156,6 @@
     .kpi-content .value { font-size: 1.4rem; font-weight: 700; color: var(--gray-900); line-height: 1.2; }
     .kpi-content .sub { font-size: 0.5rem; color: var(--gray-400); font-weight: 500; }
 
-    /* Tank Grid */
     .tank-grid-wrapper {
       flex: 1; overflow-y: auto; overflow-x: hidden; min-height: 0;
       scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
@@ -227,7 +223,6 @@
       border-top: 1px solid var(--gray-200); padding-top: 2px;
     }
 
-    /* App Footer */
     .app-footer {
       flex-shrink: 0; background: white; border-radius: var(--radius);
       box-shadow: var(--shadow); border: 1px solid var(--gray-200);
@@ -251,7 +246,6 @@
       position: absolute; top: 2px; right: 4px;
     }
 
-    /* Screens */
     .screen { display: none; flex-direction: column; flex: 1; min-height: 0; }
     .screen.active { display: flex; }
     .screen-header {
@@ -280,7 +274,6 @@
     .screen-body::-webkit-scrollbar-track { background: var(--gray-100); border-radius: 10px; }
     .screen-body::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 10px; }
 
-    /* Form Elements */
     .form-card {
       background: white; border-radius: var(--radius); padding: 12px 16px;
       border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm);
@@ -307,7 +300,6 @@
     }
     .section-title .count { background: var(--gray-200); padding: 1px 8px; border-radius: 12px; font-size: 0.5rem; }
 
-    /* Vacant Picker */
     .vacant-picker {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
       gap: 4px; flex-shrink: 0;
@@ -324,7 +316,6 @@
       box-shadow: 0 0 12px rgba(45,122,255,0.2);
     }
 
-    /* Expenses */
     .expense-form {
       background: var(--gray-50); border-radius: var(--radius);
       padding: 8px 10px; display: flex; flex-direction: column; gap: 4px;
@@ -392,7 +383,6 @@
       padding: 20px; font-style: italic;
     }
 
-    /* Invoice Groups */
     .invoice-group-list { display: flex; flex-direction: column; gap: 6px; }
     .invoice-group-card {
       background: white; border-radius: var(--radius); padding: 10px 14px;
@@ -436,7 +426,6 @@
       margin-top: 4px;
     }
 
-    /* Reports */
     .reports-grid {
       display: grid; grid-template-columns: 1fr; gap: 8px;
     }
@@ -503,7 +492,6 @@
     .btn-download:hover { background: var(--accent-light); }
     .btn-download:active { transform: scale(0.95); }
 
-    /* Modal */
     .modal-overlay {
       display: none; position: fixed; top: 0; left: 0;
       width: 100%; height: 100%; background: rgba(10,22,40,0.6);
@@ -573,7 +561,6 @@
     .modal-total .total-label { color: var(--gray-600); font-size: 0.6rem; }
     .modal-total .total-value { font-size: 0.85rem; color: var(--success); }
 
-    /* Settings */
     .settings-section { margin: 6px 0; }
     .settings-section h4 {
       font-size: 0.65rem; color: var(--gray-800); margin-bottom: 4px;
@@ -641,7 +628,6 @@
       padding: 1px 8px; border-radius: 12px; background: var(--gray-100);
     }
 
-    /* Payments Section */
     .payment-history {
       max-height: 150px; overflow-y: auto; margin-top: 4px;
     }
@@ -662,7 +648,6 @@
     }
     .add-payment-row input:focus { border-color: var(--accent); outline: none; }
 
-    /* Responsive */
     @media (max-width: 400px) {
       .dashboard { padding: 4px; gap: 4px; }
       .top-bar { padding: 6px 10px; min-height: 44px; }
@@ -681,7 +666,6 @@
       .screen-header { padding: 8px 12px; }
       .screen-header h2 { font-size: 0.7rem; }
     }
-
     @media (min-width: 1200px) {
       .tank-grid { grid-template-columns: repeat(12, 1fr); }
     }
@@ -690,14 +674,12 @@
 <body>
 <div class="dashboard">
 
-  <!-- Loading Overlay -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner"></div>
     <div class="text" id="loadingText">Syncing...</div>
     <div class="sub-text" id="loadingSub">Please wait</div>
   </div>
 
-  <!-- TOP BAR -->
   <div class="top-bar">
     <div class="logo-area">
       <div class="logo-icon">E</div>
@@ -714,7 +696,6 @@
     </div>
   </div>
 
-  <!-- KPI -->
   <div class="kpi-grid" id="kpiGrid">
     <div class="kpi-card" id="kpiOccupied">
       <div class="kpi-icon blue"><i class="fas fa-flask"></i></div>
@@ -750,12 +731,10 @@
     </div>
   </div>
 
-  <!-- TANK GRID -->
   <div class="tank-grid-wrapper" id="tankGridWrapper">
     <div class="tank-grid" id="tankGrid"></div>
   </div>
 
-  <!-- LOAD SCREEN -->
   <div class="screen" id="loadScreen">
     <div class="screen-header">
       <button class="back-btn" id="loadBackBtn"><i class="fas fa-arrow-left"></i> Back</button>
@@ -798,7 +777,6 @@
     </div>
   </div>
 
-  <!-- EMPTY SCREEN -->
   <div class="screen" id="emptyScreen">
     <div class="screen-header">
       <button class="back-btn" id="emptyBackBtn"><i class="fas fa-arrow-left"></i> Back</button>
@@ -828,7 +806,6 @@
     </div>
   </div>
 
-  <!-- REPORTS SCREEN -->
   <div class="screen" id="reportsScreen">
     <div class="screen-header">
       <button class="back-btn" id="reportsBackBtn"><i class="fas fa-arrow-left"></i> Back</button>
@@ -836,8 +813,7 @@
     </div>
     <div class="screen-body">
       <div class="filter-row">
-        <select id="reportMonthFilter"><option value="all">All Months</option></select>
-        <button class="btn-download" id="downloadReportBtn"><i class="fas fa-download"></i> Download</button>
+        <button class="btn-download" id="downloadReportBtn"><i class="fas fa-download"></i> Download Statement</button>
       </div>
       <div class="reports-grid">
         <div class="report-card">
@@ -856,7 +832,6 @@
     </div>
   </div>
 
-  <!-- INVOICE DETAIL SCREEN -->
   <div class="screen" id="invoiceDetailScreen">
     <div class="screen-header">
       <button class="back-btn" id="invoiceDetailBack"><i class="fas fa-arrow-left"></i> Back</button>
@@ -867,7 +842,6 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
   <div class="app-footer" id="appFooter">
     <button class="footer-icon" id="footerEmpty">
       <i class="fas fa-flask"></i>
@@ -885,7 +859,6 @@
   </div>
 </div>
 
-<!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-header">
@@ -914,7 +887,6 @@
   </div>
 </div>
 
-<!-- SETTINGS -->
 <div class="modal-overlay" id="settingsOverlay">
   <div class="modal">
     <div class="modal-header">
@@ -963,7 +935,6 @@
     const CYCLE_DAYS = 10;
     const RETRY_INTERVAL = 5000;
 
-    // State
     let currentTanks = [];
     let costItems = [];
     let invoices = [];
@@ -978,20 +949,16 @@
     let pendingWrites = [];
     let writeRetryInterval = null;
 
-    // ─── PWA INSTALL ───
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      // Show install banner
     });
 
-    // ─── SERVICE WORKER ───
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
 
-    // ─── HELPERS ───
     function showLoading(show, text = 'Syncing...', sub = 'Please wait') {
       const overlay = document.getElementById('loadingOverlay');
       if (show) {
@@ -1040,7 +1007,6 @@
       return Math.min((diffDays / CYCLE_DAYS) * 100, 100);
     }
 
-    // ─── API CALLS ───
     async function apiCall(action, data = {}, retryCount = 0) {
       try {
         setSyncStatus('syncing', 'Syncing...');
@@ -1064,7 +1030,6 @@
         setSyncStatus('error', 'Sync failed');
         console.error('API Error:', err);
         
-        // Queue for retry
         if (retryCount < 3) {
           pendingWrites.push({ action, data, retryCount: retryCount + 1, timestamp: Date.now() });
           startRetryQueue();
@@ -1097,116 +1062,100 @@
       }, RETRY_INTERVAL);
     }
 
-    // ─── SYNC FUNCTIONS ───
- // ─── SYNC FUNCTIONS ───
-async function syncTanksStatus() {
-  try {
-    showLoading(true, 'Loading tanks...', 'Fetching occupancy status');
-    const result = await apiCall('syncTanks');
-    // We need to fetch sessions for occupied tanks to show them in empty screen
-    // So we need to get full data for occupied tanks
-    currentTanks = result.map(t => ({ ...t, sessions: [] }));
-    
-    // Fetch full data to get sessions for occupied tanks
-    try {
-      const fullResult = await apiCall('syncAll');
-      // Merge sessions into tanks
-      const fullTanks = fullResult.tanks || [];
-      currentTanks = currentTanks.map(t => {
-        const fullTank = fullTanks.find(ft => ft.id === t.id);
-        return { ...t, sessions: fullTank ? fullTank.sessions || [] : [] };
-      });
-      invoices = fullResult.invoices || [];
-      costItems = fullResult.expenses || [];
-      payments = fullResult.payments || [];
-      localStorage.setItem('enican_tanks_full', JSON.stringify(currentTanks));
-      localStorage.setItem('enican_invoices', JSON.stringify(invoices));
-      localStorage.setItem('enican_expenses', JSON.stringify(costItems));
-      localStorage.setItem('enican_payments', JSON.stringify(payments));
-    } catch (e) {
-      // If full sync fails, try cached
-      const cachedTanks = localStorage.getItem('enican_tanks_full');
-      if (cachedTanks) {
-        const fullTanks = JSON.parse(cachedTanks);
-        currentTanks = currentTanks.map(t => {
-          const fullTank = fullTanks.find(ft => ft.id === t.id);
-          return { ...t, sessions: fullTank ? fullTank.sessions || [] : [] };
-        });
+    async function syncTanksStatus() {
+      try {
+        showLoading(true, 'Loading tanks...', 'Fetching occupancy status');
+        const result = await apiCall('syncTanks');
+        currentTanks = result.map(t => ({ ...t, sessions: [] }));
+        
+        try {
+          const fullResult = await apiCall('syncAll');
+          const fullTanks = fullResult.tanks || [];
+          currentTanks = currentTanks.map(t => {
+            const fullTank = fullTanks.find(ft => ft.id === t.id);
+            return { ...t, sessions: fullTank ? fullTank.sessions || [] : [] };
+          });
+          invoices = fullResult.invoices || [];
+          costItems = fullResult.expenses || [];
+          payments = fullResult.payments || [];
+          localStorage.setItem('enican_tanks_full', JSON.stringify(currentTanks));
+          localStorage.setItem('enican_invoices', JSON.stringify(invoices));
+          localStorage.setItem('enican_expenses', JSON.stringify(costItems));
+          localStorage.setItem('enican_payments', JSON.stringify(payments));
+        } catch (e) {
+          const cachedTanks = localStorage.getItem('enican_tanks_full');
+          if (cachedTanks) {
+            const fullTanks = JSON.parse(cachedTanks);
+            currentTanks = currentTanks.map(t => {
+              const fullTank = fullTanks.find(ft => ft.id === t.id);
+              return { ...t, sessions: fullTank ? fullTank.sessions || [] : [] };
+            });
+          }
+        }
+        
+        localStorage.setItem('enican_tanks_status', JSON.stringify(currentTanks.map(t => ({
+          id: t.id, status: t.status, customer: t.customer,
+          loadedDate: t.loadedDate, loadedDateISO: t.loadedDateISO
+        }))));
+        
+        renderDashboard(currentTanks);
+        return currentTanks;
+      } catch (err) {
+        const cached = localStorage.getItem('enican_tanks_status');
+        if (cached) {
+          currentTanks = JSON.parse(cached).map(t => ({ ...t, sessions: [] }));
+          const cachedFull = localStorage.getItem('enican_tanks_full');
+          if (cachedFull) {
+            const fullTanks = JSON.parse(cachedFull);
+            currentTanks = currentTanks.map(t => {
+              const fullTank = fullTanks.find(ft => ft.id === t.id);
+              return { ...t, sessions: fullTank ? fullTank.sessions || [] : [] };
+            });
+          }
+          renderDashboard(currentTanks);
+        }
+        return currentTanks || [];
+      } finally {
+        showLoading(false);
       }
     }
-    
-    renderDashboard(currentTanks);
-    return currentTanks;
-  } catch (err) {
-    const cached = localStorage.getItem('enican_tanks_status');
-    if (cached) {
-      currentTanks = JSON.parse(cached).map(t => ({ ...t, sessions: [] }));
-      // Try to get sessions from cache
-      const cachedFull = localStorage.getItem('enican_tanks_full');
-      if (cachedFull) {
-        const fullTanks = JSON.parse(cachedFull);
-        currentTanks = currentTanks.map(t => {
-          const fullTank = fullTanks.find(ft => ft.id === t.id);
-          return { ...t, sessions: fullTank ? fullTank.sessions || [] : [] };
-        });
+
+    async function syncFull() {
+      try {
+        showLoading(true, 'Loading full data...', 'Fetching all records');
+        const result = await apiCall('syncAll');
+        currentTanks = (result.tanks || []).map(t => ({ ...t, sessions: t.sessions || [] }));
+        invoices = result.invoices || [];
+        costItems = result.expenses || [];
+        payments = result.payments || [];
+        
+        localStorage.setItem('enican_tanks_full', JSON.stringify(currentTanks));
+        localStorage.setItem('enican_tanks_status', JSON.stringify(currentTanks.map(t => ({
+          id: t.id, status: t.status, customer: t.customer,
+          loadedDate: t.loadedDate, loadedDateISO: t.loadedDateISO
+        }))));
+        localStorage.setItem('enican_invoices', JSON.stringify(invoices));
+        localStorage.setItem('enican_expenses', JSON.stringify(costItems));
+        localStorage.setItem('enican_payments', JSON.stringify(payments));
+        
+        renderDashboard(currentTanks);
+        return result;
+      } catch (err) {
+        const cachedTanks = localStorage.getItem('enican_tanks_full');
+        const cachedInvoices = localStorage.getItem('enican_invoices');
+        const cachedExpenses = localStorage.getItem('enican_expenses');
+        if (cachedTanks) {
+          currentTanks = JSON.parse(cachedTanks).map(t => ({ ...t, sessions: t.sessions || [] }));
+        }
+        if (cachedInvoices) invoices = JSON.parse(cachedInvoices);
+        if (cachedExpenses) costItems = JSON.parse(cachedExpenses);
+        renderDashboard(currentTanks);
+        throw err;
+      } finally {
+        showLoading(false);
       }
-      renderDashboard(currentTanks);
     }
-    return currentTanks || [];
-  } finally {
-    showLoading(false);
-  }
-}
 
-async function syncFull() {
-  try {
-    showLoading(true, 'Loading full data...', 'Fetching all records');
-    const result = await apiCall('syncAll');
-    currentTanks = result.tanks || [];
-    invoices = result.invoices || [];
-    costItems = result.expenses || [];
-    payments = result.payments || [];
-    
-    // Ensure each tank has sessions array
-    currentTanks = currentTanks.map(t => ({
-      ...t,
-      sessions: t.sessions || []
-    }));
-    
-    localStorage.setItem('enican_tanks_full', JSON.stringify(currentTanks));
-    localStorage.setItem('enican_tanks_status', JSON.stringify(currentTanks.map(t => ({
-      id: t.id,
-      status: t.status,
-      customer: t.customer,
-      loadedDate: t.loadedDate,
-      loadedDateISO: t.loadedDateISO
-    }))));
-    localStorage.setItem('enican_invoices', JSON.stringify(invoices));
-    localStorage.setItem('enican_expenses', JSON.stringify(costItems));
-    localStorage.setItem('enican_payments', JSON.stringify(payments));
-    
-    renderDashboard(currentTanks);
-    return result;
-  } catch (err) {
-    const cachedTanks = localStorage.getItem('enican_tanks_full');
-    const cachedInvoices = localStorage.getItem('enican_invoices');
-    const cachedExpenses = localStorage.getItem('enican_expenses');
-    if (cachedTanks) {
-      currentTanks = JSON.parse(cachedTanks).map(t => ({
-        ...t,
-        sessions: t.sessions || []
-      }));
-    }
-    if (cachedInvoices) invoices = JSON.parse(cachedInvoices);
-    if (cachedExpenses) costItems = JSON.parse(cachedExpenses);
-    renderDashboard(currentTanks);
-    throw err;
-  } finally {
-    showLoading(false);
-  }
-}
-
-    // ─── RENDER FUNCTIONS ───
     function renderDashboard(tanks) {
       currentTanks = tanks;
       const occupied = tanks.filter(t => t.status === 'occupied');
@@ -1216,7 +1165,6 @@ async function syncFull() {
       document.getElementById('vacantCount').textContent = vacant.length;
       document.getElementById('vacantBadge').textContent = vacant.length;
       
-      // Calculate monthly revenue and profit
       const now = new Date();
       let monthlyRevenue = 0, monthlyProfit = 0;
       tanks.forEach(t => {
@@ -1233,7 +1181,6 @@ async function syncFull() {
       document.getElementById('totalRevenue').textContent = formatCurrency(monthlyRevenue);
       document.getElementById('totalProfit').textContent = formatCurrency(monthlyProfit);
       
-      // Render tank grid
       const grid = document.getElementById('tankGrid');
       grid.innerHTML = '';
       
@@ -1415,7 +1362,6 @@ async function syncFull() {
       }
     }
 
-    // ─── SCREEN NAVIGATION ───
     function showDashboard() {
       currentScreen = 'dashboard';
       document.getElementById('kpiGrid').style.display = 'grid';
@@ -1439,25 +1385,25 @@ async function syncFull() {
       renderLoadScreen();
     }
 
-function openEmptyScreen() {
-  currentScreen = 'empty';
-  document.getElementById('kpiGrid').style.display = 'none';
-  document.getElementById('tankGridWrapper').style.display = 'none';
-  ['loadScreen', 'reportsScreen', 'invoiceDetailScreen'].forEach(id => 
-    document.getElementById(id).classList.remove('active')
-  );
-  document.getElementById('emptyScreen').classList.add('active');
-  document.getElementById('breadcrumbLabel').textContent = 'Empty';
-  emptySelectedGroup = null;
-  emptySelectedTankIds = [];
-  
-  // Need full data to get sessions
-  syncFull().then(() => {
-    renderEmptyScreen();
-  }).catch(() => {
-    renderEmptyScreen();
-  });
-}
+    function openEmptyScreen() {
+      currentScreen = 'empty';
+      document.getElementById('kpiGrid').style.display = 'none';
+      document.getElementById('tankGridWrapper').style.display = 'none';
+      ['loadScreen', 'reportsScreen', 'invoiceDetailScreen'].forEach(id => 
+        document.getElementById(id).classList.remove('active')
+      );
+      document.getElementById('emptyScreen').classList.add('active');
+      document.getElementById('breadcrumbLabel').textContent = 'Empty';
+      emptySelectedGroup = null;
+      emptySelectedTankIds = [];
+      
+      syncFull().then(() => {
+        renderEmptyScreen();
+      }).catch(() => {
+        renderEmptyScreen();
+      });
+    }
+
     function openReportsScreen() {
       currentScreen = 'reports';
       document.getElementById('kpiGrid').style.display = 'none';
@@ -1467,10 +1413,14 @@ function openEmptyScreen() {
       );
       document.getElementById('reportsScreen').classList.add('active');
       document.getElementById('breadcrumbLabel').textContent = 'Reports';
-      renderReports();
+      
+      syncFull().then(() => {
+        renderReports();
+      }).catch(() => {
+        renderReports();
+      });
     }
 
-    // ─── LOAD SCREEN ───
     function renderLoadScreen() {
       const invoiceInput = document.getElementById('loadInvoiceInput');
       const customerInput = document.getElementById('loadCustomerInput');
@@ -1642,76 +1592,64 @@ function openEmptyScreen() {
       }
     }
 
-    // ─── EMPTY SCREEN ───
-// ─── EMPTY SCREEN ───
-function renderEmptyScreen() {
-  document.getElementById('emptyGroupListWrap').style.display = 'block';
-  document.getElementById('emptyGroupDetailWrap').style.display = 'none';
-  document.getElementById('emptyConfirmWrap').style.display = 'none';
-  
-  const list = document.getElementById('invoiceGroupList');
-  list.innerHTML = '';
-  const groups = {};
-  
-  // Debug: Log tank statuses
-  console.log('All tanks:', currentTanks);
-  
-  // Find occupied tanks with active sessions
-  const occupiedTanks = currentTanks.filter(t => t.status === 'occupied');
-  console.log('Occupied tanks:', occupiedTanks);
-  
-  occupiedTanks.forEach(t => {
-    // Check if tank has sessions array
-    const sessions = t.sessions || [];
-    console.log(`Tank #${t.id} sessions:`, sessions);
-    
-    const activeSession = sessions.find(s => s.status === 'active');
-    console.log(`Tank #${t.id} active session:`, activeSession);
-    
-    if (activeSession) {
-      const key = activeSession.invoiceNumber + '||' + activeSession.customer + '||' + activeSession.invoiceId;
-      if (!groups[key]) {
-        groups[key] = { 
-          invoice: activeSession.invoiceNumber, 
-          customer: activeSession.customer, 
-          tankIds: [], 
-          invoiceId: activeSession.invoiceId 
-        };
+    function renderEmptyScreen() {
+      document.getElementById('emptyGroupListWrap').style.display = 'block';
+      document.getElementById('emptyGroupDetailWrap').style.display = 'none';
+      document.getElementById('emptyConfirmWrap').style.display = 'none';
+      
+      const list = document.getElementById('invoiceGroupList');
+      list.innerHTML = '';
+      const groups = {};
+      
+      const occupiedTanks = currentTanks.filter(t => t.status === 'occupied');
+      
+      occupiedTanks.forEach(t => {
+        const sessions = t.sessions || [];
+        const activeSession = sessions.find(s => s.status === 'active');
+        
+        if (activeSession) {
+          const key = activeSession.invoiceNumber + '||' + activeSession.customer + '||' + activeSession.invoiceId;
+          if (!groups[key]) {
+            groups[key] = { 
+              invoice: activeSession.invoiceNumber, 
+              customer: activeSession.customer, 
+              tankIds: [], 
+              invoiceId: activeSession.invoiceId 
+            };
+          }
+          groups[key].tankIds.push(t.id);
+        }
+      });
+      
+      const groupArr = Object.values(groups);
+      
+      if (groupArr.length === 0) {
+        list.innerHTML = `
+          <div class="empty-state-msg">
+            <i class="fas fa-info-circle" style="font-size:1.5rem;display:block;margin-bottom:8px;color:var(--gray-400);"></i>
+            No occupied tanks to empty
+            <div style="font-size:0.5rem;color:var(--gray-400);margin-top:4px;">
+              Make sure you have loaded tanks with active sessions
+            </div>
+          </div>
+        `;
+        return;
       }
-      groups[key].tankIds.push(t.id);
+      
+      groupArr.forEach(g => {
+        const card = document.createElement('div');
+        card.className = 'invoice-group-card';
+        card.innerHTML = `
+          <div>
+            <div class="ig-customer"><i class="fas fa-user"></i> ${g.customer}</div>
+            <div class="ig-invoice"><i class="fas fa-file-invoice"></i> ${g.invoice}</div>
+          </div>
+          <div class="ig-count"><i class="fas fa-flask"></i> ${g.tankIds.length}</div>
+        `;
+        card.addEventListener('click', () => selectGroupForEmpty(g));
+        list.appendChild(card);
+      });
     }
-  });
-  
-  const groupArr = Object.values(groups);
-  console.log('Groups found:', groupArr);
-  
-  if (groupArr.length === 0) {
-    list.innerHTML = `
-      <div class="empty-state-msg">
-        <i class="fas fa-info-circle" style="font-size:1.5rem;display:block;margin-bottom:8px;color:var(--gray-400);"></i>
-        No occupied tanks to empty
-        <div style="font-size:0.5rem;color:var(--gray-400);margin-top:4px;">
-          Make sure you have loaded tanks with active sessions
-        </div>
-      </div>
-    `;
-    return;
-  }
-  
-  groupArr.forEach(g => {
-    const card = document.createElement('div');
-    card.className = 'invoice-group-card';
-    card.innerHTML = `
-      <div>
-        <div class="ig-customer"><i class="fas fa-user"></i> ${g.customer}</div>
-        <div class="ig-invoice"><i class="fas fa-file-invoice"></i> ${g.invoice}</div>
-      </div>
-      <div class="ig-count"><i class="fas fa-flask"></i> ${g.tankIds.length}</div>
-    `;
-    card.addEventListener('click', () => selectGroupForEmpty(g));
-    list.appendChild(card);
-  });
-}
 
     function selectGroupForEmpty(g) {
       emptySelectedGroup = g;
@@ -1786,200 +1724,152 @@ function renderEmptyScreen() {
       }
     }
 
-    // ─── REPORTS ───
-// ─── REPORTS ───
-function renderReports() {
-  // Monthly chart - gather data from all sessions
-  const monthData = {};
-  let totalRevenue = 0;
-  let totalCost = 0;
-  let totalProfit = 0;
-  let completedSessions = 0;
-  
-  currentTanks.forEach(t => {
-    (t.sessions || []).forEach(s => {
-      // Track totals
-      const rev = s.revenue || 0;
-      const cost = s.cost || 0;
-      const profit = rev - cost;
-      
-      totalRevenue += rev;
-      totalCost += cost;
-      totalProfit += profit;
-      if (s.status === 'completed') completedSessions++;
-      
-      // Monthly grouping
-      if (s.status === 'completed' && s.date) {
-        const d = new Date(s.date);
-        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-        if (!monthData[key]) monthData[key] = { revenue: 0, cost: 0, profit: 0 };
-        monthData[key].revenue += rev;
-        monthData[key].cost += cost;
-        monthData[key].profit += profit;
-      }
-    });
-  });
-  
-  // Update summary
-  const summary = document.getElementById('reportSummary');
-  summary.innerHTML = `
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;">
-      <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
-        <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Total Revenue</div>
-        <div style="font-size:1.2rem;font-weight:700;color:var(--accent);">${formatCurrency(totalRevenue)}</div>
-      </div>
-      <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
-        <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Total Cost</div>
-        <div style="font-size:1.2rem;font-weight:700;color:var(--warning);">${formatCurrency(totalCost)}</div>
-      </div>
-      <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
-        <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Total Profit</div>
-        <div style="font-size:1.2rem;font-weight:700;color:var(--success);">${formatCurrency(totalProfit)}</div>
-      </div>
-      <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
-        <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Completed Sessions</div>
-        <div style="font-size:1.2rem;font-weight:700;">${completedSessions}</div>
-      </div>
-    </div>
-  `;
-  
-  // Render chart
-  const chart = document.getElementById('monthlyChart');
-  chart.innerHTML = '';
-  const sorted = Object.keys(monthData).sort();
-  
-  if (sorted.length === 0) {
-    chart.innerHTML = '<div class="empty-state-msg">No completed sessions data available</div>';
-    return;
-  }
-  
-  const maxVal = Math.max(...sorted.map(k => monthData[k].revenue), 1);
-  
-  sorted.forEach(k => {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'bar-wrapper';
-    wrapper.style.cssText = 'display:flex;flex-direction:column;align-items:center;flex:1;height:100%;justify-content:flex-end;';
-    
-    // Revenue bar
-    const revBar = document.createElement('div');
-    revBar.className = 'bar-revenue';
-    const revPct = Math.max(2, (monthData[k].revenue / maxVal) * 80);
-    revBar.style.cssText = `width:100%;border-radius:3px 3px 0 0;background:linear-gradient(180deg,var(--accent),var(--accent-light));height:${revPct}px;min-height:2px;transition:height 0.5s ease;`;
-    
-    // Profit bar (smaller, on top)
-    const profitBar = document.createElement('div');
-    profitBar.className = 'bar-profit';
-    const profitPct = Math.max(1, (Math.abs(monthData[k].profit) / maxVal) * 50);
-    profitBar.style.cssText = `width:70%;border-radius:3px 3px 0 0;background:${monthData[k].profit >= 0 ? 'linear-gradient(180deg,var(--success),var(--success-light))' : 'linear-gradient(180deg,var(--danger),#ef4444)'};height:${profitPct}px;min-height:1px;transition:height 0.5s ease;margin-top:2px;`;
-    
-    const label = document.createElement('div');
-    label.className = 'bar-label';
-    const d = new Date(k + '-01');
-    label.textContent = d.toLocaleDateString('en-US', { month: 'short' });
-    label.style.cssText = 'font-size:0.4rem;color:var(--gray-500);text-align:center;margin-top:4px;font-weight:600;';
-    
-    wrapper.appendChild(revBar);
-    wrapper.appendChild(profitBar);
-    wrapper.appendChild(label);
-    chart.appendChild(wrapper);
-  });
-  
-  // Add legend
-  const legend = document.createElement('div');
-  legend.style.cssText = 'display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:0.5rem;color:var(--gray-600);';
-  legend.innerHTML = `
-    <span><span style="display:inline-block;width:12px;height:4px;border-radius:2px;background:var(--accent);margin-right:4px;"></span> Revenue</span>
-    <span><span style="display:inline-block;width:12px;height:4px;border-radius:2px;background:var(--success);margin-right:4px;"></span> Profit</span>
-  `;
-  chart.appendChild(legend);
-  
-  // Pending payments
-  const pendingList = document.getElementById('pendingList');
-  pendingList.innerHTML = '';
-  const pending = {};
-  
-  currentTanks.forEach(t => {
-    (t.sessions || []).forEach(s => {
-      if (s.status === 'active') {
-        const key = s.invoiceNumber + '||' + s.customer + '||' + s.invoiceId;
-        if (!pending[key]) {
-          pending[key] = { 
-            invoice: s.invoiceNumber, 
-            customer: s.customer, 
-            total: 0, 
-            invoiceId: s.invoiceId,
-            tankCount: 0
-          };
-        }
-        pending[key].total += s.revenue || 0;
-        pending[key].tankCount++;
-      }
-    });
-  });
-  
-  const pendingArr = Object.values(pending);
-  if (pendingArr.length === 0) {
-    pendingList.innerHTML = `
-      <div class="empty-state-msg">
-        <i class="fas fa-check-circle" style="font-size:1.2rem;display:block;margin-bottom:4px;color:var(--success);"></i>
-        No pending payments
-      </div>
-    `;
-  } else {
-    pendingArr.forEach(p => {
-      const div = document.createElement('div');
-      div.className = 'pending-item';
-      div.style.cssText = 'display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-100);font-size:0.6rem;cursor:pointer;transition:all 0.2s ease;';
-      div.innerHTML = `
-        <div>
-          <span class="name" style="font-weight:600;color:var(--gray-800);">${p.customer}</span>
-          <span style="font-size:0.45rem;color:var(--gray-500);margin-left:6px;">${p.invoice} · ${p.tankCount} tanks</span>
-        </div>
-        <span class="amount" style="font-weight:700;color:var(--warning);">${formatCurrency(p.total)}</span>
-      `;
-      div.addEventListener('mouseenter', () => { div.style.background = 'var(--gray-50)'; });
-      div.addEventListener('mouseleave', () => { div.style.background = 'transparent'; });
-      div.addEventListener('click', () => openInvoiceDetail(p.invoiceId));
-      pendingList.appendChild(div);
-    });
-  }
-}
-      
-      // Summary
-      const summary = document.getElementById('reportSummary');
-      let totalRev = 0, totalCost = 0, totalProfit = 0;
+    function renderReports() {
+      const monthData = {};
+      let totalRevenue = 0;
+      let totalCost = 0;
+      let totalProfit = 0;
       let completedSessions = 0;
+      
       currentTanks.forEach(t => {
         (t.sessions || []).forEach(s => {
-          if (s.status === 'completed') {
-            totalRev += s.revenue || 0;
-            totalCost += s.cost || 0;
-            totalProfit += (s.revenue || 0) - (s.cost || 0);
-            completedSessions++;
+          const rev = s.revenue || 0;
+          const cost = s.cost || 0;
+          const profit = rev - cost;
+          
+          totalRevenue += rev;
+          totalCost += cost;
+          totalProfit += profit;
+          if (s.status === 'completed') completedSessions++;
+          
+          if (s.status === 'completed' && s.date) {
+            const d = new Date(s.date);
+            const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+            if (!monthData[key]) monthData[key] = { revenue: 0, cost: 0, profit: 0 };
+            monthData[key].revenue += rev;
+            monthData[key].cost += cost;
+            monthData[key].profit += profit;
           }
         });
       });
       
+      const summary = document.getElementById('reportSummary');
       summary.innerHTML = `
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;">
-          <div>
-            <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Revenue</div>
-            <div style="font-size:1rem;font-weight:700;color:var(--accent);">${formatCurrency(totalRev)}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;">
+          <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
+            <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Total Revenue</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--accent);">${formatCurrency(totalRevenue)}</div>
           </div>
-          <div>
-            <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Cost</div>
-            <div style="font-size:1rem;font-weight:700;color:var(--warning);">${formatCurrency(totalCost)}</div>
+          <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
+            <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Total Cost</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--warning);">${formatCurrency(totalCost)}</div>
           </div>
-          <div>
-            <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Profit</div>
-            <div style="font-size:1rem;font-weight:700;color:var(--success);">${formatCurrency(totalProfit)}</div>
+          <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
+            <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Total Profit</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--success);">${formatCurrency(totalProfit)}</div>
           </div>
-          <div>
-            <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Completed</div>
-            <div style="font-size:1rem;font-weight:700;">${completedSessions}</div>
+          <div style="background:var(--gray-50);padding:12px;border-radius:8px;border:1px solid var(--gray-200);">
+            <div style="font-size:0.5rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Completed Sessions</div>
+            <div style="font-size:1.2rem;font-weight:700;">${completedSessions}</div>
           </div>
         </div>
       `;
+      
+      const chart = document.getElementById('monthlyChart');
+      chart.innerHTML = '';
+      const sorted = Object.keys(monthData).sort();
+      
+      if (sorted.length === 0) {
+        chart.innerHTML = '<div class="empty-state-msg">No completed sessions data available</div>';
+        return;
+      }
+      
+      const maxVal = Math.max(...sorted.map(k => monthData[k].revenue), 1);
+      
+      sorted.forEach(k => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'bar-wrapper';
+        wrapper.style.cssText = 'display:flex;flex-direction:column;align-items:center;flex:1;height:100%;justify-content:flex-end;';
+        
+        const revBar = document.createElement('div');
+        revBar.className = 'bar-revenue';
+        const revPct = Math.max(2, (monthData[k].revenue / maxVal) * 80);
+        revBar.style.cssText = `width:100%;border-radius:3px 3px 0 0;background:linear-gradient(180deg,var(--accent),var(--accent-light));height:${revPct}px;min-height:2px;transition:height 0.5s ease;`;
+        
+        const profitBar = document.createElement('div');
+        profitBar.className = 'bar-profit';
+        const profitPct = Math.max(1, (Math.abs(monthData[k].profit) / maxVal) * 50);
+        profitBar.style.cssText = `width:70%;border-radius:3px 3px 0 0;background:${monthData[k].profit >= 0 ? 'linear-gradient(180deg,var(--success),var(--success-light))' : 'linear-gradient(180deg,var(--danger),#ef4444)'};height:${profitPct}px;min-height:1px;transition:height 0.5s ease;margin-top:2px;`;
+        
+        const label = document.createElement('div');
+        label.className = 'bar-label';
+        const d = new Date(k + '-01');
+        label.textContent = d.toLocaleDateString('en-US', { month: 'short' });
+        label.style.cssText = 'font-size:0.4rem;color:var(--gray-500);text-align:center;margin-top:4px;font-weight:600;';
+        
+        wrapper.appendChild(revBar);
+        wrapper.appendChild(profitBar);
+        wrapper.appendChild(label);
+        chart.appendChild(wrapper);
+      });
+      
+      const legend = document.createElement('div');
+      legend.style.cssText = 'display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:0.5rem;color:var(--gray-600);';
+      legend.innerHTML = `
+        <span><span style="display:inline-block;width:12px;height:4px;border-radius:2px;background:var(--accent);margin-right:4px;"></span> Revenue</span>
+        <span><span style="display:inline-block;width:12px;height:4px;border-radius:2px;background:var(--success);margin-right:4px;"></span> Profit</span>
+      `;
+      chart.appendChild(legend);
+      
+      const pendingList = document.getElementById('pendingList');
+      pendingList.innerHTML = '';
+      const pending = {};
+      
+      currentTanks.forEach(t => {
+        (t.sessions || []).forEach(s => {
+          if (s.status === 'active') {
+            const key = s.invoiceNumber + '||' + s.customer + '||' + s.invoiceId;
+            if (!pending[key]) {
+              pending[key] = { 
+                invoice: s.invoiceNumber, 
+                customer: s.customer, 
+                total: 0, 
+                invoiceId: s.invoiceId,
+                tankCount: 0
+              };
+            }
+            pending[key].total += s.revenue || 0;
+            pending[key].tankCount++;
+          }
+        });
+      });
+      
+      const pendingArr = Object.values(pending);
+      if (pendingArr.length === 0) {
+        pendingList.innerHTML = `
+          <div class="empty-state-msg">
+            <i class="fas fa-check-circle" style="font-size:1.2rem;display:block;margin-bottom:4px;color:var(--success);"></i>
+            No pending payments
+          </div>
+        `;
+      } else {
+        pendingArr.forEach(p => {
+          const div = document.createElement('div');
+          div.className = 'pending-item';
+          div.style.cssText = 'display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-100);font-size:0.6rem;cursor:pointer;transition:all 0.2s ease;';
+          div.innerHTML = `
+            <div>
+              <span class="name" style="font-weight:600;color:var(--gray-800);">${p.customer}</span>
+              <span style="font-size:0.45rem;color:var(--gray-500);margin-left:6px;">${p.invoice} · ${p.tankCount} tanks</span>
+            </div>
+            <span class="amount" style="font-weight:700;color:var(--warning);">${formatCurrency(p.total)}</span>
+          `;
+          div.addEventListener('mouseenter', () => { div.style.background = 'var(--gray-50)'; });
+          div.addEventListener('mouseleave', () => { div.style.background = 'transparent'; });
+          div.addEventListener('click', () => openInvoiceDetail(p.invoiceId));
+          pendingList.appendChild(div);
+        });
+      }
     }
 
     function downloadStatement() {
@@ -2022,7 +1912,6 @@ function renderReports() {
       URL.revokeObjectURL(a.href);
     }
 
-    // ─── SETTINGS ───
     function renderSettings() {
       const list = document.getElementById('settingsCostList');
       list.innerHTML = '';
@@ -2064,23 +1953,27 @@ function renderReports() {
       });
     }
 
-    // ─── INIT ───
     async function init() {
-      // Load cached data first
       const cachedTanks = localStorage.getItem('enican_tanks_status');
       const cachedExpenses = localStorage.getItem('enican_expenses');
       if (cachedTanks) {
-        currentTanks = JSON.parse(cachedTanks);
+        currentTanks = JSON.parse(cachedTanks).map(t => ({ ...t, sessions: [] }));
+        const cachedFull = localStorage.getItem('enican_tanks_full');
+        if (cachedFull) {
+          const fullTanks = JSON.parse(cachedFull);
+          currentTanks = currentTanks.map(t => {
+            const fullTank = fullTanks.find(ft => ft.id === t.id);
+            return { ...t, sessions: fullTank ? fullTank.sessions || [] : [] };
+          });
+        }
         renderDashboard(currentTanks);
       }
       if (cachedExpenses) {
         costItems = JSON.parse(cachedExpenses);
       }
       
-      // Then sync
       await syncTanksStatus();
       
-      // Event Listeners
       document.getElementById('modalClose').addEventListener('click', () => 
         document.getElementById('modalOverlay').classList.remove('active')
       );
@@ -2172,7 +2065,6 @@ function renderReports() {
         renderLoadScreen();
       });
       
-      // Footer Navigation
       document.getElementById('footerLoad').addEventListener('click', () => {
         if (currentScreen === 'load') {
           if (loadBatch.tankIds.length > 0 || loadBatch.invoice.trim() || loadBatch.customer.trim()) {
@@ -2202,7 +2094,6 @@ function renderReports() {
         }
       });
       
-      // Load Screen Events
       document.getElementById('loadBackBtn').addEventListener('click', () => {
         if (loadBatch.tankIds.length > 0 || loadBatch.invoice.trim() || loadBatch.customer.trim()) {
           if (!confirm('Discard this load batch?')) return;
@@ -2226,7 +2117,6 @@ function renderReports() {
       });
       document.getElementById('completeLoadBtn').addEventListener('click', completeLoad);
       
-      // Empty Screen Events
       document.getElementById('emptyBackBtn').addEventListener('click', () => {
         emptySelectedGroup = null;
         emptySelectedTankIds = [];
@@ -2245,21 +2135,17 @@ function renderReports() {
         document.getElementById('emptyGroupDetailWrap').style.display = 'block';
       });
       
-      // Reports Events
       document.getElementById('reportsBackBtn').addEventListener('click', showDashboard);
       document.getElementById('downloadReportBtn').addEventListener('click', downloadStatement);
       
-      // Invoice Detail
       document.getElementById('invoiceDetailBack').addEventListener('click', showDashboard);
       
-      // KPI clicks
       document.getElementById('kpiOccupied').addEventListener('click', openEmptyScreen);
       document.getElementById('kpiVacant').addEventListener('click', openLoadScreen);
       document.getElementById('kpiRevenue').addEventListener('click', openReportsScreen);
       document.getElementById('kpiProfit').addEventListener('click', openReportsScreen);
     }
 
-    // Start the app
     init();
   })();
 </script>

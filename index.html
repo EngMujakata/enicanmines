@@ -29,7 +29,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 80px; -webkit-font-smoothing: antialiased; height: 100vh; overflow: hidden; }
 
-    /* Header & Navbar */
     .top-header { 
       background-color: var(--header-bg); 
       color: var(--primary); 
@@ -56,7 +55,6 @@
     .menu-btn { background: none; border: none; color: var(--primary); cursor: pointer; padding: 8px; }
     .menu-btn svg { width: 28px; height: 28px; fill: var(--primary); }
 
-    /* Slide-out Drawer */
     .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 200; }
     .drawer-overlay.active { opacity: 1; pointer-events: auto; }
     .drawer { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--card-bg); z-index: 201; transition: transform 0.3s ease; box-shadow: var(--shadow-md); display: flex; flex-direction: column; }
@@ -70,10 +68,8 @@
     .drawer-item.logout { color: var(--danger); border-top: 2px solid var(--border-color); margin-top: 8px; }
     .drawer-item.logout svg { fill: var(--danger); }
 
-    /* Main Container */
     .container { max-width: 1200px; margin: 0 auto; padding: 16px; height: calc(100vh - 140px); overflow-y: auto; }
 
-    /* Login Overlay */
     .login-overlay { position: fixed; inset: 0; background: var(--primary); z-index: 999; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; }
     .login-overlay.hidden { display: none; }
     .login-box { background: white; padding: 40px 30px; border-radius: var(--radius); max-width: 400px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
@@ -86,19 +82,17 @@
     .login-box .btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; }
     .login-box .btn:hover { background: var(--accent-hover); }
     .login-error { color: var(--danger); font-size: 0.85rem; text-align: center; margin-top: 8px; display: none; }
+    .login-loading { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 8px; display: none; }
 
-    /* Summary KPI Cards */
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
     .kpi-card { background: var(--card-bg); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: center; cursor: pointer; transition: all 0.2s; }
     .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--primary); }
     .kpi-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
     .kpi-value { font-size: 1.5rem; font-weight: 800; color: var(--text-main); }
 
-    /* View Sections */
     .view-section { display: none; }
     .view-section.active { display: block; }
 
-    /* Tank Display Grid */
     .section-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
     .tank-grid-wrapper { height: calc(100vh - 280px); overflow-y: auto; }
     .tank-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
@@ -122,7 +116,6 @@
     .progress-bar-fill { height: 100%; background: var(--accent); transition: width 0.3s ease; }
     .progress-bar-fill.overdue { background: var(--danger); }
 
-    /* Workspaces */
     .workspace-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color); padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
     .form-group { margin-bottom: 16px; }
     .form-label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
@@ -156,7 +149,6 @@
     .nav-item-load .fab-btn { width: 52px; height: 52px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; margin-top: -24px; box-shadow: 0 4px 10px rgba(37,99,235,0.4); border: 3px solid var(--primary); }
     .nav-item-load .fab-btn svg { width: 28px; height: 28px; fill: white; margin-bottom: 0; }
 
-    /* Modal */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 300; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
     .modal-box { background: var(--card-bg); width: 90%; max-width: 400px; border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-md); }
@@ -165,11 +157,13 @@
     .chart-container { position: relative; width: 100%; height: 250px; margin-bottom: 20px; }
     canvas { width: 100% !important; height: 100% !important; }
 
-    /* Empty Tanks List */
     .empty-tank-option { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; background: var(--bg-main); cursor: pointer; transition: all 0.2s; }
     .empty-tank-option:hover { border-color: var(--primary); background: #eff6ff; }
     .empty-tank-option.selected { border-color: var(--primary); background: #eff6ff; }
     .empty-tank-option input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary); }
+
+    .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #e2e8f0; border-radius: 50%; border-top-color: var(--primary); animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (min-width: 768px) {
       body { padding-bottom: 0; overflow: hidden; }
@@ -198,8 +192,9 @@
         <label class="form-label">Password</label>
         <input type="password" id="loginPassword" class="form-input" placeholder="Enter password" onkeydown="if(event.key==='Enter') doLogin()">
       </div>
-      <button class="btn" onclick="doLogin()">Sign In</button>
+      <button class="btn" onclick="doLogin()" id="loginBtn">Sign In</button>
       <div class="login-error" id="loginError">Invalid credentials. Please try again.</div>
+      <div class="login-loading" id="loginLoading"><span class="loading-spinner"></span> Authenticating...</div>
     </div>
   </div>
 
@@ -481,6 +476,11 @@
   </div>
 
   <script>
+    // ========================================================================
+    // ENICAN MINES — COMPLETE APPLICATION SCRIPT
+    // All data comes live from Google Sheets API
+    // ========================================================================
+
     // ------------------------------------------------------------------------
     // CONFIGURATION
     // ------------------------------------------------------------------------
@@ -493,17 +493,23 @@
     // ------------------------------------------------------------------------
     let db = null;
     let isOnline = navigator.onLine;
-    let currentUser = null; // { username, role }
+    let currentUser = null;
     let stagedLoadingData = { invoiceNumber: "", customerName: "", customerPhone: "", tanks: {} };
     let activeSelectedTankIdForExpenses = null;
     let currentFilterStatus = null;
+    let cachedTanks = [];
+    let cachedSessions = [];
+    let cachedExpenses = [];
+    let cachedCustomers = [];
+    let cachedUsers = [];
+    let dataLoaded = false;
 
     // ------------------------------------------------------------------------
     // INDEXEDDB INIT
     // ------------------------------------------------------------------------
     function initIndexedDB() {
       return new Promise((resolve, reject) => {
-        const request = indexedDB.open("EnicanMinesCyanidationDB", 2);
+        const request = indexedDB.open("EnicanMinesCyanidationDB", 3);
         request.onupgradeneeded = (e) => {
           const database = e.target.result;
           if (!database.objectStoreNames.contains("tanks")) {
@@ -581,41 +587,79 @@
         req.onerror = () => reject(req.error);
       });
     }
+    function idbClear(storeName) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readwrite");
+        const req = tx.objectStore(storeName).clear();
+        req.onsuccess = () => resolve(true);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    // ------------------------------------------------------------------------
+    // API CALLS - FETCH LIVE DATA FROM GOOGLE SHEETS
+    // ------------------------------------------------------------------------
+    async function fetchLiveData() {
+      try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify({ action: "getAllData" })
+        });
+        const data = await response.json();
+        if (data.status === "SUCCESS") {
+          // Clear and repopulate IndexedDB with live data
+          await idbClear("tanks");
+          await idbClear("sessions");
+          await idbClear("expenses");
+          await idbClear("customers");
+          await idbClear("users");
+          await idbClear("auditTrail");
+
+          if (data.tanks) {
+            for (const t of data.tanks) await idbPut("tanks", t);
+          }
+          if (data.sessions) {
+            for (const s of data.sessions) await idbPut("sessions", s);
+          }
+          if (data.expenses) {
+            for (const e of data.expenses) await idbPut("expenses", e);
+          }
+          if (data.customers) {
+            for (const c of data.customers) await idbPut("customers", c);
+          }
+          if (data.users) {
+            for (const u of data.users) await idbPut("users", u);
+          }
+          if (data.auditTrail) {
+            for (const a of data.auditTrail) await idbPut("auditTrail", a);
+          }
+
+          // Update caches
+          cachedTanks = await idbGetAll("tanks");
+          cachedSessions = await idbGetAll("sessions");
+          cachedExpenses = await idbGetAll("expenses");
+          cachedCustomers = await idbGetAll("customers");
+          cachedUsers = await idbGetAll("users");
+          dataLoaded = true;
+          return true;
+        }
+        return false;
+      } catch (error) {
+        console.error("Failed to fetch live data:", error);
+        return false;
+      }
+    }
 
     // ------------------------------------------------------------------------
     // USER AUTHENTICATION
     // ------------------------------------------------------------------------
-    async function seedUsers() {
-      const users = await idbGetAll("users");
-      if (users.length === 0) {
-        await idbPut("users", { username: "admin", password: "admin123", role: "admin" });
-        await idbPut("users", { username: "operator", password: "op123", role: "operator" });
-      }
-    }
-
-    async function syncUsersFromSheet() {
-      try {
-        const res = await fetch(GAS_WEB_APP_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain" },
-          body: JSON.stringify({ action: "getUsers" })
-        });
-        const data = await res.json();
-        if (data.status === "SUCCESS" && data.users) {
-          for (const u of data.users) {
-            await idbPut("users", u);
-          }
-          console.log("Users synced from server.");
-        }
-      } catch (e) {
-        console.log("Could not sync users from server.");
-      }
-    }
-
     async function doLogin() {
       const username = document.getElementById("loginUsername").value.trim();
       const password = document.getElementById("loginPassword").value.trim();
       const errorEl = document.getElementById("loginError");
+      const loadingEl = document.getElementById("loginLoading");
+      const loginBtn = document.getElementById("loginBtn");
 
       if (!username || !password) {
         errorEl.style.display = "block";
@@ -623,23 +667,68 @@
         return;
       }
 
-      const user = await idbGet("users", username);
-      if (user && user.password === password) {
-        currentUser = { username: user.username, role: user.role };
-        errorEl.style.display = "none";
-        document.getElementById("loginOverlay").classList.add("hidden");
-        document.getElementById("drawerUserInfo").textContent = user.username + " (" + user.role + ")";
-        if (user.role !== "admin") {
-          document.getElementById("settingsNavBtn").style.display = "none";
-          document.getElementById("settingsDrawerItem").style.display = "none";
+      // Show loading
+      loadingEl.style.display = "block";
+      loginBtn.disabled = true;
+      errorEl.style.display = "none";
+
+      // Fetch live users from API
+      try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify({ action: "getUsers" })
+        });
+        const data = await response.json();
+        
+        if (data.status === "SUCCESS" && data.users) {
+          // Store users in IndexedDB
+          await idbClear("users");
+          for (const u of data.users) {
+            await idbPut("users", u);
+          }
+          cachedUsers = data.users;
+
+          // Find user
+          const user = data.users.find(u => u.username === username && u.password === password);
+          
+          if (user) {
+            currentUser = { username: user.username, role: user.role };
+            loadingEl.style.display = "none";
+            loginBtn.disabled = false;
+            errorEl.style.display = "none";
+            document.getElementById("loginOverlay").classList.add("hidden");
+            document.getElementById("drawerUserInfo").textContent = user.username + " (" + user.role + ")";
+            
+            if (user.role !== "admin") {
+              document.getElementById("settingsNavBtn").style.display = "none";
+              document.getElementById("settingsDrawerItem").style.display = "none";
+            } else {
+              document.getElementById("settingsNavBtn").style.display = "inline-block";
+              document.getElementById("settingsDrawerItem").style.display = "flex";
+            }
+            
+            // Load all data after login
+            await fetchLiveData();
+            renderDashboard();
+          } else {
+            loadingEl.style.display = "none";
+            loginBtn.disabled = false;
+            errorEl.style.display = "block";
+            errorEl.textContent = "Invalid username or password.";
+          }
         } else {
-          document.getElementById("settingsNavBtn").style.display = "inline-block";
-          document.getElementById("settingsDrawerItem").style.display = "flex";
+          loadingEl.style.display = "none";
+          loginBtn.disabled = false;
+          errorEl.style.display = "block";
+          errorEl.textContent = "Could not connect to server. Please try again.";
         }
-        renderDashboard();
-      } else {
+      } catch (error) {
+        loadingEl.style.display = "none";
+        loginBtn.disabled = false;
         errorEl.style.display = "block";
-        errorEl.textContent = "Invalid username or password.";
+        errorEl.textContent = "Network error. Please check your connection.";
+        console.error("Login error:", error);
       }
     }
 
@@ -649,31 +738,6 @@
       document.getElementById("loginUsername").value = "";
       document.getElementById("loginPassword").value = "";
       document.getElementById("loginError").style.display = "none";
-    }
-
-    // ------------------------------------------------------------------------
-    // SEED DATA
-    // ------------------------------------------------------------------------
-    async function seedInitialDataIfEmpty() {
-      const tanks = await idbGetAll("tanks");
-      if (tanks.length === 0) {
-        const initialTanks = [
-          { tankId: "T001", tankName: "Tank 001", status: "VACANT", active: true, createdAt: new Date().toISOString() },
-          { tankId: "T002", tankName: "Tank 002", status: "VACANT", active: true, createdAt: new Date().toISOString() },
-          { tankId: "T003", tankName: "Tank 003", status: "VACANT", active: true, createdAt: new Date().toISOString() }
-        ];
-        for (const t of initialTanks) await idbPut("tanks", t);
-      }
-      const expenses = await idbGetAll("expenses");
-      if (expenses.length === 0) {
-        const initialExpenses = [
-          { expenseId: "EXP001", name: "Chemical Treatment", description: "Cyanide & Lime Mixture", defaultCost: 100, defaultSelling: 150, active: true },
-          { expenseId: "EXP002", name: "Transport & Logistics", description: "Ore Transport", defaultCost: 50, defaultSelling: 75, active: true },
-          { expenseId: "EXP003", name: "Laboratory Assay Test", description: "Gold Extraction Analysis", defaultCost: 30, defaultSelling: 50, active: true }
-        ];
-        for (const exp of initialExpenses) await idbPut("expenses", exp);
-      }
-      await seedUsers();
     }
 
     // ------------------------------------------------------------------------
@@ -989,6 +1053,8 @@
       resetLoadForm();
       switchView("viewDashboard");
       triggerSyncQueueProcess();
+      // Refresh data from server
+      fetchLiveData();
     }
 
     // ------------------------------------------------------------------------
@@ -1127,6 +1193,7 @@
       alert("Payment confirmed and tanks emptied successfully.");
       renderEmptyWorkspace();
       triggerSyncQueueProcess();
+      fetchLiveData();
     }
 
     // ------------------------------------------------------------------------
@@ -1257,20 +1324,17 @@
         const h = (item.val / maxVal) * chartHeight;
         const y = canvas.height - padding - h;
 
-        // Shadow
         ctx.shadowColor = "rgba(0,0,0,0.1)";
         ctx.shadowBlur = 8;
         ctx.fillStyle = item.color;
         ctx.fillRect(x, y, barWidth, h);
         ctx.shadowBlur = 0;
 
-        // Value on top
         ctx.fillStyle = "#0f172a";
         ctx.font = "bold 11px sans-serif";
         ctx.textAlign = "center";
         ctx.fillText("$" + item.val.toFixed(0), x + barWidth / 2, y - 8);
 
-        // Label
         ctx.fillStyle = "#64748b";
         ctx.font = "10px sans-serif";
         ctx.fillText(item.label, x + barWidth / 2, canvas.height - 10);
@@ -1313,7 +1377,6 @@
         startAngle += sliceAngle;
       });
 
-      // Hole
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius * 0.5, 0, 2 * Math.PI);
       ctx.fillStyle = "#ffffff";
@@ -1327,7 +1390,6 @@
       ctx.fillStyle = "#64748b";
       ctx.fillText("Utilised", centerX, centerY + 16);
 
-      // Legend
       let legendX = 20;
       const legendY = canvas.height - 30;
       slices.forEach(slice => {
@@ -1424,6 +1486,8 @@
       document.getElementById("newTankName").value = "";
       renderSettings();
       renderDashboard();
+      // Push to server
+      triggerSyncQueueProcess();
     }
 
     async function toggleTankActive(tankId, newActiveState) {
@@ -1442,6 +1506,7 @@
       document.getElementById("newExpenseCost").value = "";
       document.getElementById("newExpenseSelling").value = "";
       renderSettings();
+      triggerSyncQueueProcess();
     }
 
     async function toggleExpenseActive(expId, newActiveState) {
@@ -1502,25 +1567,40 @@
     function manualSyncTrigger() {
       if (!isOnline) return alert("System is currently offline.");
       triggerSyncQueueProcess();
+      fetchLiveData();
     }
 
-    setInterval(() => { if (isOnline) triggerSyncQueueProcess(); }, 30000);
+    setInterval(() => { 
+      if (isOnline) {
+        triggerSyncQueueProcess();
+        fetchLiveData();
+      }
+    }, 30000);
 
     // ------------------------------------------------------------------------
     // ENTRY POINT
     // ------------------------------------------------------------------------
     window.addEventListener("DOMContentLoaded", async () => {
       await initIndexedDB();
-      await seedInitialDataIfEmpty();
-      await syncUsersFromSheet();
       updateOnlineStatusIndicator();
+      
       // Check if user already logged in (session)
       const users = await idbGetAll("users");
       if (users.length > 0) {
-        // Show login overlay
         document.getElementById("loginOverlay").classList.remove("hidden");
       }
-      renderDashboard();
+      
+      // Load cached data if available
+      cachedTanks = await idbGetAll("tanks");
+      cachedSessions = await idbGetAll("sessions");
+      cachedExpenses = await idbGetAll("expenses");
+      cachedCustomers = await idbGetAll("customers");
+      cachedUsers = await idbGetAll("users");
+      
+      if (cachedTanks.length > 0) {
+        dataLoaded = true;
+        renderDashboard();
+      }
     });
   </script>
 </body>

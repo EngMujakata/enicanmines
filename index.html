@@ -68,7 +68,7 @@
     .drawer-item.logout { color: var(--danger); border-top: 2px solid var(--border-color); margin-top: 8px; }
     .drawer-item.logout svg { fill: var(--danger); }
 
-    .container { max-width: 1200px; margin: 0 auto; padding: 16px; height: calc(100vh - 140px); overflow-y: auto; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 16px; height: calc(100vh - 140px); overflow: hidden; display: flex; flex-direction: column; }
 
     .login-overlay { position: fixed; inset: 0; background: var(--primary); z-index: 999; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; }
     .login-overlay.hidden { display: none; }
@@ -84,45 +84,68 @@
     .login-error { color: var(--danger); font-size: 0.85rem; text-align: center; margin-top: 8px; display: none; }
     .login-loading { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 8px; display: none; }
 
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
-    .kpi-card { background: var(--card-bg); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: center; cursor: pointer; transition: all 0.2s; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 12px; flex-shrink: 0; }
+    .kpi-card { background: var(--card-bg); border-radius: var(--radius); padding: 12px 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: center; cursor: pointer; transition: all 0.2s; }
     .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--primary); }
-    .kpi-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
-    .kpi-value { font-size: 1.5rem; font-weight: 800; color: var(--text-main); }
+    .kpi-title { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
+    .kpi-value { font-size: 1.3rem; font-weight: 800; color: var(--text-main); }
 
-    .view-section { display: none; }
-    .view-section.active { display: block; }
+    .view-section { display: none; height: 100%; overflow: hidden; }
+    .view-section.active { display: flex; flex-direction: column; }
 
-    .section-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .tank-grid-wrapper { height: calc(100vh - 280px); overflow-y: auto; }
-    .tank-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
-    @media (min-width: 1200px) { .tank-grid { grid-template-columns: repeat(4, 1fr); } }
-    @media (min-width: 1600px) { .tank-grid { grid-template-columns: repeat(5, 1fr); } }
+    .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; flex-shrink: 0; }
+    
+    /* Tank Grid - Fit all on screen */
+    .tank-grid-wrapper { flex: 1; overflow: hidden; }
+    .tank-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+      gap: 10px; 
+      height: 100%;
+      align-content: start;
+    }
+    @media (min-width: 1400px) { 
+      .tank-grid { grid-template-columns: repeat(6, 1fr); } 
+    }
+    @media (min-width: 1200px) and (max-width: 1399px) { 
+      .tank-grid { grid-template-columns: repeat(5, 1fr); } 
+    }
+    @media (min-width: 992px) and (max-width: 1199px) { 
+      .tank-grid { grid-template-columns: repeat(4, 1fr); } 
+    }
+    @media (min-width: 768px) and (max-width: 991px) { 
+      .tank-grid { grid-template-columns: repeat(3, 1fr); } 
+    }
+    @media (max-width: 767px) { 
+      .tank-grid { grid-template-columns: repeat(2, 1fr); }
+      .tank-grid-wrapper { overflow-y: auto; }
+    }
 
     .tank-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: flex; flex-direction: column; }
-    .tank-header { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border-bottom: 1px solid var(--border-color); }
-    .tank-title { font-weight: 800; font-size: 1.1rem; }
-    .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+    .tank-header { padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border-bottom: 1px solid var(--border-color); }
+    .tank-title { font-weight: 800; font-size: 0.95rem; }
+    .badge { padding: 2px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
     .badge-vacant { background: #e2e8f0; color: #475569; }
     .badge-occupied { background: #dbeafe; color: #1e40af; }
     .badge-ready { background: #fef9c3; color: #854d0e; }
     .badge-overdue { background: #fee2e2; color: #991b1b; }
     .badge-completed { background: #dcfce7; color: #166534; }
-    .tank-body { padding: 16px; flex: 1; font-size: 0.9rem; line-height: 1.5; }
-    .tank-field { margin-bottom: 8px; }
-    .tank-field-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-    .tank-field-value { font-weight: 600; color: var(--text-main); }
-    .progress-bar-container { width: 100%; height: 10px; background: #e2e8f0; border-radius: 5px; overflow: hidden; margin-top: 8px; }
+    .tank-body { padding: 10px 12px; flex: 1; font-size: 0.8rem; line-height: 1.4; }
+    .tank-field { margin-bottom: 4px; }
+    .tank-field-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+    .tank-field-value { font-weight: 600; color: var(--text-main); font-size: 0.8rem; }
+    .progress-bar-container { width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-top: 4px; }
     .progress-bar-fill { height: 100%; background: var(--accent); transition: width 0.3s ease; }
     .progress-bar-fill.overdue { background: var(--danger); }
 
-    .workspace-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color); padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
-    .form-group { margin-bottom: 16px; }
-    .form-label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
-    .form-input, .form-select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; background: #fff; }
+    .workspace-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color); padding: 16px; box-shadow: var(--shadow-sm); margin-bottom: 12px; flex-shrink: 0; }
+    .workspace-card-scroll { flex: 1; overflow-y: auto; }
+    .form-group { margin-bottom: 12px; }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+    .form-input, .form-select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; background: #fff; }
     .form-input:focus, .form-select:focus { outline: none; border-color: var(--accent); }
     
-    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 20px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer; transition: background-color 0.2s; gap: 8px; font-size: 0.95rem; width: 100%; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer; transition: background-color 0.2s; gap: 8px; font-size: 0.9rem; }
     .btn-primary { background: var(--accent); color: white; }
     .btn-primary:hover { background: var(--accent-hover); }
     .btn-success { background: var(--success); color: white; }
@@ -133,16 +156,16 @@
     .btn-primary-outline:hover { background: var(--primary); color: white; }
 
     .selectable-tank-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-top: 8px; }
-    .selectable-tank { padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; text-align: center; cursor: pointer; font-weight: 700; background: var(--bg-main); }
+    .selectable-tank { padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; text-align: center; cursor: pointer; font-weight: 700; background: var(--bg-main); font-size: 0.85rem; }
     .selectable-tank.selected { border-color: var(--accent); background: #eff6ff; color: var(--accent); }
 
-    .data-table-container { overflow-x: auto; margin: 12px 0; border: 1px solid var(--border-color); border-radius: 8px; }
-    .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
-    .data-table th, .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); }
+    .data-table-container { overflow-x: auto; margin: 8px 0; border: 1px solid var(--border-color); border-radius: 8px; }
+    .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; }
+    .data-table th, .data-table td { padding: 6px 10px; border-bottom: 1px solid var(--border-color); }
     .data-table th { background: #f8fafc; font-weight: 700; color: var(--text-muted); }
 
     .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: var(--primary); display: flex; justify-content: space-around; align-items: center; z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
-    .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; text-decoration: none; font-size: 0.75rem; font-weight: 600; width: 33.33%; height: 100%; border: none; background: none; cursor: pointer; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; text-decoration: none; font-size: 0.7rem; font-weight: 600; width: 33.33%; height: 100%; border: none; background: none; cursor: pointer; }
     .nav-item.active { color: #ffffff; }
     .nav-item svg { width: 22px; height: 22px; fill: currentColor; margin-bottom: 2px; }
     .nav-item-load { position: relative; }
@@ -154,31 +177,44 @@
     .modal-box { background: var(--card-bg); width: 90%; max-width: 400px; border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-md); }
     .modal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; }
 
-    .chart-container { position: relative; width: 100%; height: 250px; margin-bottom: 20px; }
+    .chart-container { position: relative; width: 100%; height: 200px; margin-bottom: 12px; }
     canvas { width: 100% !important; height: 100% !important; }
 
-    .empty-tank-option { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; background: var(--bg-main); cursor: pointer; transition: all 0.2s; }
-    .empty-tank-option:hover { border-color: var(--primary); background: #eff6ff; }
-    .empty-tank-option.selected { border-color: var(--primary); background: #eff6ff; }
-    .empty-tank-option input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary); }
+    .empty-invoice-card { 
+      background: var(--card-bg); 
+      border-radius: var(--radius); 
+      border: 1px solid var(--border-color); 
+      padding: 16px; 
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .empty-invoice-card:hover { border-color: var(--primary); box-shadow: var(--shadow-md); }
+    .empty-invoice-card.selected { border-color: var(--primary); background: #eff6ff; }
+
+    .auto-add-section { display: flex; gap: 8px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
+    .auto-add-section input { width: 80px; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; }
+    .auto-add-section .btn { width: auto; padding: 8px 16px; }
 
     .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #e2e8f0; border-radius: 50%; border-top-color: var(--primary); animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    .auto-add-section { display: flex; gap: 8px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
-    .auto-add-section input { width: 80px; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; }
-    .auto-add-section .btn { width: auto; padding: 8px 16px; }
 
     @media (min-width: 768px) {
       body { padding-bottom: 0; overflow: hidden; }
       .bottom-nav { display: none; }
       .desktop-nav-links { display: flex; gap: 16px; align-items: center; }
-      .desktop-nav-links button { background: transparent; border: none; color: var(--primary); font-weight: 600; cursor: pointer; padding: 8px 12px; border-radius: 6px; }
+      .desktop-nav-links button { background: transparent; border: none; color: var(--primary); font-weight: 600; cursor: pointer; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; }
       .desktop-nav-links button:hover { background: rgba(6, 65, 171, 0.1); }
       .desktop-nav-links .logout-btn { color: var(--danger); }
       .desktop-nav-links .logout-btn:hover { background: rgba(220, 38, 38, 0.1); }
     }
-    @media (max-width: 767px) { .desktop-nav-links { display: none; } }
+    @media (max-width: 767px) { 
+      .desktop-nav-links { display: none; }
+      .container { height: calc(100vh - 130px); }
+    }
+
+    /* Scrollable content areas on mobile */
+    .view-content-scroll { flex: 1; overflow-y: auto; padding-bottom: 10px; }
   </style>
 </head>
 <body>
@@ -292,7 +328,7 @@
     <section id="viewDashboard" class="view-section active">
       <div class="section-title">
         <span>Cyanidation Tanks</span>
-        <button class="btn btn-primary-outline" style="width:auto; padding:6px 12px; font-size:0.8rem;" onclick="manualSyncTrigger()">Force Sync</button>
+        <button class="btn btn-primary-outline" style="width:auto; padding:4px 10px; font-size:0.75rem;" onclick="manualSyncTrigger()">Force Sync</button>
       </div>
       <div class="tank-grid-wrapper">
         <div class="tank-grid" id="tankGrid"></div>
@@ -301,168 +337,179 @@
 
     <!-- VIEW 2: LOAD TANK -->
     <section id="viewLoadWorkspace" class="view-section">
-      <div class="section-title">Load Cyanidation Tank Workspace</div>
-      <div class="workspace-card">
-        <div class="form-group">
-          <label class="form-label">STEP 1 — Invoice Number</label>
-          <input type="text" id="loadInvoiceNum" class="form-input" placeholder="e.g. INV-001">
+      <div class="view-content-scroll">
+        <div class="section-title">Load Cyanidation Tank Workspace</div>
+        <div class="workspace-card">
+          <div class="form-group">
+            <label class="form-label">STEP 1 — Invoice Number</label>
+            <input type="text" id="loadInvoiceNum" class="form-input" placeholder="e.g. INV-001">
+          </div>
+          <div class="form-group">
+            <label class="form-label">STEP 2 — Customer Details</label>
+            <input type="text" id="loadCustomerName" class="form-input" placeholder="Customer / Mining Company Name" list="customerSuggestions" style="margin-bottom: 8px;">
+            <datalist id="customerSuggestions"></datalist>
+            <input type="tel" id="loadCustomerPhone" class="form-input" placeholder="Customer Phone Number">
+          </div>
+          <div class="form-group">
+            <label class="form-label">STEP 3 — Select Vacant Tanks</label>
+            <div class="selectable-tank-grid" id="loadTankSelector"></div>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">STEP 2 — Customer Details</label>
-          <input type="text" id="loadCustomerName" class="form-input" placeholder="Customer / Mining Company Name" list="customerSuggestions" style="margin-bottom: 8px;">
-          <datalist id="customerSuggestions"></datalist>
-          <input type="tel" id="loadCustomerPhone" class="form-input" placeholder="Customer Phone Number">
-        </div>
-        <div class="form-group">
-          <label class="form-label">STEP 3 — Select Vacant Tanks</label>
-          <div class="selectable-tank-grid" id="loadTankSelector"></div>
-        </div>
-      </div>
 
-      <div class="workspace-card" id="loadExpenseCard" style="display:none;">
-        <div class="section-title" id="selectedTankHeader">Tank Expenses</div>
-        <div class="form-group">
-          <label class="form-label">Add Predefined Expense</label>
-          <select id="expensePredefinedSelect" class="form-select" onchange="onPredefinedExpenseSelect()"></select>
+        <div class="workspace-card" id="loadExpenseCard" style="display:none;">
+          <div class="section-title" id="selectedTankHeader">Tank Expenses</div>
+          <div class="form-group">
+            <label class="form-label">Add Predefined Expense</label>
+            <select id="expensePredefinedSelect" class="form-select" onchange="onPredefinedExpenseSelect()"></select>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+            <div><label class="form-label">Qty</label><input type="number" id="expQty" class="form-input" value="1" min="1"></div>
+            <div><label class="form-label">Cost ($)</label><input type="number" id="expCostPrice" class="form-input" step="0.01"></div>
+            <div><label class="form-label">Selling ($)</label><input type="number" id="expSellingPrice" class="form-input" step="0.01"></div>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-secondary" onclick="addExpenseToCurrentTank()" style="flex:1;">Add To Selected Tank</button>
+            <button class="btn btn-primary" onclick="addExpenseToAllTanks()" style="flex:1;">Add To All Selected</button>
+          </div>
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead><tr><th>Expense</th><th>Qty</th><th>Cost</th><th>Selling</th><th>Profit</th><th>Action</th></tr></thead>
+              <tbody id="tankExpenseTableBody"></tbody>
+            </table>
+          </div>
+          <div style="margin-top:8px; font-weight:700; font-size:0.85rem;" id="tankFinancialsSummary">
+            Total Cost: $0.00 | Total Selling: $0.00 | Expected Profit: $0.00
+          </div>
         </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-          <div><label class="form-label">Qty</label><input type="number" id="expQty" class="form-input" value="1" min="1"></div>
-          <div><label class="form-label">Cost ($)</label><input type="number" id="expCostPrice" class="form-input" step="0.01"></div>
-          <div><label class="form-label">Selling ($)</label><input type="number" id="expSellingPrice" class="form-input" step="0.01"></div>
-        </div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn btn-secondary" onclick="addExpenseToCurrentTank()" style="flex:1;">Add To Selected Tank</button>
-          <button class="btn btn-primary" onclick="addExpenseToAllTanks()" style="flex:1;">Add To All Selected</button>
-        </div>
-        <div class="data-table-container">
-          <table class="data-table">
-            <thead><tr><th>Expense</th><th>Qty</th><th>Cost</th><th>Selling</th><th>Profit</th><th>Action</th></tr></thead>
-            <tbody id="tankExpenseTableBody"></tbody>
-          </table>
-        </div>
-        <div style="margin-top:12px; font-weight:700;" id="tankFinancialsSummary">
-          Total Cost: $0.00 | Total Selling: $0.00 | Expected Profit: $0.00
-        </div>
-      </div>
 
-      <div class="workspace-card" id="loadStagingSummaryCard" style="display:none;">
-        <div class="section-title">Session Tanks Staging Overview</div>
-        <div id="stagedTanksList" style="margin-bottom:16px;"></div>
-        <div style="display:flex; gap:12px;">
-          <button class="btn btn-outline" onclick="resetLoadForm()">Clear Workspace</button>
-          <button class="btn btn-success" onclick="executeCompleteLoading()">COMPLETE &amp; LOCK SESSION</button>
+        <div class="workspace-card" id="loadStagingSummaryCard" style="display:none;">
+          <div class="section-title">Session Tanks Staging Overview</div>
+          <div id="stagedTanksList" style="margin-bottom:12px;"></div>
+          <div style="display:flex; gap:12px;">
+            <button class="btn btn-outline" onclick="resetLoadForm()">Clear Workspace</button>
+            <button class="btn btn-success" onclick="executeCompleteLoading()">COMPLETE &amp; LOCK SESSION</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- VIEW 3: EMPTY TANK -->
+    <!-- VIEW 3: EMPTY TANK (Simplified) -->
     <section id="viewEmptyWorkspace" class="view-section">
-      <div class="section-title">Empty Tank Workspace</div>
-      <div id="emptySessionGroupList"></div>
+      <div class="view-content-scroll">
+        <div class="section-title">Empty Tank Workspace</div>
+        <div id="emptySessionGroupList"></div>
+      </div>
     </section>
 
     <!-- VIEW 4: LIVE SESSIONS -->
     <section id="viewLiveSessions" class="view-section">
-      <div class="section-title">Active Live Sessions</div>
-      <div class="form-group">
-        <input type="text" id="liveSessionSearch" class="form-input" placeholder="Search..." onkeyup="renderLiveSessions()">
+      <div class="view-content-scroll">
+        <div class="section-title">Active Live Sessions</div>
+        <div class="form-group">
+          <input type="text" id="liveSessionSearch" class="form-input" placeholder="Search..." onkeyup="renderLiveSessions()">
+        </div>
+        <div id="liveSessionsList"></div>
       </div>
-      <div id="liveSessionsList"></div>
     </section>
 
     <!-- VIEW 5: COMPLETED SESSIONS -->
     <section id="viewCompletedSessions" class="view-section">
-      <div class="section-title">Completed Session Records</div>
-      <div class="form-group">
-        <input type="text" id="completedSessionSearch" class="form-input" placeholder="Search..." onkeyup="renderCompletedSessions()">
+      <div class="view-content-scroll">
+        <div class="section-title">Completed Session Records</div>
+        <div class="form-group">
+          <input type="text" id="completedSessionSearch" class="form-input" placeholder="Search..." onkeyup="renderCompletedSessions()">
+        </div>
+        <div id="completedSessionsList"></div>
       </div>
-      <div id="completedSessionsList"></div>
     </section>
 
     <!-- VIEW 6: REPORTS -->
     <section id="viewReports" class="view-section">
-      <div class="section-title">Analytics &amp; Financial Reports</div>
-      <div class="workspace-card">
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom:12px;">
-          <div><label class="form-label">Customer</label><select id="reportFilterCustomer" class="form-select" onchange="applyReportFilters()"></select></div>
-          <div><label class="form-label">From</label><input type="date" id="reportFilterDateFrom" class="form-input" onchange="applyReportFilters()"></div>
-          <div><label class="form-label">To</label><input type="date" id="reportFilterDateTo" class="form-input" onchange="applyReportFilters()"></div>
-          <div><label class="form-label">Status</label><select id="reportFilterStatus" class="form-select" onchange="applyReportFilters()"><option value="ALL">All</option><option value="OCCUPIED">Live</option><option value="COMPLETED">Completed</option></select></div>
+      <div class="view-content-scroll">
+        <div class="section-title">Analytics &amp; Financial Reports</div>
+        <div class="workspace-card">
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom:12px;">
+            <div><label class="form-label">Customer</label><select id="reportFilterCustomer" class="form-select" onchange="applyReportFilters()"></select></div>
+            <div><label class="form-label">From</label><input type="date" id="reportFilterDateFrom" class="form-input" onchange="applyReportFilters()"></div>
+            <div><label class="form-label">To</label><input type="date" id="reportFilterDateTo" class="form-input" onchange="applyReportFilters()"></div>
+            <div><label class="form-label">Status</label><select id="reportFilterStatus" class="form-select" onchange="applyReportFilters()"><option value="ALL">All</option><option value="OCCUPIED">Live</option><option value="COMPLETED">Completed</option></select></div>
+          </div>
+          <button class="btn btn-outline" onclick="loadPreviousSessionData()">LOAD PREVIOUS SESSION DATA</button>
         </div>
-        <button class="btn btn-outline" onclick="loadPreviousSessionData()">LOAD PREVIOUS SESSION DATA</button>
-      </div>
 
-      <div class="kpi-grid">
-        <div class="kpi-card"><div class="kpi-title">Total Revenue</div><div class="kpi-value" id="reportRev">$0.00</div></div>
-        <div class="kpi-card"><div class="kpi-title">Total Costs</div><div class="kpi-value" id="reportCost">$0.00</div></div>
-        <div class="kpi-card"><div class="kpi-title">Gross Profit</div><div class="kpi-value" id="reportProfit">$0.00</div></div>
-      </div>
+        <div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="kpi-card"><div class="kpi-title">Total Revenue</div><div class="kpi-value" id="reportRev">$0.00</div></div>
+          <div class="kpi-card"><div class="kpi-title">Total Costs</div><div class="kpi-value" id="reportCost">$0.00</div></div>
+          <div class="kpi-card"><div class="kpi-title">Gross Profit</div><div class="kpi-value" id="reportProfit">$0.00</div></div>
+        </div>
 
-      <div class="workspace-card">
-        <div class="section-title">Revenue &amp; Cost Analysis</div>
-        <div class="chart-container"><canvas id="chartFinancials"></canvas></div>
-      </div>
-      <div class="workspace-card">
-        <div class="section-title">Tank Utilisation Status</div>
-        <div class="chart-container"><canvas id="chartUtilisation"></canvas></div>
+        <div class="workspace-card">
+          <div class="section-title">Revenue &amp; Cost Analysis</div>
+          <div class="chart-container"><canvas id="chartFinancials"></canvas></div>
+        </div>
+        <div class="workspace-card">
+          <div class="section-title">Tank Utilisation Status</div>
+          <div class="chart-container"><canvas id="chartUtilisation"></canvas></div>
+        </div>
       </div>
     </section>
 
     <!-- VIEW 7: AUDIT TRAIL -->
     <section id="viewAuditTrail" class="view-section">
-      <div class="section-title">System Action Audit Log</div>
-      <div class="data-table-container">
-        <table class="data-table">
-          <thead><tr><th>Timestamp</th><th>Action</th><th>Entity</th><th>ID/Invoice</th><th>Details</th><th>User</th></tr></thead>
-          <tbody id="auditTrailTableBody"></tbody>
-        </table>
+      <div class="view-content-scroll">
+        <div class="section-title">System Action Audit Log</div>
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead><tr><th>Timestamp</th><th>Action</th><th>Entity</th><th>ID/Invoice</th><th>Details</th><th>User</th></tr></thead>
+            <tbody id="auditTrailTableBody"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
     <!-- VIEW 8: SETTINGS -->
     <section id="viewSettings" class="view-section">
-      <div class="section-title">Administrator Settings</div>
-      
-      <div class="workspace-card">
-        <div class="section-title">Manage Cyanidation Tanks</div>
+      <div class="view-content-scroll">
+        <div class="section-title">Administrator Settings</div>
         
-        <!-- Individual Add -->
-        <div style="display:flex; gap:8px; margin-bottom:12px;">
-          <input type="text" id="newTankName" class="form-input" placeholder="Tank ID / Name">
-          <button class="btn btn-primary" style="width:auto;" onclick="addNewTank()">Add Tank</button>
-        </div>
-        
-        <!-- Bulk Auto-Add -->
-        <div style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 8px;">
-          <div class="form-label">Auto-Add Multiple Tanks</div>
-          <div class="auto-add-section">
-            <label style="font-size:0.85rem; font-weight:600;">Number of tanks:</label>
-            <input type="number" id="bulkTankCount" value="10" min="1" max="100">
-            <button class="btn btn-success" style="width:auto;" onclick="autoAddMultipleTanks()">Add Tanks</button>
+        <div class="workspace-card">
+          <div class="section-title">Manage Cyanidation Tanks</div>
+          <div style="display:flex; gap:8px; margin-bottom:12px;">
+            <input type="text" id="newTankName" class="form-input" placeholder="Tank ID / Name">
+            <button class="btn btn-primary" style="width:auto;" onclick="addNewTank()">Add Tank</button>
+          </div>
+          
+          <div style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 8px;">
+            <div class="form-label">Auto-Add Multiple Tanks</div>
+            <div class="auto-add-section">
+              <label style="font-size:0.8rem; font-weight:600;">Number of tanks:</label>
+              <input type="number" id="bulkTankCount" value="10" min="1" max="100">
+              <button class="btn btn-success" style="width:auto;" onclick="autoAddMultipleTanks()">Add Tanks</button>
+            </div>
+          </div>
+          
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead><tr><th>Tank Name</th><th>Status</th><th>Active</th><th>Actions</th></tr></thead>
+              <tbody id="settingsTankTableBody"></tbody>
+            </table>
           </div>
         </div>
         
-        <div class="data-table-container">
-          <table class="data-table">
-            <thead><tr><th>Tank Name</th><th>Status</th><th>Active</th><th>Actions</th></tr></thead>
-            <tbody id="settingsTankTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-      
-      <div class="workspace-card">
-        <div class="section-title">Manage Predefined Expenses</div>
-        <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:8px; margin-bottom:8px;">
-          <input type="text" id="newExpenseName" class="form-input" placeholder="Expense Name">
-          <input type="number" id="newExpenseCost" class="form-input" placeholder="Default Cost ($)" step="0.01">
-          <input type="number" id="newExpenseSelling" class="form-input" placeholder="Default Selling ($)" step="0.01">
-        </div>
-        <button class="btn btn-primary" style="margin-bottom:12px;" onclick="addNewPredefinedExpense()">Add Expense Item</button>
-        <div class="data-table-container">
-          <table class="data-table">
-            <thead><tr><th>Expense Item</th><th>Default Cost</th><th>Default Selling</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="settingsExpenseTableBody"></tbody>
-          </table>
+        <div class="workspace-card">
+          <div class="section-title">Manage Predefined Expenses</div>
+          <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:8px; margin-bottom:8px;">
+            <input type="text" id="newExpenseName" class="form-input" placeholder="Expense Name">
+            <input type="number" id="newExpenseCost" class="form-input" placeholder="Default Cost ($)" step="0.01">
+            <input type="number" id="newExpenseSelling" class="form-input" placeholder="Default Selling ($)" step="0.01">
+          </div>
+          <button class="btn btn-primary" style="margin-bottom:12px;" onclick="addNewPredefinedExpense()">Add Expense Item</button>
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead><tr><th>Expense Item</th><th>Default Cost</th><th>Default Selling</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="settingsExpenseTableBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
@@ -515,6 +562,7 @@
     let stagedLoadingData = { invoiceNumber: "", customerName: "", customerPhone: "", tanks: {} };
     let activeSelectedTankIdForExpenses = null;
     let currentFilterStatus = null;
+    let selectedEmptyInvoice = null;
 
     // ------------------------------------------------------------------------
     // INDEXEDDB INIT
@@ -626,6 +674,7 @@
           await idbClear("customers");
           await idbClear("users");
           await idbClear("auditTrail");
+          await idbClear("invoices");
 
           if (data.tanks) {
             for (const t of data.tanks) await idbPut("tanks", t);
@@ -644,6 +693,9 @@
           }
           if (data.auditTrail) {
             for (const a of data.auditTrail) await idbPut("auditTrail", a);
+          }
+          if (data.invoices) {
+            for (const inv of data.invoices) await idbPut("invoices", inv);
           }
           return true;
         }
@@ -874,10 +926,10 @@
         card.innerHTML = `
           <div class="tank-header"><div class="tank-title">${tank.tankName}</div><span class="badge ${statusBadgeClass}">${displayStatus}</span></div>
           <div class="tank-body">
-            <div class="tank-field"><div class="tank-field-label">Invoice #</div><div class="tank-field-value">${invoiceInfo}</div></div>
-            <div class="tank-field"><div class="tank-field-label">Occupied By</div><div class="tank-field-value">${customerInfo}</div></div>
-            <div class="tank-field"><div class="tank-field-label">Phone</div><div class="tank-field-value">${phoneInfo}</div></div>
-            ${activeSession ? `<div class="tank-field" style="margin-top:10px;"><div class="tank-field-label">Days Remaining (${daysLeftText})</div><div class="progress-bar-container"><div class="progress-bar-fill ${displayStatus === 'OVERDUE' ? 'overdue' : ''}" style="width:${percent}%;"></div></div></div>` : ''}
+            <div class="tank-field"><div class="tank-field-label">Invoice</div><div class="tank-field-value">${invoiceInfo}</div></div>
+            <div class="tank-field"><div class="tank-field-label">Customer</div><div class="tank-field-value">${customerInfo}</div></div>
+            ${activeSession ? `<div class="tank-field"><div class="tank-field-label">Days Left</div><div class="tank-field-value">${daysLeftText}</div></div>` : ''}
+            ${activeSession ? `<div class="progress-bar-container"><div class="progress-bar-fill ${displayStatus === 'OVERDUE' ? 'overdue' : ''}" style="width:${percent}%;"></div></div>` : ''}
           </div>
         `;
         grid.appendChild(card);
@@ -998,7 +1050,7 @@
       tankObj.expenses.forEach((item, idx) => {
         totC += item.totalCost;
         totS += item.totalSelling;
-        tbody.innerHTML += `<tr><td>${item.expenseName}</td><td>${item.quantity}</td><td>$${item.totalCost.toFixed(2)}</td><td>$${item.totalSelling.toFixed(2)}</td><td>$${item.profit.toFixed(2)}</td><td><button class="btn btn-danger" style="padding:2px 6px; font-size:0.75rem; width:auto;" onclick="removeExpenseFromTank('${activeSelectedTankIdForExpenses}', ${idx})">Remove</button></td></tr>`;
+        tbody.innerHTML += `<tr><td>${item.expenseName}</td><td>${item.quantity}</td><td>$${item.totalCost.toFixed(2)}</td><td>$${item.totalSelling.toFixed(2)}</td><td>$${item.profit.toFixed(2)}</td><td><button class="btn btn-danger" style="padding:2px 6px; font-size:0.7rem; width:auto;" onclick="removeExpenseFromTank('${activeSelectedTankIdForExpenses}', ${idx})">Remove</button></td></tr>`;
       });
       document.getElementById("tankFinancialsSummary").innerText = `Total Cost: $${totC.toFixed(2)} | Total Selling: $${totS.toFixed(2)} | Expected Profit: $${(totS - totC).toFixed(2)}`;
     }
@@ -1019,7 +1071,7 @@
       tankIds.forEach(tid => {
         const t = stagedLoadingData.tanks[tid];
         const tSelling = t.expenses.reduce((sum, e) => sum + e.totalSelling, 0);
-        stagedList.innerHTML += `<div style="padding:8px; border-bottom:1px solid var(--border-color); display:flex; justify-between; align-items:center;"><span><strong>${t.tankName}</strong> (${t.expenses.length} Expenses)</span><span>Total Selling: <strong>$${tSelling.toFixed(2)}</strong></span></div>`;
+        stagedList.innerHTML += `<div style="padding:6px; border-bottom:1px solid var(--border-color); display:flex; justify-between; align-items:center; font-size:0.85rem;"><span><strong>${t.tankName}</strong> (${t.expenses.length} Expenses)</span><span>Total: <strong>$${tSelling.toFixed(2)}</strong></span></div>`;
       });
     }
 
@@ -1052,6 +1104,9 @@
       await idbPut("invoices", { invoiceId, invoiceNumber: invNum, customerId, customerName: custName, phone: custPhone, status: "OPEN", createdAt: nowIso });
 
       const createdSessions = [];
+      const sessionExpenses = [];
+      const tanksToUpdate = [];
+
       for (const tankId in stagedLoadingData.tanks) {
         const tankData = stagedLoadingData.tanks[tankId];
         const sessionId = "SESS-" + invNum + "-" + tankId;
@@ -1065,11 +1120,20 @@
         };
         await idbPut("sessions", sessionObj);
         createdSessions.push(sessionObj);
+        
         for (const exp of tankData.expenses) {
-          await idbPut("sessionExpenses", { ...exp, sessionId, tankId });
+          const se = { ...exp, sessionId, tankId };
+          await idbPut("sessionExpenses", se);
+          sessionExpenses.push(se);
         }
+        
         const existingTank = await idbGet("tanks", tankId);
-        if (existingTank) { existingTank.status = "OCCUPIED"; existingTank.updatedAt = nowIso; await idbPut("tanks", existingTank); }
+        if (existingTank) { 
+          existingTank.status = "OCCUPIED"; 
+          existingTank.updatedAt = nowIso; 
+          await idbPut("tanks", existingTank);
+          tanksToUpdate.push(existingTank);
+        }
       }
 
       const auditObj = {
@@ -1082,7 +1146,18 @@
       await idbPut("syncQueue", {
         writeId, deviceId: DEVICE_ID, timestamp: nowIso,
         operation: "LOAD_TANK", entityType: "SESSIONS",
-        payload: { invoiceNumber: invNum, customerName: custName, customerPhone: custPhone, sessions: createdSessions, audit: auditObj }
+        payload: { 
+          operation: "LOAD_TANK",
+          invoiceNumber: invNum, 
+          customerName: custName, 
+          customerPhone: custPhone, 
+          sessions: createdSessions,
+          sessionExpenses: sessionExpenses,
+          tanks: tanksToUpdate,
+          invoices: [{ invoiceId, invoiceNumber: invNum, customerId, customerName: custName, phone: custPhone, status: "OPEN", createdAt: nowIso }],
+          customers: [{ customerId, name: custName, phone: custPhone, createdAt: nowIso }],
+          audit: auditObj 
+        }
       });
 
       alert("Tank session successfully loaded and locked.");
@@ -1093,7 +1168,7 @@
     }
 
     // ------------------------------------------------------------------------
-    // EMPTY TANK WORKSPACE
+    // EMPTY TANK WORKSPACE (Simplified)
     // ------------------------------------------------------------------------
     async function renderEmptyWorkspace() {
       const sessions = await idbGetAll("sessions");
@@ -1107,128 +1182,176 @@
         return;
       }
 
+      // Group by invoice
       const groups = {};
       activeSessions.forEach(s => {
         if (!groups[s.invoiceNumber]) {
-          groups[s.invoiceNumber] = { invoiceNumber: s.invoiceNumber, customerName: s.customerName, loadingDate: s.loadingDate, sessions: [] };
+          groups[s.invoiceNumber] = { 
+            invoiceNumber: s.invoiceNumber, 
+            customerName: s.customerName, 
+            customerId: s.customerId,
+            invoiceId: s.invoiceId,
+            loadingDate: s.loadingDate, 
+            sessions: [],
+            totalSelling: 0,
+            totalCost: 0
+          };
         }
         groups[s.invoiceNumber].sessions.push(s);
+        groups[s.invoiceNumber].totalSelling += s.totalSelling || 0;
+        groups[s.invoiceNumber].totalCost += s.totalCost || 0;
       });
 
       for (const invNum in groups) {
         const group = groups[invNum];
-        const totalSelling = group.sessions.reduce((a, b) => a + b.totalSelling, 0);
-        const totalCost = group.sessions.reduce((a, b) => a + b.totalCost, 0);
+        const tankNames = group.sessions.map(s => {
+          const t = tanks.find(tk => tk.tankId === s.tankId);
+          return t ? t.tankName : s.tankId;
+        }).join(', ');
 
         const card = document.createElement("div");
-        card.className = "workspace-card";
+        card.className = "empty-invoice-card";
+        card.id = "emptyCard_" + invNum;
         card.innerHTML = `
-          <div class="section-title">${group.customerName}</div>
-          <div style="font-size:0.9rem; margin-bottom:12px; line-height:1.6;">
-            <div><strong>Invoice:</strong> ${group.invoiceNumber}</div>
-            <div><strong>Active Tanks:</strong> ${group.sessions.length}</div>
-            <div><strong>Loaded:</strong> ${new Date(group.loadingDate).toLocaleDateString()}</div>
-            <div><strong>Total Value:</strong> $${totalSelling.toFixed(2)} | <strong>Expected Profit:</strong> $${(totalSelling - totalCost).toFixed(2)}</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>
+              <strong style="font-size:1rem;">${group.customerName}</strong>
+              <div style="font-size:0.85rem; color:var(--text-muted);">Invoice: ${group.invoiceNumber}</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Tanks: ${tankNames}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:700; color:var(--primary);">$${group.totalSelling.toFixed(2)}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${group.sessions.length} tank(s)</div>
+            </div>
           </div>
-          <button class="btn btn-primary" onclick="openEmptySessionGroupDetails('${group.invoiceNumber}')">Select Tanks to Empty &amp; Collect Payment</button>
-          <div id="emptyGroupDetails_${group.invoiceNumber}" style="display:none; margin-top:16px; border-top:1px solid var(--border-color); padding-top:12px;"></div>
+          <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <div class="form-group" style="flex:1; min-width:150px; margin-bottom:0;">
+              <input type="number" id="emptyPaymentAmt_${invNum}" class="form-input" placeholder="Payment Amount ($)" step="0.01" style="padding:8px;">
+            </div>
+            <div class="form-group" style="flex:1; min-width:150px; margin-bottom:0;">
+              <input type="text" id="emptyPaymentNote_${invNum}" class="form-input" placeholder="Reference / Note" style="padding:8px;">
+            </div>
+            <button class="btn btn-success" onclick="executeEmptyAndConfirmPayment('${invNum}')" style="flex:0 0 auto; padding:8px 20px;">
+              CONFIRM PAYMENT & EMPTY
+            </button>
+          </div>
+          <div id="emptyStatus_${invNum}" style="margin-top:8px; font-size:0.85rem; display:none;"></div>
         `;
         container.appendChild(card);
       }
     }
 
-    async function openEmptySessionGroupDetails(invNum) {
-      const targetDiv = document.getElementById(`emptyGroupDetails_${invNum}`);
-      if (targetDiv.style.display === "block") { targetDiv.style.display = "none"; return; }
-      targetDiv.style.display = "block";
-
-      const sessions = await idbGetAll("sessions");
-      const groupSessions = sessions.filter(s => s.invoiceNumber === invNum && s.status !== "COMPLETED");
-      const tanks = await idbGetAll("tanks");
-
-      let html = `<div style="font-weight:700; margin-bottom:8px;">Select Tank(s) Being Emptied:</div>`;
-      groupSessions.forEach(s => {
-        const t = tanks.find(tk => tk.tankId === s.tankId);
-        const tName = t ? t.tankName : s.tankId;
-        html += `
-          <div class="empty-tank-option">
-            <input type="checkbox" id="chkEmpty_${s.sessionId}" value="${s.sessionId}" data-selling="${s.totalSelling}">
-            <label for="chkEmpty_${s.sessionId}" style="font-weight:600; flex:1; cursor:pointer;">${tName} (Value: $${s.totalSelling.toFixed(2)})</label>
-          </div>
-        `;
-      });
-
-      html += `
-        <div class="form-group" style="margin-top:12px;">
-          <label class="form-label">Payment Amount Collected ($)</label>
-          <input type="number" id="emptyPaymentAmt_${invNum}" class="form-input" placeholder="Amount ($)" step="0.01">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Confirmation Note / Ref</label>
-          <input type="text" id="emptyPaymentNote_${invNum}" class="form-input" placeholder="e.g. Cash / Bank Transfer Receipt #">
-        </div>
-        <button class="btn btn-success" onclick="executeEmptyAndConfirmPayment('${invNum}')">CONFIRM RECEIPT OF PAYMENT &amp; EMPTY</button>
-      `;
-      targetDiv.innerHTML = html;
-    }
-
     async function executeEmptyAndConfirmPayment(invNum) {
       if (!currentUser) return alert("You must be logged in.");
-
-      const sessions = await idbGetAll("sessions");
-      const groupSessions = sessions.filter(s => s.invoiceNumber === invNum && s.status !== "COMPLETED");
-
-      const selectedSessionIds = [];
-      groupSessions.forEach(s => {
-        const chk = document.getElementById(`chkEmpty_${s.sessionId}`);
-        if (chk && chk.checked) selectedSessionIds.push(s.sessionId);
-      });
-
-      if (selectedSessionIds.length === 0) return alert("Please check at least one tank to empty.");
 
       const inputAmt = parseFloat(document.getElementById(`emptyPaymentAmt_${invNum}`).value);
       if (isNaN(inputAmt) || inputAmt <= 0) return alert("Valid Payment Amount is required.");
 
-      const note = document.getElementById(`emptyPaymentNote_${invNum}`).value;
-      const writeId = "WID-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7);
-      const nowIso = new Date().toISOString();
+      const note = document.getElementById(`emptyPaymentNote_${invNum}`).value || "Cash payment";
+      const statusEl = document.getElementById(`emptyStatus_${invNum}`);
+      
+      // Show loading
+      statusEl.style.display = "block";
+      statusEl.style.color = "var(--text-muted)";
+      statusEl.textContent = "⏳ Processing...";
 
-      const paymentId = "PAY-" + Date.now();
-      const paymentObj = {
-        paymentId, invoiceId: groupSessions[0].invoiceId, invoiceNumber: invNum,
-        customerId: groupSessions[0].customerId, amount: inputAmt,
-        paymentStatus: "CONFIRMED", paymentDate: nowIso, confirmedBy: currentUser.username, note
-      };
-      await idbPut("payments", paymentObj);
+      try {
+        const sessions = await idbGetAll("sessions");
+        const groupSessions = sessions.filter(s => s.invoiceNumber === invNum && s.status !== "COMPLETED");
 
-      for (const sid of selectedSessionIds) {
-        const sess = await idbGet("sessions", sid);
-        if (sess) {
+        if (groupSessions.length === 0) {
+          statusEl.textContent = "❌ No active sessions found for this invoice.";
+          return;
+        }
+
+        const writeId = "WID-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7);
+        const nowIso = new Date().toISOString();
+        const totalSelling = groupSessions.reduce((a, b) => a + (b.totalSelling || 0), 0);
+
+        // Create payment record
+        const paymentId = "PAY-" + Date.now();
+        const paymentObj = {
+          paymentId, 
+          invoiceId: groupSessions[0].invoiceId, 
+          invoiceNumber: invNum,
+          customerId: groupSessions[0].customerId, 
+          amount: inputAmt,
+          paymentStatus: "CONFIRMED", 
+          paymentDate: nowIso, 
+          confirmedBy: currentUser.username, 
+          note
+        };
+        await idbPut("payments", paymentObj);
+
+        // Update sessions and tanks
+        const sessionIds = [];
+        const tanksToUpdate = [];
+        
+        for (const sess of groupSessions) {
           sess.status = "COMPLETED";
           sess.emptyingDate = nowIso;
           await idbPut("sessions", sess);
+          sessionIds.push(sess.sessionId);
+          
           const tank = await idbGet("tanks", sess.tankId);
-          if (tank) { tank.status = "VACANT"; tank.updatedAt = nowIso; await idbPut("tanks", tank); }
+          if (tank) { 
+            tank.status = "VACANT"; 
+            tank.updatedAt = nowIso; 
+            await idbPut("tanks", tank);
+            tanksToUpdate.push(tank);
+          }
         }
+
+        // Audit log
+        const auditObj = {
+          auditId: "AUD-" + Date.now(), 
+          writeId, 
+          timestamp: nowIso,
+          action: "TANK_EMPTIED_PAYMENT_CONFIRMED", 
+          entityType: "PAYMENT",
+          entityId: paymentId, 
+          invoiceNumber: invNum, 
+          customer: groupSessions[0].customerName,
+          user: currentUser.username, 
+          details: `Emptied ${groupSessions.length} tank(s). Payment of $${inputAmt.toFixed(2)} confirmed.`
+        };
+        await idbPut("auditTrail", auditObj);
+
+        // Queue for sync
+        await idbPut("syncQueue", {
+          writeId, 
+          deviceId: DEVICE_ID, 
+          timestamp: nowIso,
+          operation: "EMPTY_TANK_PAYMENT", 
+          entityType: "PAYMENTS",
+          payload: { 
+            payment: paymentObj, 
+            sessionIds: sessionIds, 
+            tanks: tanksToUpdate,
+            sessions: groupSessions,
+            audit: auditObj 
+          }
+        });
+
+        statusEl.style.display = "block";
+        statusEl.style.color = "var(--success)";
+        statusEl.textContent = `✅ Successfully emptied ${groupSessions.length} tank(s) and confirmed payment of $${inputAmt.toFixed(2)}`;
+
+        // Refresh the view
+        setTimeout(() => {
+          renderEmptyWorkspace();
+          renderDashboard();
+        }, 1500);
+
+        triggerSyncQueueProcess();
+        fetchLiveData();
+
+      } catch (error) {
+        statusEl.style.display = "block";
+        statusEl.style.color = "var(--danger)";
+        statusEl.textContent = "❌ Error: " + error.message;
+        console.error("Empty error:", error);
       }
-
-      const auditObj = {
-        auditId: "AUD-" + Date.now(), writeId, timestamp: nowIso,
-        action: "TANK_EMPTIED_PAYMENT_CONFIRMED", entityType: "PAYMENT",
-        entityId: paymentId, invoiceNumber: invNum, customer: groupSessions[0].customerName,
-        user: currentUser.username, details: `Emptied ${selectedSessionIds.length} tanks. Confirmed payment of $${inputAmt.toFixed(2)}`
-      };
-      await idbPut("auditTrail", auditObj);
-      await idbPut("syncQueue", {
-        writeId, deviceId: DEVICE_ID, timestamp: nowIso,
-        operation: "EMPTY_TANK_PAYMENT", entityType: "PAYMENTS",
-        payload: { payment: paymentObj, sessionIds: selectedSessionIds, audit: auditObj }
-      });
-
-      alert("Payment confirmed and tanks emptied successfully.");
-      renderEmptyWorkspace();
-      triggerSyncQueueProcess();
-      fetchLiveData();
     }
 
     // ------------------------------------------------------------------------
@@ -1244,13 +1367,15 @@
       if (active.length === 0) { container.innerHTML = `<div class="workspace-card">No live sessions match.</div>`; return; }
       active.forEach(s => {
         container.innerHTML += `
-          <div class="workspace-card">
-            <div class="section-title">${s.tankId} — ${s.customerName}</div>
-            <div style="font-size:0.9rem; line-height:1.6;">
+          <div class="workspace-card" style="padding:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+              <div><strong>${s.tankId}</strong> — ${s.customerName}</div>
+              <span class="badge badge-occupied">${s.status}</span>
+            </div>
+            <div style="font-size:0.85rem; line-height:1.5; margin-top:4px;">
               <div><strong>Invoice:</strong> ${s.invoiceNumber}</div>
-              <div><strong>Loaded:</strong> ${new Date(s.loadingDate).toLocaleString()}</div>
-              <div><strong>Expected Completion:</strong> ${new Date(s.expectedCompletionDate).toLocaleDateString()}</div>
-              <div><strong>Revenue:</strong> $${s.totalSelling.toFixed(2)} | <strong>Cost:</strong> $${s.totalCost.toFixed(2)} | <strong>Expected Profit:</strong> $${s.profit.toFixed(2)}</div>
+              <div><strong>Loaded:</strong> ${new Date(s.loadingDate).toLocaleDateString()}</div>
+              <div><strong>Value:</strong> $${s.totalSelling.toFixed(2)}</div>
             </div>
           </div>
         `;
@@ -1267,13 +1392,15 @@
       if (completed.length === 0) { container.innerHTML = `<div class="workspace-card">No completed records found.</div>`; return; }
       completed.forEach(s => {
         container.innerHTML += `
-          <div class="workspace-card">
-            <div class="section-title">${s.tankId} — ${s.customerName} (COMPLETED)</div>
-            <div style="font-size:0.9rem; line-height:1.6;">
+          <div class="workspace-card" style="padding:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+              <div><strong>${s.tankId}</strong> — ${s.customerName}</div>
+              <span class="badge badge-completed">COMPLETED</span>
+            </div>
+            <div style="font-size:0.85rem; line-height:1.5; margin-top:4px;">
               <div><strong>Invoice:</strong> ${s.invoiceNumber}</div>
-              <div><strong>Loaded:</strong> ${new Date(s.loadingDate).toLocaleDateString()}</div>
               <div><strong>Emptied:</strong> ${s.emptyingDate ? new Date(s.emptyingDate).toLocaleDateString() : 'N/A'}</div>
-              <div><strong>Revenue:</strong> $${s.totalSelling.toFixed(2)} | <strong>Cost:</strong> $${s.totalCost.toFixed(2)} | <strong>Profit:</strong> $${s.profit.toFixed(2)}</div>
+              <div><strong>Revenue:</strong> $${s.totalSelling.toFixed(2)} | <strong>Profit:</strong> $${s.profit.toFixed(2)}</div>
             </div>
           </div>
         `;
@@ -1306,8 +1433,8 @@
         return true;
       });
 
-      const totalRev = filtered.reduce((a, b) => a + b.totalSelling, 0);
-      const totalCost = filtered.reduce((a, b) => a + b.totalCost, 0);
+      const totalRev = filtered.reduce((a, b) => a + (b.totalSelling || 0), 0);
+      const totalCost = filtered.reduce((a, b) => a + (b.totalCost || 0), 0);
       const totalProfit = totalRev - totalCost;
 
       document.getElementById("reportRev").innerText = `$${totalRev.toFixed(2)}`;
@@ -1320,6 +1447,7 @@
 
     function drawFinancialsChart(rev, cost, profit) {
       const canvas = document.getElementById("chartFinancials");
+      if (!canvas) return;
       const ctx = canvas.getContext("2d");
       canvas.width = canvas.parentElement.clientWidth;
       canvas.height = canvas.parentElement.clientHeight;
@@ -1327,24 +1455,24 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const maxVal = Math.max(rev, cost, profit, 1);
-      const padding = 40;
-      const barWidth = 60;
-      const gap = 40;
+      const padding = 35;
+      const barWidth = Math.min(50, (canvas.width - 80) / 3.5);
+      const gap = 20;
       const startX = (canvas.width - (3 * barWidth + 2 * gap)) / 2;
-      const chartHeight = canvas.height - 70;
+      const chartHeight = canvas.height - 60;
 
       ctx.strokeStyle = "#e2e8f0";
       ctx.lineWidth = 0.5;
       for (let i = 0; i <= 4; i++) {
         const y = canvas.height - padding - (i / 4) * chartHeight;
         ctx.beginPath();
-        ctx.moveTo(padding - 10, y);
-        ctx.lineTo(canvas.width - padding + 10, y);
+        ctx.moveTo(padding - 5, y);
+        ctx.lineTo(canvas.width - padding + 5, y);
         ctx.stroke();
         ctx.fillStyle = "#64748b";
-        ctx.font = "9px sans-serif";
+        ctx.font = "8px sans-serif";
         ctx.textAlign = "right";
-        ctx.fillText("$" + Math.round((i / 4) * maxVal), padding - 15, y + 3);
+        ctx.fillText("$" + Math.round((i / 4) * maxVal), padding - 8, y + 3);
       }
 
       const items = [
@@ -1355,32 +1483,33 @@
 
       items.forEach((item, i) => {
         const x = startX + i * (barWidth + gap);
-        const h = (item.val / maxVal) * chartHeight;
+        const h = Math.max((item.val / maxVal) * chartHeight, 2);
         const y = canvas.height - padding - h;
 
         ctx.shadowColor = "rgba(0,0,0,0.1)";
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = 6;
         ctx.fillStyle = item.color;
         ctx.fillRect(x, y, barWidth, h);
         ctx.shadowBlur = 0;
 
         ctx.fillStyle = "#0f172a";
-        ctx.font = "bold 11px sans-serif";
+        ctx.font = "bold 10px sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText("$" + item.val.toFixed(0), x + barWidth / 2, y - 8);
+        ctx.fillText("$" + item.val.toFixed(0), x + barWidth / 2, y - 5);
 
         ctx.fillStyle = "#64748b";
-        ctx.font = "10px sans-serif";
-        ctx.fillText(item.label, x + barWidth / 2, canvas.height - 10);
+        ctx.font = "9px sans-serif";
+        ctx.fillText(item.label, x + barWidth / 2, canvas.height - 8);
       });
     }
 
     async function drawUtilisationChart() {
+      const canvas = document.getElementById("chartUtilisation");
+      if (!canvas) return;
       const tanks = await idbGetAll("tanks");
       const occupied = tanks.filter(t => t.status === "OCCUPIED" || t.status === "READY_TO_EMPTY").length;
       const vacant = tanks.filter(t => t.status === "VACANT" && t.active).length;
 
-      const canvas = document.getElementById("chartUtilisation");
       const ctx = canvas.getContext("2d");
       canvas.width = canvas.parentElement.clientWidth;
       canvas.height = canvas.parentElement.clientHeight;
@@ -1388,11 +1517,17 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const total = occupied + vacant;
-      if (total === 0) { ctx.fillStyle = "#64748b"; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.fillText("No tank data available", canvas.width/2, canvas.height/2); return; }
+      if (total === 0) { 
+        ctx.fillStyle = "#64748b"; 
+        ctx.font = "14px sans-serif"; 
+        ctx.textAlign = "center"; 
+        ctx.fillText("No tank data available", canvas.width/2, canvas.height/2); 
+        return; 
+      }
 
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
-      const radius = Math.min(centerX, centerY) - 30;
+      const radius = Math.min(centerX, centerY) - 25;
 
       let startAngle = -Math.PI / 2;
       const slices = [
@@ -1417,23 +1552,23 @@
       ctx.fill();
 
       ctx.fillStyle = "#0f172a";
-      ctx.font = "bold 16px sans-serif";
+      ctx.font = "bold 14px sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(`${Math.round((occupied/total)*100)}%`, centerX, centerY - 4);
-      ctx.font = "10px sans-serif";
+      ctx.font = "9px sans-serif";
       ctx.fillStyle = "#64748b";
       ctx.fillText("Utilised", centerX, centerY + 16);
 
-      let legendX = 20;
-      const legendY = canvas.height - 30;
+      let legendX = 30;
+      const legendY = canvas.height - 25;
       slices.forEach(slice => {
         ctx.fillStyle = slice.color;
         ctx.fillRect(legendX, legendY, 12, 12);
         ctx.fillStyle = "#0f172a";
-        ctx.font = "10px sans-serif";
+        ctx.font = "9px sans-serif";
         ctx.textAlign = "left";
         ctx.fillText(`${slice.label} (${slice.count})`, legendX + 16, legendY + 10);
-        legendX += 80;
+        legendX += 90;
       });
     }
 
@@ -1501,14 +1636,14 @@
       const tBody = document.getElementById("settingsTankTableBody");
       tBody.innerHTML = "";
       tanks.forEach(t => {
-        tBody.innerHTML += `<tr><td>${t.tankName}</td><td>${t.status}</td><td>${t.active ? 'Active' : 'Inactive'}</td><td><button class="btn btn-outline" style="padding:2px 6px; font-size:0.75rem; width:auto;" onclick="toggleTankActive('${t.tankId}', ${!t.active})">${t.active ? 'Deactivate' : 'Activate'}</button></td></tr>`;
+        tBody.innerHTML += `<tr><td>${t.tankName}</td><td>${t.status}</td><td>${t.active ? 'Active' : 'Inactive'}</td><td><button class="btn btn-outline" style="padding:2px 6px; font-size:0.7rem; width:auto;" onclick="toggleTankActive('${t.tankId}', ${!t.active})">${t.active ? 'Deactivate' : 'Activate'}</button></td></tr>`;
       });
 
       const expenses = await idbGetAll("expenses");
       const eBody = document.getElementById("settingsExpenseTableBody");
       eBody.innerHTML = "";
       expenses.forEach(e => {
-        eBody.innerHTML += `<tr><td>${e.name}</td><td>$${e.defaultCost.toFixed(2)}</td><td>$${e.defaultSelling.toFixed(2)}</td><td>${e.active ? 'Active' : 'Inactive'}</td><td><button class="btn btn-outline" style="padding:2px 6px; font-size:0.75rem; width:auto;" onclick="toggleExpenseActive('${e.expenseId}', ${!e.active})">${e.active ? 'Deactivate' : 'Activate'}</button></td></tr>`;
+        eBody.innerHTML += `<tr><td>${e.name}</td><td>$${e.defaultCost.toFixed(2)}</td><td>$${e.defaultSelling.toFixed(2)}</td><td>${e.active ? 'Active' : 'Inactive'}</td><td><button class="btn btn-outline" style="padding:2px 6px; font-size:0.7rem; width:auto;" onclick="toggleExpenseActive('${e.expenseId}', ${!e.active})">${e.active ? 'Deactivate' : 'Activate'}</button></td></tr>`;
       });
     }
 

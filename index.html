@@ -22,7 +22,7 @@
       --border-color: #e2e8f0;
       --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
       --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-      --radius: 12px;
+      --radius: 8px;
       --header-bg: #ffffff;
     }
 
@@ -32,7 +32,7 @@
     .top-header { 
       background-color: var(--header-bg); 
       color: var(--primary); 
-      padding: 12px 16px; 
+      padding: 8px 16px; 
       display: flex; 
       align-items: center; 
       justify-content: space-between; 
@@ -41,183 +41,165 @@
       z-index: 100; 
       box-shadow: var(--shadow-md); 
       border-bottom: 2px solid var(--primary);
+      height: 50px;
     }
     .brand-section { display: flex; align-items: center; gap: 12px; }
-    .brand-logo { height: 42px; width: auto; max-width: 140px; object-fit: contain; }
-    .brand-title { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; color: var(--primary); }
+    .brand-logo { height: 32px; width: auto; max-width: 120px; object-fit: contain; }
     
-    .sync-badge { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .sync-badge { display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
     .sync-online { background-color: #dcfce7; color: #15803d; }
     .sync-syncing { background-color: #fef9c3; color: #a16207; }
     .sync-offline { background-color: #fee2e2; color: #b91c1c; }
-    .sync-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .sync-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
 
-    .menu-btn { background: none; border: none; color: var(--primary); cursor: pointer; padding: 8px; }
-    .menu-btn svg { width: 28px; height: 28px; fill: var(--primary); }
+    .menu-btn { background: none; border: none; color: var(--primary); cursor: pointer; padding: 4px; }
+    .menu-btn svg { width: 24px; height: 24px; fill: var(--primary); }
 
     .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 200; }
     .drawer-overlay.active { opacity: 1; pointer-events: auto; }
     .drawer { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--card-bg); z-index: 201; transition: transform 0.3s ease; box-shadow: var(--shadow-md); display: flex; flex-direction: column; }
     .drawer.active { transform: translateX(280px); }
-    .drawer-header { padding: 20px; background: var(--primary); color: white; font-weight: 700; font-size: 1.1rem; display: flex; justify-content: space-between; align-items: center; }
-    .drawer-header .user-info { font-size: 0.8rem; font-weight: 400; opacity: 0.9; }
-    .drawer-menu { list-style: none; padding: 12px 0; overflow-y: auto; flex: 1; }
-    .drawer-item { padding: 14px 20px; display: flex; align-items: center; gap: 12px; font-weight: 500; cursor: pointer; color: var(--text-main); border-bottom: 1px solid var(--border-color); }
+    .drawer-header { padding: 16px; background: var(--primary); color: white; font-weight: 700; font-size: 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .drawer-header .user-info { font-size: 0.75rem; font-weight: 400; opacity: 0.9; }
+    .drawer-menu { list-style: none; padding: 8px 0; overflow-y: auto; flex: 1; }
+    .drawer-item { padding: 12px 16px; display: flex; align-items: center; gap: 12px; font-weight: 500; cursor: pointer; color: var(--text-main); border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
     .drawer-item:hover { background-color: var(--bg-main); }
-    .drawer-item svg { width: 20px; height: 20px; fill: var(--text-muted); }
+    .drawer-item svg { width: 18px; height: 18px; fill: var(--text-muted); }
     .drawer-item.logout { color: var(--danger); border-top: 2px solid var(--border-color); margin-top: 8px; }
     .drawer-item.logout svg { fill: var(--danger); }
 
-    .container { max-width: 1200px; margin: 0 auto; padding: 16px; height: calc(100vh - 140px); overflow: hidden; display: flex; flex-direction: column; }
+    .container { max-width: 100%; margin: 0 auto; padding: 10px; height: calc(100vh - 50px); overflow: hidden; display: flex; flex-direction: column; }
 
     .login-overlay { position: fixed; inset: 0; background: var(--primary); z-index: 999; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; }
     .login-overlay.hidden { display: none; }
-    .login-box { background: white; padding: 40px 30px; border-radius: var(--radius); max-width: 400px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-    .login-box h1 { font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; text-align: center; }
-    .login-box .sub { text-align: center; color: var(--text-muted); margin-bottom: 24px; font-size: 0.9rem; }
-    .login-box .form-group { margin-bottom: 16px; }
-    .login-box .form-label { display: block; font-weight: 600; margin-bottom: 4px; color: var(--text-main); }
-    .login-box .form-input { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; }
+    .login-box { background: white; padding: 30px 24px; border-radius: var(--radius); max-width: 360px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .login-box h1 { font-size: 1.3rem; color: var(--primary); margin-bottom: 4px; text-align: center; }
+    .login-box .sub { text-align: center; color: var(--text-muted); margin-bottom: 20px; font-size: 0.8rem; }
+    .login-box .form-group { margin-bottom: 12px; }
+    .login-box .form-label { display: block; font-weight: 600; margin-bottom: 4px; color: var(--text-main); font-size: 0.8rem; }
+    .login-box .form-input { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; }
     .login-box .form-input:focus { outline: none; border-color: var(--primary); }
-    .login-box .btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; }
+    .login-box .btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
     .login-box .btn:hover { background: var(--accent-hover); }
-    .login-error { color: var(--danger); font-size: 0.85rem; text-align: center; margin-top: 8px; display: none; }
-    .login-loading { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 8px; display: none; }
+    .login-error { color: var(--danger); font-size: 0.8rem; text-align: center; margin-top: 8px; display: none; }
+    .login-loading { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 8px; display: none; }
 
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 12px; flex-shrink: 0; }
-    .kpi-card { background: var(--card-bg); border-radius: var(--radius); padding: 12px 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: center; cursor: pointer; transition: all 0.2s; }
-    .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--primary); }
-    .kpi-title { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
-    .kpi-value { font-size: 1.3rem; font-weight: 800; color: var(--text-main); }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 8px; flex-shrink: 0; }
+    .kpi-card { background: var(--card-bg); border-radius: var(--radius); padding: 8px 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: center; cursor: pointer; transition: all 0.2s; }
+    .kpi-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+    .kpi-title { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
+    .kpi-value { font-size: 1.1rem; font-weight: 800; color: var(--text-main); }
 
     .view-section { display: none; height: 100%; overflow: hidden; }
-    .view-section.active { display: flex; flex-direction: column; }
+    .view-section.active { display: flex; flex-direction: column; flex: 1; }
 
-    .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; flex-shrink: 0; }
+    .section-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; flex-shrink: 0; }
     
-    /* Tank Grid - Fit all on screen */
-    .tank-grid-wrapper { flex: 1; overflow: hidden; }
+    /* Optimized Tank Grid - Screen Fit & Dynamic Sizing */
+    .tank-grid-wrapper { flex: 1; overflow-y: auto; padding-right: 4px; }
     .tank-grid { 
       display: grid; 
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
-      gap: 10px; 
-      height: 100%;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+      gap: 6px; 
       align-content: start;
     }
-    @media (min-width: 1400px) { 
-      .tank-grid { grid-template-columns: repeat(6, 1fr); } 
-    }
-    @media (min-width: 1200px) and (max-width: 1399px) { 
-      .tank-grid { grid-template-columns: repeat(5, 1fr); } 
-    }
-    @media (min-width: 992px) and (max-width: 1199px) { 
-      .tank-grid { grid-template-columns: repeat(4, 1fr); } 
-    }
-    @media (min-width: 768px) and (max-width: 991px) { 
-      .tank-grid { grid-template-columns: repeat(3, 1fr); } 
-    }
-    @media (max-width: 767px) { 
-      .tank-grid { grid-template-columns: repeat(2, 1fr); }
-      .tank-grid-wrapper { overflow-y: auto; }
-    }
 
-    .tank-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: flex; flex-direction: column; }
-    .tank-header { padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border-bottom: 1px solid var(--border-color); }
-    .tank-title { font-weight: 800; font-size: 0.95rem; }
-    .badge { padding: 2px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
+    .tank-card { background: var(--card-bg); border-radius: 6px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: flex; flex-direction: column; padding: 6px 8px; }
+    .tank-header { padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; }
+    .tank-title { font-weight: 800; font-size: 0.8rem; }
+    .badge { padding: 1px 5px; border-radius: 4px; font-size: 0.55rem; font-weight: 700; text-transform: uppercase; }
     .badge-vacant { background: #e2e8f0; color: #475569; }
     .badge-occupied { background: #dbeafe; color: #1e40af; }
     .badge-ready { background: #fef9c3; color: #854d0e; }
     .badge-overdue { background: #fee2e2; color: #991b1b; }
     .badge-completed { background: #dcfce7; color: #166534; }
-    .tank-body { padding: 10px 12px; flex: 1; font-size: 0.8rem; line-height: 1.4; }
-    .tank-field { margin-bottom: 4px; }
-    .tank-field-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-    .tank-field-value { font-weight: 600; color: var(--text-main); font-size: 0.8rem; }
-    .progress-bar-container { width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-top: 4px; }
+    .tank-body { flex: 1; font-size: 0.7rem; line-height: 1.2; }
+    .tank-field { margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tank-field-label { font-size: 0.55rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; display: inline-block; width: 45px; }
+    .tank-field-value { font-weight: 600; color: var(--text-main); font-size: 0.7rem; display: inline; }
+    .progress-bar-container { width: 100%; height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden; margin-top: 4px; }
     .progress-bar-fill { height: 100%; background: var(--accent); transition: width 0.3s ease; }
     .progress-bar-fill.overdue { background: var(--danger); }
 
-    .workspace-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color); padding: 16px; box-shadow: var(--shadow-sm); margin-bottom: 12px; flex-shrink: 0; }
+    .workspace-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color); padding: 12px; box-shadow: var(--shadow-sm); margin-bottom: 8px; flex-shrink: 0; }
     .workspace-card-scroll { flex: 1; overflow-y: auto; }
-    .form-group { margin-bottom: 12px; }
-    .form-label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
-    .form-input, .form-select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; background: #fff; }
+    .form-group { margin-bottom: 8px; }
+    .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-main); margin-bottom: 2px; }
+    .form-input, .form-select { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.85rem; background: #fff; }
     .form-input:focus, .form-select:focus { outline: none; border-color: var(--accent); }
     
-    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer; transition: background-color 0.2s; gap: 8px; font-size: 0.9rem; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; transition: background-color 0.2s; gap: 6px; font-size: 0.8rem; }
     .btn-primary { background: var(--accent); color: white; }
     .btn-primary:hover { background: var(--accent-hover); }
     .btn-success { background: var(--success); color: white; }
     .btn-danger { background: var(--danger); color: white; }
     .btn-secondary { background: #64748b; color: white; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
-    .btn-primary-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+    .btn-primary-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
     .btn-primary-outline:hover { background: var(--primary); color: white; }
 
-    .selectable-tank-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-top: 8px; }
-    .selectable-tank { padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; text-align: center; cursor: pointer; font-weight: 700; background: var(--bg-main); font-size: 0.85rem; }
+    .selectable-tank-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 6px; margin-top: 6px; }
+    .selectable-tank { padding: 6px; border: 2px solid var(--border-color); border-radius: 6px; text-align: center; cursor: pointer; font-weight: 700; background: var(--bg-main); font-size: 0.75rem; }
     .selectable-tank.selected { border-color: var(--accent); background: #eff6ff; color: var(--accent); }
 
-    .data-table-container { overflow-x: auto; margin: 8px 0; border: 1px solid var(--border-color); border-radius: 8px; }
-    .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; }
-    .data-table th, .data-table td { padding: 6px 10px; border-bottom: 1px solid var(--border-color); }
+    .data-table-container { overflow-x: auto; margin: 6px 0; border: 1px solid var(--border-color); border-radius: 6px; }
+    .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.75rem; }
+    .data-table th, .data-table td { padding: 5px 8px; border-bottom: 1px solid var(--border-color); }
     .data-table th { background: #f8fafc; font-weight: 700; color: var(--text-muted); }
 
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: var(--primary); display: flex; justify-content: space-around; align-items: center; z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
-    .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; text-decoration: none; font-size: 0.7rem; font-weight: 600; width: 33.33%; height: 100%; border: none; background: none; cursor: pointer; }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 55px; background: var(--primary); display: flex; justify-content: space-around; align-items: center; z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+    .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; text-decoration: none; font-size: 0.65rem; font-weight: 600; width: 33.33%; height: 100%; border: none; background: none; cursor: pointer; }
     .nav-item.active { color: #ffffff; }
-    .nav-item svg { width: 22px; height: 22px; fill: currentColor; margin-bottom: 2px; }
+    .nav-item svg { width: 20px; height: 20px; fill: currentColor; margin-bottom: 2px; }
     .nav-item-load { position: relative; }
-    .nav-item-load .fab-btn { width: 52px; height: 52px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; margin-top: -24px; box-shadow: 0 4px 10px rgba(37,99,235,0.4); border: 3px solid var(--primary); }
-    .nav-item-load .fab-btn svg { width: 28px; height: 28px; fill: white; margin-bottom: 0; }
+    .nav-item-load .fab-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; margin-top: -20px; box-shadow: 0 4px 10px rgba(37,99,235,0.4); border: 2px solid var(--primary); }
+    .nav-item-load .fab-btn svg { width: 22px; height: 22px; fill: white; margin-bottom: 0; }
 
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 300; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
-    .modal-box { background: var(--card-bg); width: 90%; max-width: 400px; border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-md); }
-    .modal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; }
+    .modal-box { background: var(--card-bg); width: 90%; max-width: 380px; border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-md); }
+    .modal-title { font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
 
-    .chart-container { position: relative; width: 100%; height: 200px; margin-bottom: 12px; }
+    .chart-container { position: relative; width: 100%; height: 180px; margin-bottom: 8px; }
     canvas { width: 100% !important; height: 100% !important; }
 
-    .empty-invoice-card { 
-      background: var(--card-bg); 
-      border-radius: var(--radius); 
-      border: 1px solid var(--border-color); 
-      padding: 16px; 
-      margin-bottom: 10px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
+    .empty-invoice-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color); padding: 12px; margin-bottom: 8px; transition: all 0.2s; }
     .empty-invoice-card:hover { border-color: var(--primary); box-shadow: var(--shadow-md); }
-    .empty-invoice-card.selected { border-color: var(--primary); background: #eff6ff; }
 
-    .auto-add-section { display: flex; gap: 8px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
-    .auto-add-section input { width: 80px; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; }
-    .auto-add-section .btn { width: auto; padding: 8px 16px; }
+    .auto-add-section { display: flex; gap: 8px; margin-top: 6px; align-items: center; flex-wrap: wrap; }
+    .auto-add-section input { width: 70px; padding: 6px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.85rem; }
+    .auto-add-section .btn { width: auto; padding: 6px 12px; }
 
-    .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #e2e8f0; border-radius: 50%; border-top-color: var(--primary); animation: spin 0.8s linear infinite; }
+    .loading-spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid #e2e8f0; border-radius: 50%; border-top-color: var(--primary); animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (min-width: 768px) {
       body { padding-bottom: 0; overflow: hidden; }
       .bottom-nav { display: none; }
-      .desktop-nav-links { display: flex; gap: 16px; align-items: center; }
-      .desktop-nav-links button { background: transparent; border: none; color: var(--primary); font-weight: 600; cursor: pointer; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; }
+      .desktop-nav-links { display: flex; gap: 12px; align-items: center; }
+      .desktop-nav-links button { background: transparent; border: none; color: var(--primary); font-weight: 600; cursor: pointer; padding: 6px 10px; border-radius: 6px; font-size: 0.8rem; }
       .desktop-nav-links button:hover { background: rgba(6, 65, 171, 0.1); }
       .desktop-nav-links .logout-btn { color: var(--danger); }
       .desktop-nav-links .logout-btn:hover { background: rgba(220, 38, 38, 0.1); }
     }
     @media (max-width: 767px) { 
       .desktop-nav-links { display: none; }
-      .container { height: calc(100vh - 130px); }
+      .container { height: calc(100vh - 105px); }
     }
 
-    /* Scrollable content areas on mobile */
     .view-content-scroll { flex: 1; overflow-y: auto; padding-bottom: 10px; }
   </style>
 </head>
 <body>
+
+  <!-- WRITE OPERATION MODAL -->
+  <div class="modal-overlay" id="writeOperationModal">
+    <div class="modal-box" style="text-align: center; padding: 30px 20px;">
+      <span class="loading-spinner" style="width:36px; height:36px; border-width: 4px;"></span>
+      <div class="modal-title" id="writeModalTitle" style="margin-top:16px;">Writing to Google Sheets...</div>
+      <p style="font-size: 0.8rem; color: var(--text-muted);" id="writeModalSub">Please wait while the spreadsheet records are being updated.</p>
+    </div>
+  </div>
 
   <!-- LOGIN OVERLAY -->
   <div class="login-overlay" id="loginOverlay">
@@ -245,7 +227,7 @@
         <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
       </button>
       <img src="logo.png" alt="Enican Mines Logo" class="brand-logo" id="mainLogo" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block';">
-      <div id="logoFallback" style="display:none; font-weight:800; font-size:1.1rem; letter-spacing:0.5px; color: var(--primary);">ENICAN MINES</div>
+      <div id="logoFallback" style="display:none; font-weight:800; font-size:1rem; letter-spacing:0.5px; color: var(--primary);">ENICAN MINES</div>
     </div>
 
     <div class="desktop-nav-links">
@@ -328,7 +310,7 @@
     <section id="viewDashboard" class="view-section active">
       <div class="section-title">
         <span>Cyanidation Tanks</span>
-        <button class="btn btn-primary-outline" style="width:auto; padding:4px 10px; font-size:0.75rem;" onclick="manualSyncTrigger()">Force Sync</button>
+        <button class="btn btn-primary-outline" style="width:auto; padding:2px 8px; font-size:0.7rem;" onclick="manualSyncTrigger()">Force Sync</button>
       </div>
       <div class="tank-grid-wrapper">
         <div class="tank-grid" id="tankGrid"></div>
@@ -346,7 +328,7 @@
           </div>
           <div class="form-group">
             <label class="form-label">STEP 2 — Customer Details</label>
-            <input type="text" id="loadCustomerName" class="form-input" placeholder="Customer / Mining Company Name" list="customerSuggestions" style="margin-bottom: 8px;">
+            <input type="text" id="loadCustomerName" class="form-input" placeholder="Customer / Mining Company Name" list="customerSuggestions" style="margin-bottom: 6px;">
             <datalist id="customerSuggestions"></datalist>
             <input type="tel" id="loadCustomerPhone" class="form-input" placeholder="Customer Phone Number">
           </div>
@@ -362,12 +344,12 @@
             <label class="form-label">Add Predefined Expense</label>
             <select id="expensePredefinedSelect" class="form-select" onchange="onPredefinedExpenseSelect()"></select>
           </div>
-          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px;">
             <div><label class="form-label">Qty</label><input type="number" id="expQty" class="form-input" value="1" min="1"></div>
             <div><label class="form-label">Cost ($)</label><input type="number" id="expCostPrice" class="form-input" step="0.01"></div>
             <div><label class="form-label">Selling ($)</label><input type="number" id="expSellingPrice" class="form-input" step="0.01"></div>
           </div>
-          <div style="display:flex; gap:8px;">
+          <div style="display:flex; gap:6px;">
             <button class="btn btn-secondary" onclick="addExpenseToCurrentTank()" style="flex:1;">Add To Selected Tank</button>
             <button class="btn btn-primary" onclick="addExpenseToAllTanks()" style="flex:1;">Add To All Selected</button>
           </div>
@@ -377,15 +359,15 @@
               <tbody id="tankExpenseTableBody"></tbody>
             </table>
           </div>
-          <div style="margin-top:8px; font-weight:700; font-size:0.85rem;" id="tankFinancialsSummary">
+          <div style="margin-top:6px; font-weight:700; font-size:0.75rem;" id="tankFinancialsSummary">
             Total Cost: $0.00 | Total Selling: $0.00 | Expected Profit: $0.00
           </div>
         </div>
 
         <div class="workspace-card" id="loadStagingSummaryCard" style="display:none;">
           <div class="section-title">Session Tanks Staging Overview</div>
-          <div id="stagedTanksList" style="margin-bottom:12px;"></div>
-          <div style="display:flex; gap:12px;">
+          <div id="stagedTanksList" style="margin-bottom:8px;"></div>
+          <div style="display:flex; gap:8px;">
             <button class="btn btn-outline" onclick="resetLoadForm()">Clear Workspace</button>
             <button class="btn btn-success" onclick="executeCompleteLoading()">COMPLETE &amp; LOCK SESSION</button>
           </div>
@@ -393,7 +375,7 @@
       </div>
     </section>
 
-    <!-- VIEW 3: EMPTY TANK (Simplified) -->
+    <!-- VIEW 3: EMPTY TANK -->
     <section id="viewEmptyWorkspace" class="view-section">
       <div class="view-content-scroll">
         <div class="section-title">Empty Tank Workspace</div>
@@ -428,7 +410,7 @@
       <div class="view-content-scroll">
         <div class="section-title">Analytics &amp; Financial Reports</div>
         <div class="workspace-card">
-          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom:12px;">
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; margin-bottom:8px;">
             <div><label class="form-label">Customer</label><select id="reportFilterCustomer" class="form-select" onchange="applyReportFilters()"></select></div>
             <div><label class="form-label">From</label><input type="date" id="reportFilterDateFrom" class="form-input" onchange="applyReportFilters()"></div>
             <div><label class="form-label">To</label><input type="date" id="reportFilterDateTo" class="form-input" onchange="applyReportFilters()"></div>
@@ -474,15 +456,15 @@
         
         <div class="workspace-card">
           <div class="section-title">Manage Cyanidation Tanks</div>
-          <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <div style="display:flex; gap:6px; margin-bottom:8px;">
             <input type="text" id="newTankName" class="form-input" placeholder="Tank ID / Name">
             <button class="btn btn-primary" style="width:auto;" onclick="addNewTank()">Add Tank</button>
           </div>
           
-          <div style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 8px;">
+          <div style="border-top: 1px solid var(--border-color); padding-top: 8px; margin-top: 6px;">
             <div class="form-label">Auto-Add Multiple Tanks</div>
             <div class="auto-add-section">
-              <label style="font-size:0.8rem; font-weight:600;">Number of tanks:</label>
+              <label style="font-size:0.75rem; font-weight:600;">Number of tanks:</label>
               <input type="number" id="bulkTankCount" value="10" min="1" max="100">
               <button class="btn btn-success" style="width:auto;" onclick="autoAddMultipleTanks()">Add Tanks</button>
             </div>
@@ -498,12 +480,12 @@
         
         <div class="workspace-card">
           <div class="section-title">Manage Predefined Expenses</div>
-          <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:8px; margin-bottom:8px;">
+          <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:6px; margin-bottom:6px;">
             <input type="text" id="newExpenseName" class="form-input" placeholder="Expense Name">
             <input type="number" id="newExpenseCost" class="form-input" placeholder="Default Cost ($)" step="0.01">
             <input type="number" id="newExpenseSelling" class="form-input" placeholder="Default Selling ($)" step="0.01">
           </div>
-          <button class="btn btn-primary" style="margin-bottom:12px;" onclick="addNewPredefinedExpense()">Add Expense Item</button>
+          <button class="btn btn-primary" style="margin-bottom:8px;" onclick="addNewPredefinedExpense()">Add Expense Item</button>
           <div class="data-table-container">
             <table class="data-table">
               <thead><tr><th>Expense Item</th><th>Default Cost</th><th>Default Selling</th><th>Status</th><th>Actions</th></tr></thead>
@@ -524,7 +506,7 @@
     </button>
     <button class="nav-item nav-item-load" onclick="switchView('viewLoadWorkspace')">
       <div class="fab-btn"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
-      <span style="margin-top:18px;">Load Tank</span>
+      <span style="margin-top:14px;">Load Tank</span>
     </button>
     <button class="nav-item" onclick="switchView('viewReports')">
       <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v17zm4 0h-2v-4h2v4z"/></svg>
@@ -532,83 +514,43 @@
     </button>
   </nav>
 
-  <!-- PASSWORD MODAL -->
-  <div class="modal-overlay" id="passwordModal">
-    <div class="modal-box">
-      <div class="modal-title">Administrator Authentication</div>
-      <div class="form-group"><label class="form-label">Enter Security Password</label><input type="password" id="adminPasswordInput" class="form-input" placeholder="Password"></div>
-      <div style="display:flex; gap:8px;"><button class="btn btn-outline" onclick="closeAuthModal()">Cancel</button><button class="btn btn-primary" onclick="verifyAdminPassword()">Login</button></div>
-    </div>
-  </div>
-
   <script>
-    // ========================================================================
-    // ENICAN MINES — COMPLETE APPLICATION SCRIPT
-    // ========================================================================
-
-    // ------------------------------------------------------------------------
-    // CONFIGURATION
-    // ------------------------------------------------------------------------
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzJ2XVF80tvZlA6IU3v_E_Wa53qgAl5vs2-5uKu9ORVnm9gigkyDZvUtHXjkMvJEZJf/exec";
     const DEVICE_ID = "DEV-" + Math.random().toString(36).substring(2, 9).toUpperCase();
     const DEFAULT_SESSION_DAYS = 10;
 
-    // ------------------------------------------------------------------------
-    // STATE
-    // ------------------------------------------------------------------------
     let db = null;
     let isOnline = navigator.onLine;
     let currentUser = null;
     let stagedLoadingData = { invoiceNumber: "", customerName: "", customerPhone: "", tanks: {} };
     let activeSelectedTankIdForExpenses = null;
     let currentFilterStatus = null;
-    let selectedEmptyInvoice = null;
 
-    // ------------------------------------------------------------------------
-    // INDEXEDDB INIT
-    // ------------------------------------------------------------------------
+    function openWriteModal(title, text) {
+      document.getElementById("writeModalTitle").innerText = title || "Writing to Google Sheets...";
+      document.getElementById("writeModalSub").innerText = text || "Please wait while spreadsheet records update.";
+      document.getElementById("writeOperationModal").classList.add("active");
+    }
+
+    function closeWriteModal() {
+      document.getElementById("writeOperationModal").classList.remove("active");
+    }
+
     function initIndexedDB() {
       return new Promise((resolve, reject) => {
         const request = indexedDB.open("EnicanMinesCyanidationDB", 3);
         request.onupgradeneeded = (e) => {
           const database = e.target.result;
-          if (!database.objectStoreNames.contains("tanks")) {
-            const s = database.createObjectStore("tanks", { keyPath: "tankId" });
-            s.createIndex("status", "status", { unique: false });
-          }
-          if (!database.objectStoreNames.contains("customers")) {
-            database.createObjectStore("customers", { keyPath: "customerId" });
-          }
-          if (!database.objectStoreNames.contains("invoices")) {
-            const s = database.createObjectStore("invoices", { keyPath: "invoiceId" });
-            s.createIndex("invoiceNumber", "invoiceNumber", { unique: true });
-          }
-          if (!database.objectStoreNames.contains("sessions")) {
-            const s = database.createObjectStore("sessions", { keyPath: "sessionId" });
-            s.createIndex("invoiceNumber", "invoiceNumber", { unique: false });
-            s.createIndex("tankId", "tankId", { unique: false });
-            s.createIndex("status", "status", { unique: false });
-          }
-          if (!database.objectStoreNames.contains("expenses")) {
-            database.createObjectStore("expenses", { keyPath: "expenseId" });
-          }
-          if (!database.objectStoreNames.contains("sessionExpenses")) {
-            const s = database.createObjectStore("sessionExpenses", { keyPath: "sessionExpenseId" });
-            s.createIndex("sessionId", "sessionId", { unique: false });
-          }
-          if (!database.objectStoreNames.contains("payments")) {
-            database.createObjectStore("payments", { keyPath: "paymentId" });
-          }
-          if (!database.objectStoreNames.contains("auditTrail")) {
-            database.createObjectStore("auditTrail", { keyPath: "auditId" });
-          }
-          if (!database.objectStoreNames.contains("syncQueue")) {
-            const s = database.createObjectStore("syncQueue", { keyPath: "writeId" });
-            s.createIndex("timestamp", "timestamp", { unique: false });
-          }
-          if (!database.objectStoreNames.contains("users")) {
-            database.createObjectStore("users", { keyPath: "username" });
-          }
+          if (!database.objectStoreNames.contains("tanks")) database.createObjectStore("tanks", { keyPath: "tankId" });
+          if (!database.objectStoreNames.contains("customers")) database.createObjectStore("customers", { keyPath: "customerId" });
+          if (!database.objectStoreNames.contains("invoices")) database.createObjectStore("invoices", { keyPath: "invoiceId" });
+          if (!database.objectStoreNames.contains("sessions")) database.createObjectStore("sessions", { keyPath: "sessionId" });
+          if (!database.objectStoreNames.contains("expenses")) database.createObjectStore("expenses", { keyPath: "expenseId" });
+          if (!database.objectStoreNames.contains("sessionExpenses")) database.createObjectStore("sessionExpenses", { keyPath: "sessionExpenseId" });
+          if (!database.objectStoreNames.contains("payments")) database.createObjectStore("payments", { keyPath: "paymentId" });
+          if (!database.objectStoreNames.contains("auditTrail")) database.createObjectStore("auditTrail", { keyPath: "auditId" });
+          if (!database.objectStoreNames.contains("syncQueue")) database.createObjectStore("syncQueue", { keyPath: "writeId" });
+          if (!database.objectStoreNames.contains("users")) database.createObjectStore("users", { keyPath: "username" });
         };
         request.onsuccess = (e) => { db = e.target.result; resolve(db); };
         request.onerror = (e) => reject("IndexedDB Error: " + e.target.errorCode);
@@ -656,9 +598,6 @@
       });
     }
 
-    // ------------------------------------------------------------------------
-    // API CALLS - FETCH LIVE DATA
-    // ------------------------------------------------------------------------
     async function fetchLiveData() {
       try {
         const response = await fetch(GAS_WEB_APP_URL, {
@@ -676,27 +615,13 @@
           await idbClear("auditTrail");
           await idbClear("invoices");
 
-          if (data.tanks) {
-            for (const t of data.tanks) await idbPut("tanks", t);
-          }
-          if (data.sessions) {
-            for (const s of data.sessions) await idbPut("sessions", s);
-          }
-          if (data.expenses) {
-            for (const e of data.expenses) await idbPut("expenses", e);
-          }
-          if (data.customers) {
-            for (const c of data.customers) await idbPut("customers", c);
-          }
-          if (data.users) {
-            for (const u of data.users) await idbPut("users", u);
-          }
-          if (data.auditTrail) {
-            for (const a of data.auditTrail) await idbPut("auditTrail", a);
-          }
-          if (data.invoices) {
-            for (const inv of data.invoices) await idbPut("invoices", inv);
-          }
+          if (data.tanks) for (const t of data.tanks) await idbPut("tanks", t);
+          if (data.sessions) for (const s of data.sessions) await idbPut("sessions", s);
+          if (data.expenses) for (const e of data.expenses) await idbPut("expenses", e);
+          if (data.customers) for (const c of data.customers) await idbPut("customers", c);
+          if (data.users) for (const u of data.users) await idbPut("users", u);
+          if (data.auditTrail) for (const a of data.auditTrail) await idbPut("auditTrail", a);
+          if (data.invoices) for (const inv of data.invoices) await idbPut("invoices", inv);
           return true;
         }
         return false;
@@ -706,9 +631,6 @@
       }
     }
 
-    // ------------------------------------------------------------------------
-    // USER AUTHENTICATION
-    // ------------------------------------------------------------------------
     async function doLogin() {
       const username = document.getElementById("loginUsername").value.trim();
       const password = document.getElementById("loginPassword").value.trim();
@@ -730,54 +652,39 @@
         const response = await fetch(GAS_WEB_APP_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain" },
-          body: JSON.stringify({ action: "getUsers" })
+          body: JSON.stringify({ action: "authenticateUser", username, password })
         });
         const data = await response.json();
         
-        if (data.status === "SUCCESS" && data.users) {
-          await idbClear("users");
-          for (const u of data.users) {
-            await idbPut("users", u);
-          }
-
-          const user = data.users.find(u => u.username === username && u.password === password);
+        if (data.status === "SUCCESS" && data.user) {
+          currentUser = { username: data.user.username, role: data.user.role };
+          loadingEl.style.display = "none";
+          loginBtn.disabled = false;
+          errorEl.style.display = "none";
+          document.getElementById("loginOverlay").classList.add("hidden");
+          document.getElementById("drawerUserInfo").textContent = data.user.username + " (" + data.user.role + ")";
           
-          if (user) {
-            currentUser = { username: user.username, role: user.role };
-            loadingEl.style.display = "none";
-            loginBtn.disabled = false;
-            errorEl.style.display = "none";
-            document.getElementById("loginOverlay").classList.add("hidden");
-            document.getElementById("drawerUserInfo").textContent = user.username + " (" + user.role + ")";
-            
-            if (user.role !== "admin") {
-              document.getElementById("settingsNavBtn").style.display = "none";
-              document.getElementById("settingsDrawerItem").style.display = "none";
-            } else {
-              document.getElementById("settingsNavBtn").style.display = "inline-block";
-              document.getElementById("settingsDrawerItem").style.display = "flex";
-            }
-            
-            await fetchLiveData();
-            renderDashboard();
+          if (data.user.role !== "admin") {
+            document.getElementById("settingsNavBtn").style.display = "none";
+            document.getElementById("settingsDrawerItem").style.display = "none";
           } else {
-            loadingEl.style.display = "none";
-            loginBtn.disabled = false;
-            errorEl.style.display = "block";
-            errorEl.textContent = "Invalid username or password.";
+            document.getElementById("settingsNavBtn").style.display = "inline-block";
+            document.getElementById("settingsDrawerItem").style.display = "flex";
           }
+          
+          await fetchLiveData();
+          renderDashboard();
         } else {
           loadingEl.style.display = "none";
           loginBtn.disabled = false;
           errorEl.style.display = "block";
-          errorEl.textContent = "Could not connect to server. Please try again.";
+          errorEl.textContent = data.message || "Invalid username or password.";
         }
       } catch (error) {
         loadingEl.style.display = "none";
         loginBtn.disabled = false;
         errorEl.style.display = "block";
         errorEl.textContent = "Network error. Please check your connection.";
-        console.error("Login error:", error);
       }
     }
 
@@ -789,9 +696,6 @@
       document.getElementById("loginError").style.display = "none";
     }
 
-    // ------------------------------------------------------------------------
-    // UI HELPERS
-    // ------------------------------------------------------------------------
     function switchView(viewId) {
       document.querySelectorAll(".view-section").forEach(el => el.classList.remove("active"));
       const target = document.getElementById(viewId);
@@ -823,48 +727,31 @@
       document.getElementById("drawerOverlay").classList.remove("active");
     }
 
-    // ------------------------------------------------------------------------
-    // AUTO-ADD MULTIPLE TANKS
-    // ------------------------------------------------------------------------
     async function autoAddMultipleTanks() {
       const count = parseInt(document.getElementById("bulkTankCount").value) || 10;
-      
-      if (count < 1 || count > 100) {
-        alert("Please enter a number between 1 and 100.");
-        return;
-      }
+      if (count < 1 || count > 100) return alert("Please enter a number between 1 and 100.");
+      if (!confirm(`Are you sure you want to add ${count} new tank(s)?`)) return;
 
-      if (!confirm(`Are you sure you want to add ${count} new tank(s)?`)) {
-        return;
-      }
-
+      openWriteModal("Adding Tanks...", `Appending ${count} tanks to backend...`);
       try {
         const response = await fetch(GAS_WEB_APP_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain" },
-          body: JSON.stringify({
-            action: "autoAddTanks",
-            count: count
-          })
+          body: JSON.stringify({ action: "autoAddTanks", count })
         });
-        
         const data = await response.json();
+        closeWriteModal();
         if (data.status === "SUCCESS") {
-          alert(`✅ Successfully added ${data.result.added} tank(s).`);
           await fetchLiveData();
           renderSettings();
           renderDashboard();
-        } else {
-          alert("❌ Failed to add tanks: " + data.message);
-        }
+        } else alert("Failed to add tanks: " + data.message);
       } catch (error) {
-        alert("❌ Error: " + error.message);
+        closeWriteModal();
+        alert("Error: " + error.message);
       }
     }
 
-    // ------------------------------------------------------------------------
-    // DASHBOARD
-    // ------------------------------------------------------------------------
     async function renderDashboard() {
       const tanks = await idbGetAll("tanks");
       const sessions = await idbGetAll("sessions");
@@ -884,11 +771,8 @@
       grid.innerHTML = "";
 
       let filteredTanks = tanks;
-      if (currentFilterStatus === "OCCUPIED") {
-        filteredTanks = tanks.filter(t => t.status === "OCCUPIED" || t.status === "READY_TO_EMPTY");
-      } else if (currentFilterStatus === "VACANT") {
-        filteredTanks = tanks.filter(t => t.status === "VACANT" && t.active);
-      }
+      if (currentFilterStatus === "OCCUPIED") filteredTanks = tanks.filter(t => t.status === "OCCUPIED" || t.status === "READY_TO_EMPTY");
+      else if (currentFilterStatus === "VACANT") filteredTanks = tanks.filter(t => t.status === "VACANT" && t.active);
 
       for (const tank of filteredTanks) {
         if (!tank.active) continue;
@@ -897,12 +781,11 @@
         let displayStatus = tank.status;
         let daysLeftText = "N/A";
         let percent = 0;
-        let customerInfo = "Vacant", invoiceInfo = "—", phoneInfo = "—";
+        let customerInfo = "Vacant", invoiceInfo = "—";
 
         if (activeSession) {
           customerInfo = activeSession.customerName;
           invoiceInfo = activeSession.invoiceNumber;
-          phoneInfo = activeSession.customerPhone || "—";
           const loadDate = new Date(activeSession.loadingDate);
           const expDate = new Date(activeSession.expectedCompletionDate);
           const now = new Date();
@@ -913,12 +796,12 @@
           if (diffDays < 0) {
             displayStatus = "OVERDUE";
             statusBadgeClass = "badge-overdue";
-            daysLeftText = Math.abs(diffDays) + " Days Overdue";
+            daysLeftText = Math.abs(diffDays) + "d Overdue";
           } else {
             statusBadgeClass = "badge-occupied";
-            daysLeftText = diffDays + " Days Left";
+            daysLeftText = diffDays + "d Left";
           }
-          if (tank.status === "READY_TO_EMPTY") { displayStatus = "READY TO EMPTY"; statusBadgeClass = "badge-ready"; }
+          if (tank.status === "READY_TO_EMPTY") { displayStatus = "READY"; statusBadgeClass = "badge-ready"; }
         }
 
         const card = document.createElement("div");
@@ -926,9 +809,9 @@
         card.innerHTML = `
           <div class="tank-header"><div class="tank-title">${tank.tankName}</div><span class="badge ${statusBadgeClass}">${displayStatus}</span></div>
           <div class="tank-body">
-            <div class="tank-field"><div class="tank-field-label">Invoice</div><div class="tank-field-value">${invoiceInfo}</div></div>
-            <div class="tank-field"><div class="tank-field-label">Customer</div><div class="tank-field-value">${customerInfo}</div></div>
-            ${activeSession ? `<div class="tank-field"><div class="tank-field-label">Days Left</div><div class="tank-field-value">${daysLeftText}</div></div>` : ''}
+            <div class="tank-field"><span class="tank-field-label">Inv:</span><span class="tank-field-value">${invoiceInfo}</span></div>
+            <div class="tank-field"><span class="tank-field-label">Cust:</span><span class="tank-field-value">${customerInfo}</span></div>
+            ${activeSession ? `<div class="tank-field"><span class="tank-field-label">Time:</span><span class="tank-field-value">${daysLeftText}</span></div>` : ''}
             ${activeSession ? `<div class="progress-bar-container"><div class="progress-bar-fill ${displayStatus === 'OVERDUE' ? 'overdue' : ''}" style="width:${percent}%;"></div></div>` : ''}
           </div>
         `;
@@ -936,9 +819,6 @@
       }
     }
 
-    // ------------------------------------------------------------------------
-    // LOAD TANK WORKSPACE
-    // ------------------------------------------------------------------------
     async function prepareLoadWorkspace() {
       const tanks = await idbGetAll("tanks");
       const customers = await idbGetAll("customers");
@@ -951,9 +831,8 @@
       const selectorGrid = document.getElementById("loadTankSelector");
       selectorGrid.innerHTML = "";
       const vacantTanks = tanks.filter(t => t.status === "VACANT" && t.active);
-      if (vacantTanks.length === 0) {
-        selectorGrid.innerHTML = `<div style="grid-column:1/-1; color:var(--text-muted);">No vacant tanks available.</div>`;
-      } else {
+      if (vacantTanks.length === 0) selectorGrid.innerHTML = `<div style="grid-column:1/-1; color:var(--text-muted);">No vacant tanks available.</div>`;
+      else {
         vacantTanks.forEach(t => {
           const div = document.createElement("div");
           div.className = "selectable-tank" + (stagedLoadingData.tanks[t.tankId] ? " selected" : "");
@@ -1071,7 +950,7 @@
       tankIds.forEach(tid => {
         const t = stagedLoadingData.tanks[tid];
         const tSelling = t.expenses.reduce((sum, e) => sum + e.totalSelling, 0);
-        stagedList.innerHTML += `<div style="padding:6px; border-bottom:1px solid var(--border-color); display:flex; justify-between; align-items:center; font-size:0.85rem;"><span><strong>${t.tankName}</strong> (${t.expenses.length} Expenses)</span><span>Total: <strong>$${tSelling.toFixed(2)}</strong></span></div>`;
+        stagedList.innerHTML += `<div style="padding:4px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; font-size:0.8rem;"><span><strong>${t.tankName}</strong> (${t.expenses.length} Expenses)</span><span>Total: <strong>$${tSelling.toFixed(2)}</strong></span></div>`;
       });
     }
 
@@ -1093,6 +972,8 @@
       if (!custName) return alert("Customer Name is required.");
       if (Object.keys(stagedLoadingData.tanks).length === 0) return alert("Select at least one vacant tank.");
       if (!currentUser) return alert("You must be logged in.");
+
+      openWriteModal("Syncing Tank Load Data...", "Writing new tank session records to Google Sheets.");
 
       const writeId = "WID-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7);
       const nowIso = new Date().toISOString();
@@ -1147,29 +1028,21 @@
         writeId, deviceId: DEVICE_ID, timestamp: nowIso,
         operation: "LOAD_TANK", entityType: "SESSIONS",
         payload: { 
-          operation: "LOAD_TANK",
-          invoiceNumber: invNum, 
-          customerName: custName, 
-          customerPhone: custPhone, 
-          sessions: createdSessions,
-          sessionExpenses: sessionExpenses,
-          tanks: tanksToUpdate,
+          operation: "LOAD_TANK", invoiceNumber: invNum, customerName: custName, customerPhone: custPhone, 
+          sessions: createdSessions, sessionExpenses: sessionExpenses, tanks: tanksToUpdate,
           invoices: [{ invoiceId, invoiceNumber: invNum, customerId, customerName: custName, phone: custPhone, status: "OPEN", createdAt: nowIso }],
           customers: [{ customerId, name: custName, phone: custPhone, createdAt: nowIso }],
           audit: auditObj 
         }
       });
 
-      alert("Tank session successfully loaded and locked.");
+      await triggerSyncQueueProcess();
+      closeWriteModal();
       resetLoadForm();
       switchView("viewDashboard");
-      triggerSyncQueueProcess();
       fetchLiveData();
     }
 
-    // ------------------------------------------------------------------------
-    // EMPTY TANK WORKSPACE (Simplified)
-    // ------------------------------------------------------------------------
     async function renderEmptyWorkspace() {
       const sessions = await idbGetAll("sessions");
       const tanks = await idbGetAll("tanks");
@@ -1182,19 +1055,12 @@
         return;
       }
 
-      // Group by invoice
       const groups = {};
       activeSessions.forEach(s => {
         if (!groups[s.invoiceNumber]) {
           groups[s.invoiceNumber] = { 
-            invoiceNumber: s.invoiceNumber, 
-            customerName: s.customerName, 
-            customerId: s.customerId,
-            invoiceId: s.invoiceId,
-            loadingDate: s.loadingDate, 
-            sessions: [],
-            totalSelling: 0,
-            totalCost: 0
+            invoiceNumber: s.invoiceNumber, customerName: s.customerName, customerId: s.customerId,
+            invoiceId: s.invoiceId, loadingDate: s.loadingDate, sessions: [], totalSelling: 0, totalCost: 0
           };
         }
         groups[s.invoiceNumber].sessions.push(s);
@@ -1213,29 +1079,28 @@
         card.className = "empty-invoice-card";
         card.id = "emptyCard_" + invNum;
         card.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
             <div>
-              <strong style="font-size:1rem;">${group.customerName}</strong>
-              <div style="font-size:0.85rem; color:var(--text-muted);">Invoice: ${group.invoiceNumber}</div>
-              <div style="font-size:0.8rem; color:var(--text-muted);">Tanks: ${tankNames}</div>
+              <strong style="font-size:0.9rem;">${group.customerName}</strong>
+              <div style="font-size:0.75rem; color:var(--text-muted);">Invoice: ${group.invoiceNumber}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">Tanks: ${tankNames}</div>
             </div>
             <div style="text-align:right;">
-              <div style="font-weight:700; color:var(--primary);">$${group.totalSelling.toFixed(2)}</div>
-              <div style="font-size:0.75rem; color:var(--text-muted);">${group.sessions.length} tank(s)</div>
+              <div style="font-weight:700; color:var(--primary); font-size:0.9rem;">$${group.totalSelling.toFixed(2)}</div>
+              <div style="font-size:0.7rem; color:var(--text-muted);">${group.sessions.length} tank(s)</div>
             </div>
           </div>
-          <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-            <div class="form-group" style="flex:1; min-width:150px; margin-bottom:0;">
-              <input type="number" id="emptyPaymentAmt_${invNum}" class="form-input" placeholder="Payment Amount ($)" step="0.01" style="padding:8px;">
+          <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
+            <div class="form-group" style="flex:1; min-width:120px; margin-bottom:0;">
+              <input type="number" id="emptyPaymentAmt_${invNum}" class="form-input" placeholder="Payment Amount ($)" step="0.01">
             </div>
-            <div class="form-group" style="flex:1; min-width:150px; margin-bottom:0;">
-              <input type="text" id="emptyPaymentNote_${invNum}" class="form-input" placeholder="Reference / Note" style="padding:8px;">
+            <div class="form-group" style="flex:1; min-width:120px; margin-bottom:0;">
+              <input type="text" id="emptyPaymentNote_${invNum}" class="form-input" placeholder="Reference / Note">
             </div>
-            <button class="btn btn-success" onclick="executeEmptyAndConfirmPayment('${invNum}')" style="flex:0 0 auto; padding:8px 20px;">
+            <button class="btn btn-success" onclick="executeEmptyAndConfirmPayment('${invNum}')" style="flex:0 0 auto;">
               CONFIRM PAYMENT & EMPTY
             </button>
           </div>
-          <div id="emptyStatus_${invNum}" style="margin-top:8px; font-size:0.85rem; display:none;"></div>
         `;
         container.appendChild(card);
       }
@@ -1248,42 +1113,29 @@
       if (isNaN(inputAmt) || inputAmt <= 0) return alert("Valid Payment Amount is required.");
 
       const note = document.getElementById(`emptyPaymentNote_${invNum}`).value || "Cash payment";
-      const statusEl = document.getElementById(`emptyStatus_${invNum}`);
       
-      // Show loading
-      statusEl.style.display = "block";
-      statusEl.style.color = "var(--text-muted)";
-      statusEl.textContent = "⏳ Processing...";
+      openWriteModal("Emptying Tank & Saving Payment...", "Writing closure details to Google Sheets.");
 
       try {
         const sessions = await idbGetAll("sessions");
         const groupSessions = sessions.filter(s => s.invoiceNumber === invNum && s.status !== "COMPLETED");
 
         if (groupSessions.length === 0) {
-          statusEl.textContent = "❌ No active sessions found for this invoice.";
+          closeWriteModal();
+          alert("No active sessions found for this invoice.");
           return;
         }
 
         const writeId = "WID-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7);
         const nowIso = new Date().toISOString();
-        const totalSelling = groupSessions.reduce((a, b) => a + (b.totalSelling || 0), 0);
 
-        // Create payment record
         const paymentId = "PAY-" + Date.now();
         const paymentObj = {
-          paymentId, 
-          invoiceId: groupSessions[0].invoiceId, 
-          invoiceNumber: invNum,
-          customerId: groupSessions[0].customerId, 
-          amount: inputAmt,
-          paymentStatus: "CONFIRMED", 
-          paymentDate: nowIso, 
-          confirmedBy: currentUser.username, 
-          note
+          paymentId, invoiceId: groupSessions[0].invoiceId, invoiceNumber: invNum, customerId: groupSessions[0].customerId, 
+          amount: inputAmt, paymentStatus: "CONFIRMED", paymentDate: nowIso, confirmedBy: currentUser.username, note
         };
         await idbPut("payments", paymentObj);
 
-        // Update sessions and tanks
         const sessionIds = [];
         const tanksToUpdate = [];
         
@@ -1302,61 +1154,30 @@
           }
         }
 
-        // Audit log
         const auditObj = {
-          auditId: "AUD-" + Date.now(), 
-          writeId, 
-          timestamp: nowIso,
-          action: "TANK_EMPTIED_PAYMENT_CONFIRMED", 
-          entityType: "PAYMENT",
-          entityId: paymentId, 
-          invoiceNumber: invNum, 
-          customer: groupSessions[0].customerName,
-          user: currentUser.username, 
-          details: `Emptied ${groupSessions.length} tank(s). Payment of $${inputAmt.toFixed(2)} confirmed.`
+          auditId: "AUD-" + Date.now(), writeId, timestamp: nowIso, action: "TANK_EMPTIED_PAYMENT_CONFIRMED", 
+          entityType: "PAYMENT", entityId: paymentId, invoiceNumber: invNum, customer: groupSessions[0].customerName,
+          user: currentUser.username, details: `Emptied ${groupSessions.length} tank(s). Payment of $${inputAmt.toFixed(2)} confirmed.`
         };
         await idbPut("auditTrail", auditObj);
 
-        // Queue for sync
         await idbPut("syncQueue", {
-          writeId, 
-          deviceId: DEVICE_ID, 
-          timestamp: nowIso,
-          operation: "EMPTY_TANK_PAYMENT", 
-          entityType: "PAYMENTS",
-          payload: { 
-            payment: paymentObj, 
-            sessionIds: sessionIds, 
-            tanks: tanksToUpdate,
-            sessions: groupSessions,
-            audit: auditObj 
-          }
+          writeId, deviceId: DEVICE_ID, timestamp: nowIso, operation: "EMPTY_TANK_PAYMENT", entityType: "PAYMENTS",
+          payload: { payment: paymentObj, sessionIds, tanks: tanksToUpdate, sessions: groupSessions, audit: auditObj }
         });
 
-        statusEl.style.display = "block";
-        statusEl.style.color = "var(--success)";
-        statusEl.textContent = `✅ Successfully emptied ${groupSessions.length} tank(s) and confirmed payment of $${inputAmt.toFixed(2)}`;
-
-        // Refresh the view
-        setTimeout(() => {
-          renderEmptyWorkspace();
-          renderDashboard();
-        }, 1500);
-
-        triggerSyncQueueProcess();
+        await triggerSyncQueueProcess();
+        closeWriteModal();
+        renderEmptyWorkspace();
+        renderDashboard();
         fetchLiveData();
 
       } catch (error) {
-        statusEl.style.display = "block";
-        statusEl.style.color = "var(--danger)";
-        statusEl.textContent = "❌ Error: " + error.message;
-        console.error("Empty error:", error);
+        closeWriteModal();
+        alert("Error during operation: " + error.message);
       }
     }
 
-    // ------------------------------------------------------------------------
-    // SESSIONS VIEWS
-    // ------------------------------------------------------------------------
     async function renderLiveSessions() {
       const sessions = await idbGetAll("sessions");
       const filterText = document.getElementById("liveSessionSearch").value.toLowerCase();
@@ -1367,12 +1188,12 @@
       if (active.length === 0) { container.innerHTML = `<div class="workspace-card">No live sessions match.</div>`; return; }
       active.forEach(s => {
         container.innerHTML += `
-          <div class="workspace-card" style="padding:12px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div class="workspace-card" style="padding:8px 12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
               <div><strong>${s.tankId}</strong> — ${s.customerName}</div>
               <span class="badge badge-occupied">${s.status}</span>
             </div>
-            <div style="font-size:0.85rem; line-height:1.5; margin-top:4px;">
+            <div style="font-size:0.75rem; line-height:1.4; margin-top:4px;">
               <div><strong>Invoice:</strong> ${s.invoiceNumber}</div>
               <div><strong>Loaded:</strong> ${new Date(s.loadingDate).toLocaleDateString()}</div>
               <div><strong>Value:</strong> $${s.totalSelling.toFixed(2)}</div>
@@ -1392,12 +1213,12 @@
       if (completed.length === 0) { container.innerHTML = `<div class="workspace-card">No completed records found.</div>`; return; }
       completed.forEach(s => {
         container.innerHTML += `
-          <div class="workspace-card" style="padding:12px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div class="workspace-card" style="padding:8px 12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
               <div><strong>${s.tankId}</strong> — ${s.customerName}</div>
               <span class="badge badge-completed">COMPLETED</span>
             </div>
-            <div style="font-size:0.85rem; line-height:1.5; margin-top:4px;">
+            <div style="font-size:0.75rem; line-height:1.4; margin-top:4px;">
               <div><strong>Invoice:</strong> ${s.invoiceNumber}</div>
               <div><strong>Emptied:</strong> ${s.emptyingDate ? new Date(s.emptyingDate).toLocaleDateString() : 'N/A'}</div>
               <div><strong>Revenue:</strong> $${s.totalSelling.toFixed(2)} | <strong>Profit:</strong> $${s.profit.toFixed(2)}</div>
@@ -1407,9 +1228,6 @@
       });
     }
 
-    // ------------------------------------------------------------------------
-    // REPORTS
-    // ------------------------------------------------------------------------
     async function renderReports() {
       const customers = await idbGetAll("customers");
       const custSelect = document.getElementById("reportFilterCustomer");
@@ -1455,11 +1273,11 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const maxVal = Math.max(rev, cost, profit, 1);
-      const padding = 35;
-      const barWidth = Math.min(50, (canvas.width - 80) / 3.5);
-      const gap = 20;
+      const padding = 30;
+      const barWidth = Math.min(40, (canvas.width - 60) / 3.5);
+      const gap = 15;
       const startX = (canvas.width - (3 * barWidth + 2 * gap)) / 2;
-      const chartHeight = canvas.height - 60;
+      const chartHeight = canvas.height - 40;
 
       ctx.strokeStyle = "#e2e8f0";
       ctx.lineWidth = 0.5;
@@ -1469,10 +1287,6 @@
         ctx.moveTo(padding - 5, y);
         ctx.lineTo(canvas.width - padding + 5, y);
         ctx.stroke();
-        ctx.fillStyle = "#64748b";
-        ctx.font = "8px sans-serif";
-        ctx.textAlign = "right";
-        ctx.fillText("$" + Math.round((i / 4) * maxVal), padding - 8, y + 3);
       }
 
       const items = [
@@ -1486,19 +1300,16 @@
         const h = Math.max((item.val / maxVal) * chartHeight, 2);
         const y = canvas.height - padding - h;
 
-        ctx.shadowColor = "rgba(0,0,0,0.1)";
-        ctx.shadowBlur = 6;
         ctx.fillStyle = item.color;
         ctx.fillRect(x, y, barWidth, h);
-        ctx.shadowBlur = 0;
 
         ctx.fillStyle = "#0f172a";
-        ctx.font = "bold 10px sans-serif";
+        ctx.font = "bold 9px sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText("$" + item.val.toFixed(0), x + barWidth / 2, y - 5);
+        ctx.fillText("$" + item.val.toFixed(0), x + barWidth / 2, y - 3);
 
         ctx.fillStyle = "#64748b";
-        ctx.font = "9px sans-serif";
+        ctx.font = "8px sans-serif";
         ctx.fillText(item.label, x + barWidth / 2, canvas.height - 8);
       });
     }
@@ -1517,17 +1328,11 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const total = occupied + vacant;
-      if (total === 0) { 
-        ctx.fillStyle = "#64748b"; 
-        ctx.font = "14px sans-serif"; 
-        ctx.textAlign = "center"; 
-        ctx.fillText("No tank data available", canvas.width/2, canvas.height/2); 
-        return; 
-      }
+      if (total === 0) return;
 
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
-      const radius = Math.min(centerX, centerY) - 25;
+      const radius = Math.min(centerX, centerY) - 20;
 
       let startAngle = -Math.PI / 2;
       const slices = [
@@ -1547,33 +1352,18 @@
       });
 
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius * 0.5, 0, 2 * Math.PI);
+      ctx.arc(centerX, centerY, radius * 0.55, 0, 2 * Math.PI);
       ctx.fillStyle = "#ffffff";
       ctx.fill();
 
       ctx.fillStyle = "#0f172a";
-      ctx.font = "bold 14px sans-serif";
+      ctx.font = "bold 12px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText(`${Math.round((occupied/total)*100)}%`, centerX, centerY - 4);
-      ctx.font = "9px sans-serif";
-      ctx.fillStyle = "#64748b";
-      ctx.fillText("Utilised", centerX, centerY + 16);
-
-      let legendX = 30;
-      const legendY = canvas.height - 25;
-      slices.forEach(slice => {
-        ctx.fillStyle = slice.color;
-        ctx.fillRect(legendX, legendY, 12, 12);
-        ctx.fillStyle = "#0f172a";
-        ctx.font = "9px sans-serif";
-        ctx.textAlign = "left";
-        ctx.fillText(`${slice.label} (${slice.count})`, legendX + 16, legendY + 10);
-        legendX += 90;
-      });
+      ctx.fillText(`${Math.round((occupied/total)*100)}%`, centerX, centerY + 4);
     }
 
     async function loadPreviousSessionData() {
-      if (!isOnline) { alert("Connectivity required."); return; }
+      if (!isOnline) return alert("Connectivity required.");
       try {
         const res = await fetch(GAS_WEB_APP_URL, {
           method: "POST", headers: { "Content-Type": "text/plain" },
@@ -1588,9 +1378,6 @@
       } catch (err) { alert("Failed: " + err.message); }
     }
 
-    // ------------------------------------------------------------------------
-    // AUDIT TRAIL
-    // ------------------------------------------------------------------------
     async function renderAuditTrail() {
       const audit = await idbGetAll("auditTrail");
       audit.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -1599,32 +1386,6 @@
       audit.forEach(a => {
         tbody.innerHTML += `<tr><td>${new Date(a.timestamp).toLocaleString()}</td><td><strong>${a.action}</strong></td><td>${a.entityType}</td><td>${a.invoiceNumber || a.entityId}</td><td>${a.details}</td><td>${a.user || 'System'}</td></tr>`;
       });
-    }
-
-    // ------------------------------------------------------------------------
-    // SETTINGS
-    // ------------------------------------------------------------------------
-    function openSettingsWithAuth() {
-      if (currentUser && currentUser.role === "admin") {
-        switchView("viewSettings");
-      } else {
-        document.getElementById("passwordModal").classList.add("active");
-      }
-    }
-
-    function closeAuthModal() {
-      document.getElementById("passwordModal").classList.remove("active");
-      document.getElementById("adminPasswordInput").value = "";
-    }
-
-    function verifyAdminPassword() {
-      const pwd = document.getElementById("adminPasswordInput").value;
-      if (pwd === "admin") {
-        closeAuthModal();
-        switchView("viewSettings");
-      } else {
-        alert("Invalid administrator password.");
-      }
     }
 
     async function renderSettings() {
@@ -1650,12 +1411,14 @@
     async function addNewTank() {
       const name = document.getElementById("newTankName").value.trim();
       if (!name) return alert("Tank name required.");
+      openWriteModal("Adding Single Tank...", "Registering new tank in database...");
       const tankId = "T-" + Math.random().toString(36).substring(2, 7);
       await idbPut("tanks", { tankId, tankName: name, status: "VACANT", active: true, createdAt: new Date().toISOString() });
       document.getElementById("newTankName").value = "";
+      await triggerSyncQueueProcess();
+      closeWriteModal();
       renderSettings();
       renderDashboard();
-      triggerSyncQueueProcess();
     }
 
     async function toggleTankActive(tankId, newActiveState) {
@@ -1682,9 +1445,6 @@
       if (exp) { exp.active = newActiveState; await idbPut("expenses", exp); renderSettings(); }
     }
 
-    // ------------------------------------------------------------------------
-    // SYNC ENGINE
-    // ------------------------------------------------------------------------
     function updateOnlineStatusIndicator() {
       isOnline = navigator.onLine;
       const badge = document.getElementById("syncStatusBadge");
@@ -1745,9 +1505,6 @@
       }
     }, 30000);
 
-    // ------------------------------------------------------------------------
-    // ENTRY POINT
-    // ------------------------------------------------------------------------
     window.addEventListener("DOMContentLoaded", async () => {
       await initIndexedDB();
       updateOnlineStatusIndicator();

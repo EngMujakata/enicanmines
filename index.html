@@ -165,13 +165,13 @@ label{color:#53647b}
 <div id="app" class="app hidden">
 <header>
   <div class="brand"><button class="icon-btn" onclick="toggleSidebar()">☰</button><img src="logo-192.png" onerror="this.style.display='none'"><b>ENICAN MINES</b><span id="userChip" class="user-chip"></span></div>
-  <div class="header-right"><span id="status" class="status offline">OFFLINE</span><button class="icon-btn" onclick="showInstall()">⇧</button></div>
+  <div class="header-right"><span id="status" class="status offline">OFFLINE</span><button class="icon-btn" onclick="showInstall()" title="Install app" aria-label="Install app">⇧</button><button class="icon-btn" onclick="logout()" title="Log out" aria-label="Log out">⏻</button></div>
 </header>
 <div class="layout">
 <aside id="sidebar" class="sidebar"><div class="nav" id="nav"></div></aside>
 <main>
 <section id="view-dashboard" class="view active">
-  <div class="titlebar"><h2>Dashboard</h2><div class="title-actions"><span class="auto">Live · 10 sec</span><button class="icon-btn refresh" onclick="refreshPage('dashboard')">↻</button></div></div>
+  <div class="titlebar"><h2>Dashboard</h2><div class="title-actions"><span class="auto">Live · 30 sec</span><button class="icon-btn refresh" onclick="refreshPage('dashboard')">↻</button></div></div>
   <div class="grid kpis">
     <div class="card kpi"><small>Vacant Tanks</small><strong id="vacTank">0</strong></div>
     <div class="card kpi"><small>Occupied Tanks</small><strong id="occTank">0</strong></div>
@@ -183,17 +183,17 @@ label{color:#53647b}
 </section>
 
 <section id="view-load" class="view">
-  <div class="titlebar"><h2 id="loadTitle">Load Tank</h2><div class="title-actions"><span class="auto">Live · 10 sec</span><button class="icon-btn refresh" onclick="refreshPage('load')">↻</button></div></div>
+  <div class="titlebar"><h2 id="loadTitle">Load Tank</h2><div class="title-actions"><span class="auto">Live · 30 sec</span><button class="icon-btn refresh" onclick="refreshPage('load')">↻</button></div></div>
   <div id="loadWorkspace"></div>
 </section>
 
 <section id="view-empty" class="view">
-  <div class="titlebar"><h2 id="emptyTitle">Empty Tank</h2><div class="title-actions"><span class="auto">Live · 10 sec</span><button class="icon-btn refresh" onclick="refreshPage('empty')">↻</button></div></div>
+  <div class="titlebar"><h2 id="emptyTitle">Empty Tank</h2><div class="title-actions"><span class="auto">Live · 30 sec</span><button class="icon-btn refresh" onclick="refreshPage('empty')">↻</button></div></div>
   <div id="emptyWorkspace"></div>
 </section>
 
 <section id="view-live" class="view">
-  <div class="titlebar"><h2>Open Sessions</h2><div class="title-actions"><span class="auto">Live · 10 sec</span><button class="icon-btn refresh" onclick="refreshPage('live')">↻</button></div></div>
+  <div class="titlebar"><h2>Open Sessions</h2><div class="title-actions"><span class="auto">Live · 30 sec</span><button class="icon-btn refresh" onclick="refreshPage('live')">↻</button></div></div>
   <div class="card"><div class="field"><input id="liveSearch" placeholder="Search customer or invoice" oninput="filterLive()"></div><div id="liveList" class="invoice-list"></div></div>
 </section>
 
@@ -208,7 +208,7 @@ label{color:#53647b}
 </section>
 
 <section id="view-driver" class="view">
-  <div class="titlebar"><h2>Grabber Account</h2><div class="title-actions"><span class="auto">Server calculated · 10 sec</span><button class="icon-btn refresh" onclick="refreshPage('driver')">↻</button></div></div>
+  <div class="titlebar"><h2>Grabber Account</h2><div class="title-actions"><span class="auto">Server calculated · 30 sec</span><button class="icon-btn refresh" onclick="refreshPage('driver')">↻</button></div></div>
   <div class="card"><div class="grid two">
     <div><label>Date</label><input type="date" id="tripDate"></div><div><label>Customer</label><select id="tripCustomer"></select></div>
     <div><div class="field"><label>Trip description</label><input id="tripDesc"></div></div><div><label>Amount</label><input id="tripAmount" type="number" step="0.01"></div>
@@ -237,9 +237,10 @@ label{color:#53647b}
 <script>
 const API="https://script.google.com/macros/s/AKfycbzJ2XVF80tvZlA6IU3v_E_Wa53qgAl5vs2-5uKu9ORVnm9gigkyDZvUtHXjkMvJEZJf/exec";
 const DEVICE_ID="DEV-"+crypto.randomUUID();
+const POLL_INTERVAL_MS=30000;
 let token=localStorage.getItem("enican_token")||"",user=null;
 try{user=JSON.parse(localStorage.getItem("enican_user")||"null")}catch(e){localStorage.removeItem("enican_user")}
-let currentPage="dashboard",poller=null,lastLoadData=null,lastEmptyData=null,lastDashboard=null,selectedCustomer=null,selectedAssets=[],selectedExpenses=[],loadAccount="TANK",pageLoadInFlight=false,writeInFlight=false,activeAccountReport="";
+let currentPage="dashboard",poller=null,lastLoadData=null,lastEmptyData=null,lastDashboard=null,selectedCustomer=null,selectedAssets=[],selectedExpenses=[],loadAccount="TANK",pageLoadInFlight=false,pageLoadRunning=false,queuedPageLoad=false,writeInFlight=false,activeAccountReport="";
 let deferredInstall=null;
 
 const $=id=>document.getElementById(id);
@@ -252,12 +253,12 @@ const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 function showApiLoading(){if(autoSyncRunning)return;apiBusyCount++;$("apiLoading")?.classList.add("show");$("apiLoading")?.setAttribute("aria-busy","true")}
 function hideApiLoading(){if(autoSyncRunning)return;apiBusyCount=Math.max(0,apiBusyCount-1);if(apiBusyCount===0){$("apiLoading")?.classList.remove("show");$("apiLoading")?.setAttribute("aria-busy","false")}}
 const apiGet=async(action,params={},manual=true)=>{
-  if(manual&&!autoSyncRunning)showApiLoading();
+  if(manual&&!autoSyncRunning&&!pageLoadRunning)showApiLoading();
   try{
     const q=new URLSearchParams({action,token,...params});
     const r=await fetch(API+"?"+q.toString(),{cache:"no-store"});
     const d=await r.json(); if(d.status!=="SUCCESS") throw new Error(d.message||"Request failed"); return d.data;
-  }finally{if(manual&&!autoSyncRunning)hideApiLoading()}
+  }finally{if(manual&&!autoSyncRunning&&!pageLoadRunning)hideApiLoading()}
 };
 async function finishQueuedWrite(writeId){
   const deadline=Date.now()+120000;
@@ -341,15 +342,21 @@ function schedulePagePoll(){
   poller=setTimeout(async()=>{
     if(document.visibilityState==="visible"&&navigator.onLine)await loadPage(true);
     schedulePagePoll();
-  },10000);
+  },POLL_INTERVAL_MS);
 }
 async function loadPage(isAuto=false){
-  if(!token||pageLoadInFlight)return;
+  if(!token)return;
+  if(pageLoadInFlight){if(!isAuto)queuedPageLoad=true;return}
   pageLoadInFlight=true;
+  pageLoadRunning=true;
   autoSyncRunning=!!isAuto;
   try{
     if(!isAuto)setStatus("syncing");
-    if(currentPage==="dashboard")await loadDashboard(false);
+    if(currentPage==="dashboard"){
+      const tasks=[loadDashboard(false)];
+      if(user.role==="admin")tasks.push(checkApprovals(false));
+      await Promise.all(tasks);
+    }
     if(currentPage==="load")await loadLoad(!isAuto);
     if(currentPage==="empty")await loadEmpty(!isAuto);
     if(currentPage==="live")await loadLive(false);
@@ -360,10 +367,12 @@ async function loadPage(isAuto=false){
     if(currentPage==="driver")await loadDriver(true);
     if(currentPage==="settings"&&!isAuto)await loadSettings(true);
     if(currentPage==="audit")await loadAudit(true);
-    if(user.role==="admin")await checkApprovals(false);
     if(!isAuto)setStatus(navigator.onLine?"online":"offline");
   }catch(e){console.error(e);if(!isAuto)setStatus("offline");if(String(e.message).includes("AUTH"))logout()}
-  finally{autoSyncRunning=false;pageLoadInFlight=false;}
+  finally{
+    autoSyncRunning=false;pageLoadInFlight=false;pageLoadRunning=false;
+    if(queuedPageLoad){queuedPageLoad=false;setTimeout(()=>loadPage(false),0)}
+  }
 }
 function refreshPage(){loadPage(false)}
 async function loadDashboard(render=true){
@@ -466,9 +475,11 @@ function downloadReceipt(r){
 }
 function printReceipt(r){const w=window.open("","_blank");w.document.write(`<h1>ENICAN MINES</h1><h2>Payment Receipt</h2><p>Receipt: ${esc(r.receiptNumber)}</p><p>Invoice: ${esc(r.invoiceNumber)}</p><p>Customer: ${esc(r.customerName)}</p><p>Total: ${money(r.total)}</p><p>Paid: ${money(r.paid)}</p><p>Balance: ${money(r.balance)}</p><script>print()<\/script>`)}
 async function loadLive(render=true){
-  let all=[];
-  if(user.role==="admin"||user.role==="loader")all=all.concat((await apiGet("openSessions",{accountType:"TANK"})).invoices);
-  if(user.role==="admin"||user.role==="boiler")all=all.concat((await apiGet("openSessions",{accountType:"BOILER"})).invoices);
+  const requests=[];
+  if(user.role==="admin"||user.role==="loader")requests.push(apiGet("openSessions",{accountType:"TANK"}));
+  if(user.role==="admin"||user.role==="boiler")requests.push(apiGet("openSessions",{accountType:"BOILER"}));
+  const results=await Promise.all(requests);
+  const all=results.flatMap(result=>result.invoices);
   window.liveInvoices=all;filterLive();
 }
 function filterLive(){const q=($("liveSearch").value||"").toLowerCase();const rows=(window.liveInvoices||[]).filter(i=>(i.customerName+" "+i.invoiceNumber).toLowerCase().includes(q));$("liveList").innerHTML=rows.map(i=>`<div class="list-row" onclick="openClient(JSON.parse(decodeURIComponent('${inlineData(i.customerId)}')))"><b>${esc(i.customerName)} · ${esc(i.invoiceNumber)}</b><span class="muted">${esc(i.accountType)} · ${i.assets.map(a=>esc(a.assetName)).join(", ")} · ${money(i.balance)} due</span></div>`).join("")||"<div class='muted'>No active sessions.</div>"}
@@ -476,7 +487,11 @@ async function loadReports(render=true){
   const fixedAccount=user.role==="loader"?"TANK":user.role==="boiler"?"BOILER":"ALL";
   const selectedCompletedAccount=user.role==="admin"?($("completedAccount")?.value||"ALL"):fixedAccount;
   $("repFrom").value||($("repFrom").value=thisMonth());$("repTo").value||($("repTo").value=today());
-  const d=await apiGet("reportSummary",{from:$("repFrom").value,to:$("repTo").value});
+  const from=$("repFrom").value,to=$("repTo").value;
+  const [d,completedRows]=await Promise.all([
+    apiGet("reportSummary",{from,to}),
+    apiGet("completedInvoices",{from,to,accountType:selectedCompletedAccount})
+  ]);
   if(user.role==="admin"){
     $("adminAccounts").innerHTML=`<div class="grid account-cards"><div class="card account-card" onclick="openAccountReport('TANK')"><h3>Tanks Account</h3><div class="money">${money(d.tanks.profit)}</div><div class="profit">Profit · ${d.tanks.invoices} invoices</div></div><div class="card account-card" onclick="openAccountReport('BOILER')"><h3>Boiler Account</h3><div class="money">${money(d.boiler.profit)}</div><div class="profit">Profit · ${d.boiler.invoices} invoices</div></div><div class="card account-card" onclick="openAccountReport('GRABBER')"><h3>Grabber Account</h3><div class="money">${money(d.grabber.profit)}</div><div class="profit">Profit · ${d.grabber.trips} trips</div></div></div><div class="card" style="margin-top:10px"><b>Overall Mine</b><div class="grid three"><div>Revenue<br><strong>${money(d.overall.revenue)}</strong></div><div>Expenses<br><strong>${money(d.overall.expenses)}</strong></div><div>Monthly Profit<br><strong>${money(d.overall.profit)}</strong></div></div></div>`;
   }else $("adminAccounts").innerHTML="";
@@ -486,10 +501,13 @@ async function loadReports(render=true){
   const accountPicker=user.role==="admin"?`<select id="completedAccount" onchange="loadCompletedInvoices()"><option value="ALL">All</option><option value="TANK">Tanks</option><option value="BOILER">Boilers</option></select>`:`<input type="hidden" id="completedAccount" value="${fixedAccount}">`;
   $("reportBody").innerHTML=`<div class="card" style="margin-top:10px"><div class="grid three">${summaryHtml}</div></div><div class="card" style="margin-top:10px"><h3>Completed invoices</h3><div class="field" style="margin-top:8px">${accountPicker}</div><div id="completedList"></div></div>`;
   $("completedAccount").value=selectedCompletedAccount;
-  await loadCompletedInvoices();
+  renderCompletedInvoices(completedRows);
 }
 async function loadCompletedInvoices(){
   const rows=await apiGet("completedInvoices",{from:$("repFrom").value,to:$("repTo").value,accountType:$("completedAccount")?.value||"ALL"});
+  renderCompletedInvoices(rows);
+}
+function renderCompletedInvoices(rows){
   $("completedList").innerHTML=rows.length?rows.map(i=>`<div class="list-row" onclick="openInvoice(JSON.parse(decodeURIComponent('${inlineData(i.invoiceNumber)}')))"><b>${esc(i.invoiceNumber)} · ${esc(i.customerName)}</b><span class="muted">${esc(i.accountType)} · ${money(i.totalSelling)} · ${new Date(i.completedAt).toLocaleString()}</span></div>`).join(""):"<p class='muted'>No completed invoices in this period.</p>";
 }
 function setThisMonth(){$("repFrom").value=thisMonth();$("repTo").value=today();loadReports()}
@@ -504,9 +522,12 @@ async function loadDriver(render=true){
   if(user.role!=="driver"&&user.role!=="admin")return;
   const selectedTripCustomer=$("tripCustomer")?.value||"";
   $("tripDate").value||($("tripDate").value=today());$("driverExpDate").value||($("driverExpDate").value=today());
-  const c=await apiGet("customers");$("tripCustomer").innerHTML=c.map(x=>`<option value="${esc(x.customerId)}">${esc(x.name)} · ${esc(x.phone)}</option>`).join("");
+  const [c,d]=await Promise.all([
+    apiGet("customers"),
+    apiGet("driverReport",{from:$("repFrom")?.value||thisMonth(),to:$("repTo")?.value||today()})
+  ]);
+  $("tripCustomer").innerHTML=c.map(x=>`<option value="${esc(x.customerId)}">${esc(x.name)}${x.phone?" · "+esc(x.phone):""}</option>`).join("");
   if(c.some(x=>x.customerId===selectedTripCustomer))$("tripCustomer").value=selectedTripCustomer;
-  const d=await apiGet("driverReport",{from:$("repFrom")?.value||thisMonth(),to:$("repTo")?.value||today()});
   $("driverReport").innerHTML=`<div class="grid three"><div class="card"><small>Revenue</small><div class="money">${money(d.revenue)}</div></div><div class="card"><small>Expenses</small><div class="money">${money(d.expenses)}</div></div><div class="card"><small>Profit</small><div class="money">${money(d.profit)}</div></div></div><div class="card" style="margin-top:10px"><h3>Trips</h3>${d.trips.map(t=>`<div class="list-row"><b>${esc(t.customerName)} · ${money(t.amount)}</b><span class="muted">${esc(t.date)} · ${esc(t.description)}</span></div>`).join("")||"<p class='muted'>No trips.</p>"}</div>`;
 }
 async function saveTrip(){try{await apiPost("driverTrip",{date:$("tripDate").value,customerId:$("tripCustomer").value,description:$("tripDesc").value,amount:Number($("tripAmount").value)});$("tripDesc").value=$("tripAmount").value="";await loadDriver()}catch(e){alert(e.message)}}

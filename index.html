@@ -50,6 +50,102 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 .api-loading-box b{display:block;font-size:.86rem}.api-loading-box small{display:block;color:var(--muted);margin-top:2px;font-size:.72rem}.loading-ring{width:25px;height:25px;border:3px solid #dbeafe;border-top-color:var(--p);border-radius:50%;animation:spin .7s linear infinite;flex:0 0 auto}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:520px){header{height:58px}.brand b{font-size:.9rem}.brand img{width:36px;height:36px}.user-chip{display:none}.asset-grid{grid-template-columns:repeat(2,1fr)}.asset{padding:10px}.kpi strong{font-size:1.3rem}.card{padding:11px}.modal-box{padding:14px}.expense-row{grid-template-columns:1fr 48px 65px 65px 34px}.btn{padding:9px 10px}}
+
+/* Finance-dashboard refinement — retain Enican Mines' original blue palette. */
+:root{
+  --p:#0641ab;--pd:#05328a;--bg:#f2f5fa;--card:#fff;--text:#14233b;
+  --muted:#718096;--line:#e3eaf3;--ok:#168454;--warn:#d97706;--bad:#c83c4a;
+  --purple:#7047c8;--r:16px;--navy:#0a1d3b;--navy2:#102b54;
+  --shadow:0 8px 24px rgba(16,42,82,.07);
+}
+html,body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+header{height:70px;padding:10px 22px;background:linear-gradient(112deg,var(--navy),var(--navy2) 72%,var(--pd));border:0;box-shadow:0 4px 18px rgba(8,29,61,.18)}
+.brand b{color:#fff;letter-spacing:.075em;font-size:.94rem}
+.brand img{background:#fff;border-radius:11px;padding:3px}
+.user-chip{color:#c0cde0}
+.header-right{gap:10px}
+.status{letter-spacing:.06em;font-size:.66rem}
+.online{background:rgba(25,166,104,.18);color:#9ef0c1}
+.offline{background:rgba(230,79,88,.18);color:#ffb9bf}
+.syncing{background:rgba(239,174,46,.18);color:#ffe29c}
+header .icon-btn{color:#fff;background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18)}
+header .icon-btn:hover{background:rgba(255,255,255,.17)}
+.layout{background:var(--bg)}
+.sidebar{width:246px;padding:18px 12px;background:var(--navy);border:0}
+.nav{gap:6px}
+.nav button{display:flex;align-items:center;gap:12px;padding:12px 13px;border-radius:11px;color:#bac7da;background:transparent;font-size:.84rem}
+.nav button b{width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:rgba(255,255,255,.08);color:#dce8f8;font-size:1rem}
+.nav button.active,.nav button:hover{background:linear-gradient(100deg,rgba(6,65,171,.95),rgba(6,65,171,.64));color:#fff;transform:none}
+.nav button.active b,.nav button:hover b{background:rgba(255,255,255,.16);color:#fff}
+main{padding:26px 30px;background:var(--bg);overflow:auto}
+.view{max-width:1560px;margin:0 auto}
+.titlebar{min-height:48px;margin-bottom:20px;padding:0 0 15px;border-bottom:1px solid var(--line)}
+.titlebar h2{font-size:1.45rem;letter-spacing:-.035em;font-weight:850;color:#122542}
+.title-actions{gap:10px}
+.auto{font-size:.72rem;color:#8290a5}
+.icon-btn{border-color:#d9e2ef;color:var(--p);background:#fff;border-radius:11px}
+.card{border:1px solid #e7edf5;border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.card:hover{box-shadow:0 11px 28px rgba(16,42,82,.10)}
+.kpis{gap:14px;margin-bottom:20px}
+.kpi{position:relative;overflow:hidden;min-height:116px;padding:19px 20px;border-top:3px solid var(--p)}
+.kpi:nth-child(2){border-top-color:#168454}.kpi:nth-child(3){border-top-color:#7047c8}.kpi:nth-child(4){border-top-color:#d97706}
+.kpi small{color:#77869b;letter-spacing:.065em;font-size:.66rem}
+.kpi strong{font-size:1.9rem;letter-spacing:-.04em;color:#132b50}
+.section-label{margin:22px 0 11px;font-size:.82rem;letter-spacing:.075em;text-transform:uppercase;color:#64748b}
+.asset-grid{gap:12px;grid-template-columns:repeat(auto-fill,minmax(205px,1fr))}
+.asset{min-height:124px;border-radius:15px}
+.asset-name{font-size:.92rem;color:#142b4d}
+.badge{border-radius:999px;padding:5px 9px;font-size:.59rem;letter-spacing:.045em}
+.asset-info{color:#53647c;font-size:.78rem}
+.bar{height:7px;background:#e9eef6}
+.bar i{background:linear-gradient(90deg,var(--p),#4383e4);border-radius:8px}
+.btn{border-radius:10px;padding:10px 15px}
+.primary{background:linear-gradient(135deg,var(--p),#1c5cc8);box-shadow:0 5px 12px rgba(6,65,171,.16)}
+.success{background:#168454}.warn{background:#d97706}
+input,select,textarea{border-color:#dce5f0;border-radius:10px;padding:11px 12px;color:#203450;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#6b9be5;box-shadow:0 0 0 3px rgba(6,65,171,.11)}
+label{color:#53647b}
+.list-row{border-color:#e6edf5;border-radius:12px;padding:13px 14px;transition:border-color .15s,background .15s}
+.list-row:hover{background:#f7faff;border-color:#aec7ed}
+.table-wrap{border-color:#e5ebf3;border-radius:12px}
+.table{font-size:.78rem}
+.table th{background:#f4f7fb;color:#6b7c93;font-size:.68rem;letter-spacing:.045em;text-transform:uppercase}
+.table th,.table td{padding:11px 12px}
+.modal{backdrop-filter:blur(5px)}
+.modal-box{border:1px solid #e1e8f1;border-radius:19px;padding:22px;box-shadow:0 24px 70px rgba(5,20,47,.25)}
+.login{background:radial-gradient(circle at 15% 15%,#1b57b5 0,transparent 34%),linear-gradient(135deg,var(--navy),var(--pd) 72%,var(--p))}
+.login-box{border:1px solid rgba(255,255,255,.7);border-radius:22px;padding:30px;box-shadow:0 25px 80px rgba(4,19,47,.3)}
+.login-box h1{letter-spacing:-.04em}
+.install-banner{border-color:#e3eaf3;border-radius:14px;box-shadow:0 12px 32px rgba(12,35,69,.16)}
+.api-loading{backdrop-filter:blur(3px)}
+.api-loading-box{border-color:#e2eaf4;border-radius:16px}
+.bottom{background:var(--navy);box-shadow:0 -8px 24px rgba(8,29,61,.18)}
+.bottom button{color:#a8bad4}
+.bottom button.active{color:#fff;background:rgba(255,255,255,.1)}
+@media(max-width:900px){
+  main{padding:20px 18px 82px}
+  .sidebar{display:none}
+  .kpis{gap:10px}
+  .kpi{min-height:102px;padding:15px}
+  .asset-grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))}
+}
+@media(max-width:520px){
+  header{height:60px;padding:8px 12px}
+  .brand b{font-size:.79rem}
+  .brand img{width:34px;height:34px}
+  main{padding:16px 12px 78px}
+  .titlebar{margin-bottom:14px;padding-bottom:11px}
+  .titlebar h2{font-size:1.18rem}
+  .kpis{gap:9px}
+  .kpi{min-height:90px;padding:12px}
+  .kpi strong{font-size:1.45rem}
+  .asset-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .asset{padding:12px;min-height:112px}
+  .card{padding:13px}
+  input,select,textarea{font-size:16px}
+  .modal-box{padding:15px}
+  .bottom{height:66px;padding-bottom:env(safe-area-inset-bottom)}
+}
 </style>
 </head>
 <body>
@@ -141,15 +237,18 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 <script>
 const API="https://script.google.com/macros/s/AKfycbzJ2XVF80tvZlA6IU3v_E_Wa53qgAl5vs2-5uKu9ORVnm9gigkyDZvUtHXjkMvJEZJf/exec";
 const DEVICE_ID="DEV-"+crypto.randomUUID();
-let token=localStorage.getItem("enican_token")||"",user=JSON.parse(localStorage.getItem("enican_user")||"null");
-let currentPage="dashboard",poller=null,lastLoadData=null,lastEmptyData=null,lastDashboard=null,selectedCustomer=null,selectedAssets=[],selectedExpenses=[],loadAccount="TANK";
+let token=localStorage.getItem("enican_token")||"",user=null;
+try{user=JSON.parse(localStorage.getItem("enican_user")||"null")}catch(e){localStorage.removeItem("enican_user")}
+let currentPage="dashboard",poller=null,lastLoadData=null,lastEmptyData=null,lastDashboard=null,selectedCustomer=null,selectedAssets=[],selectedExpenses=[],loadAccount="TANK",pageLoadInFlight=false,writeInFlight=false,activeAccountReport="";
 let deferredInstall=null;
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+const inlineData=value=>encodeURIComponent(JSON.stringify(value)).replace(/'/g,"%27");
 const money=n=>"$"+Number(n||0).toFixed(2);
 let autoSyncRunning=false;
 let apiBusyCount=0;
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 function showApiLoading(){if(autoSyncRunning)return;apiBusyCount++;$("apiLoading")?.classList.add("show");$("apiLoading")?.setAttribute("aria-busy","true")}
 function hideApiLoading(){if(autoSyncRunning)return;apiBusyCount=Math.max(0,apiBusyCount-1);if(apiBusyCount===0){$("apiLoading")?.classList.remove("show");$("apiLoading")?.setAttribute("aria-busy","false")}}
 const apiGet=async(action,params={},manual=true)=>{
@@ -160,13 +259,31 @@ const apiGet=async(action,params={},manual=true)=>{
     const d=await r.json(); if(d.status!=="SUCCESS") throw new Error(d.message||"Request failed"); return d.data;
   }finally{if(manual&&!autoSyncRunning)hideApiLoading()}
 };
+async function finishQueuedWrite(writeId){
+  const deadline=Date.now()+120000;
+  while(Date.now()<deadline){
+    const drain=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({action:"processQueue",token})});
+    const drainResult=await drain.json();
+    if(drainResult.status!=="SUCCESS")throw new Error(drainResult.message||"Could not resume the write queue.");
+    const state=await apiGet("writeStatus",{writeId},false);
+    if(state.status==="DONE")return state.result;
+    if(state.status==="FAILED")throw new Error(state.error||"The queued write failed.");
+    await sleep(800);
+  }
+  throw new Error("This write is still queued. Do not submit it again; refresh the page and check the record before retrying.");
+}
 const apiPost=async(action,payload={})=>{
+  if(writeInFlight)throw new Error("Another save is already in progress. Please wait for it to finish.");
+  writeInFlight=true;
   showApiLoading();
   try{
     const writeId="W-"+crypto.randomUUID();
     const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({action,token,writeId,deviceId:DEVICE_ID,payload})});
-    const d=await r.json(); if(d.status==="QUEUED"){throw new Error("Request queued. The server will finish processing it safely.");} if(d.status!=="SUCCESS") throw new Error(d.message||"Request failed"); return d.result;
-  }finally{hideApiLoading()}
+    const d=await r.json();
+    if(d.status==="QUEUED")return await finishQueuedWrite(writeId);
+    if(d.status!=="SUCCESS") throw new Error(d.message||"Request failed");
+    return d.result;
+  }finally{writeInFlight=false;hideApiLoading()}
 };
 function setStatus(mode){const e=$("status");e.className="status "+mode;e.textContent=mode==="online"?"ONLINE":mode==="syncing"?"SYNCING":"OFFLINE"}
 function today(){return new Date().toISOString().slice(0,10)}
@@ -191,11 +308,11 @@ function startApp(){
   maybeInstall();
 }
 function buildNav(){
-  const items=[["dashboard","Dashboard","⌂"],["live","Open Sessions","◉"]];
-  if(user.role==="loader"||user.role==="admin") items.splice(1,0,["load","Load Tank","+"]);
-  if(user.role==="loader"||user.role==="admin") items.splice(2,0,["empty","Empty Tank","↓"]);
-  if(user.role==="boiler"||user.role==="admin"){items.splice(1,0,["loadBoiler","Load Boiler","+"]);items.splice(2,0,["emptyBoiler","Empty Boiler","↓"])}
-  items.push(["reports","Reports","▦"]);
+  const items=[["dashboard","Dashboard","⌂"]];
+  if(user.role!=="driver")items.push(["live","Open Sessions","◉"]);
+  if(user.role==="loader"||user.role==="admin")items.push(["load","Load Tank","+"],["empty","Empty Tank","↓"]);
+  if(user.role==="boiler"||user.role==="admin")items.push(["loadBoiler","Load Boiler","+"],["emptyBoiler","Empty Boiler","↓"]);
+  if(user.role!=="driver")items.push(["reports","Reports","▦"]);
   if(user.role==="driver"||user.role==="admin") items.push(["driver","Grabber","↗"]);
   if(user.role==="admin"){items.push(["settings","Settings","⚙"],["audit","Audit","◌"])}
   const html=items.map(i=>`<button id="nav-${i[0]}" onclick="switchPage('${i[0]}')"><b>${i[2]}</b> ${i[1]}</button>`).join("");
@@ -206,18 +323,29 @@ function toggleSidebar(){$("sidebar").style.display=$("sidebar").style.display==
 function switchPage(page){
   if(page==="loadBoiler"){loadAccount="BOILER";page="load"}
   if(page==="emptyBoiler"){loadAccount="BOILER";page="empty"}
-  if(page==="load" && !(user.role==="admin"||user.role==="loader"||user.role==="boiler"))return;
-  if(page==="empty" && !(user.role==="admin"||user.role==="loader"||user.role==="boiler"))return;
+  if(page==="load" && !(user.role==="admin"||(loadAccount==="TANK"&&user.role==="loader")||(loadAccount==="BOILER"&&user.role==="boiler")))return;
+  if(page==="empty" && !(user.role==="admin"||(loadAccount==="TANK"&&user.role==="loader")||(loadAccount==="BOILER"&&user.role==="boiler")))return;
+  if((page==="live"||page==="reports")&&user.role==="driver")return;
+  if(page==="driver"&&user.role!=="driver"&&user.role!=="admin")return;
+  if((page==="settings"||page==="audit")&&user.role!=="admin")return;
   currentPage=page;
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
   const v=$("view-"+page);if(v)v.classList.add("active");
   document.querySelectorAll("#nav button,#bottom button").forEach(b=>b.classList.remove("active"));
   const n=$("nav-"+page)||$("nav-"+(page==="load"&&loadAccount==="BOILER"?"loadBoiler":page==="empty"&&loadAccount==="BOILER"?"emptyBoiler":page));
   const b=$("bot-"+page);if(n)n.classList.add("active");if(b)b.classList.add("active");
-  loadPage(false);clearInterval(poller);poller=setInterval(()=>loadPage(true),10000);
+  clearTimeout(poller);loadPage(false);schedulePagePoll();
+}
+function schedulePagePoll(){
+  clearTimeout(poller);
+  poller=setTimeout(async()=>{
+    if(document.visibilityState==="visible"&&navigator.onLine)await loadPage(true);
+    schedulePagePoll();
+  },10000);
 }
 async function loadPage(isAuto=false){
-  if(!token)return;
+  if(!token||pageLoadInFlight)return;
+  pageLoadInFlight=true;
   autoSyncRunning=!!isAuto;
   try{
     if(!isAuto)setStatus("syncing");
@@ -225,14 +353,17 @@ async function loadPage(isAuto=false){
     if(currentPage==="load")await loadLoad(!isAuto);
     if(currentPage==="empty")await loadEmpty(!isAuto);
     if(currentPage==="live")await loadLive(false);
-    if(currentPage==="reports"&&!isAuto)await loadReports(true);
-    if(currentPage==="driver"&&!isAuto)await loadDriver(true);
+    if(currentPage==="reports"){
+      if(activeAccountReport)await openAccountReport(activeAccountReport);
+      else await loadReports(true);
+    }
+    if(currentPage==="driver")await loadDriver(true);
     if(currentPage==="settings"&&!isAuto)await loadSettings(true);
-    if(currentPage==="audit"&&!isAuto)await loadAudit(true);
+    if(currentPage==="audit")await loadAudit(true);
     if(user.role==="admin")await checkApprovals(false);
     if(!isAuto)setStatus(navigator.onLine?"online":"offline");
   }catch(e){console.error(e);if(!isAuto)setStatus("offline");if(String(e.message).includes("AUTH"))logout()}
-  finally{autoSyncRunning=false;}
+  finally{autoSyncRunning=false;pageLoadInFlight=false;}
 }
 function refreshPage(){loadPage(false)}
 async function loadDashboard(render=true){
@@ -241,20 +372,19 @@ async function loadDashboard(render=true){
   renderAssets("tankGrid",d.tanks,"tankDetail");renderAssets("boilerGrid",d.boilers,"boilerDetail");
 }
 function renderAssets(id,items,detail){
-  $(id).innerHTML=items.length?items.map(a=>`<div class="card asset" onclick="openAsset('${esc(a.id)}','${a.assetType}')"><div class="asset-head"><span class="asset-name">${esc(a.name)}</span><span class="badge ${a.status==="VACANT"?"vacant":a.status==="OVERDUE"?"overdue":"occupied"}">${esc(a.status)}</span></div><div class="asset-info">${a.customerName?`<b>${esc(a.customerName)}</b><br>Invoice: ${esc(a.invoiceNumber)}<br>${a.daysLeft<0?Math.abs(a.daysLeft)+" days overdue":a.daysLeft+" days left"}<div class="bar"><i style="width:${a.progress}%"></i></div>`:"Available"}</div></div>`).join(""):"<div class='card muted'>No assets configured.</div>";
+  $(id).innerHTML=items.length?items.map(a=>{const canOpen=user.role==="admin"||(a.assetType==="TANK"&&user.role==="loader")||(a.assetType==="BOILER"&&user.role==="boiler");return`<div class="card asset" ${canOpen?`onclick="openAsset(JSON.parse(decodeURIComponent('${inlineData(a.id)}')),JSON.parse(decodeURIComponent('${inlineData(a.assetType)}')))"`:""}><div class="asset-head"><span class="asset-name">${esc(a.name)}</span><span class="badge ${a.status==="VACANT"?"vacant":a.status==="OVERDUE"?"overdue":"occupied"}">${esc(a.status)}</span></div><div class="asset-info">${a.customerName?`<b>${esc(a.customerName)}</b><br>Invoice: ${esc(a.invoiceNumber)}<br>${a.daysLeft<0?Math.abs(a.daysLeft)+" days overdue":a.daysLeft+" days left"}<div class="bar"><i style="width:${a.progress}%"></i></div>`:"Available"}</div></div>`}).join(""):"<div class='card muted'>No assets configured.</div>";
 }
 async function openAsset(id,type){
-  if(type==="BOILER"){const d=await apiGet("invoiceDetail",{invoiceNumber:lastDashboard.boilers.find(x=>x.id===id)?.invoiceNumber||""});if(!d.invoice){}}
   const d=type==="TANK"?await apiGet("tankDetail",{tankId:id}):await apiGet("boilerDetail",{boilerId:id});
   const a=d.asset,s=d.currentSession;
   $("modalTitle").textContent=(a.tankName||a.boilerName)+" · Current Data";
-  $("modalBody").innerHTML=`<div class="grid two"><div><b>Status</b><p>${esc(a.status)}</p></div><div><b>Customer</b><p>${esc(s?.customerName||"None")}</p></div><div><b>Invoice</b><p>${esc(s?.invoiceNumber||"—")}</p></div><div><b>Loading</b><p>${s?new Date(s.loadingDate).toLocaleString():"—"}</p></div><div><b>Expected emptying</b><p>${s?new Date(s.expectedCompletionDate).toLocaleString():"—"}</p></div><div><b>Value</b><p>${money(s?.totalSelling)}</p></div></div><h4>Expenses</h4>${d.expenses.length?`<div class="table-wrap"><table class="table"><tr><th>Expense</th><th>Qty</th><th>Selling</th></tr>${d.expenses.map(e=>`<tr><td>${esc(e.expenseName)}</td><td>${e.quantity}</td><td>${money(e.totalSelling)}</td></tr>`).join("")}</table></div>`:"<p class='muted'>No current expenses.</p>"}${s?`<button class="btn primary" onclick="openClient('${esc(s.customerId)}')">View Open Sessions / Client</button>`:""}`;
+  $("modalBody").innerHTML=`<div class="grid two"><div><b>Status</b><p>${esc(a.status)}</p></div><div><b>Customer</b><p>${esc(s?.customerName||"None")}</p></div><div><b>Invoice</b><p>${esc(s?.invoiceNumber||"—")}</p></div><div><b>Loading</b><p>${s?new Date(s.loadingDate).toLocaleString():"—"}</p></div><div><b>Expected emptying</b><p>${s?new Date(s.expectedCompletionDate).toLocaleString():"—"}</p></div><div><b>Value</b><p>${money(s?.totalSelling)}</p></div></div><h4>Expenses</h4>${d.expenses.length?`<div class="table-wrap"><table class="table"><tr><th>Expense</th><th>Qty</th><th>Selling</th></tr>${d.expenses.map(e=>`<tr><td>${esc(e.expenseName)}</td><td>${e.quantity}</td><td>${money(e.totalSelling)}</td></tr>`).join("")}</table></div>`:"<p class='muted'>No current expenses.</p>"}${s?`<button class="btn primary" onclick="openClient(JSON.parse(decodeURIComponent('${inlineData(s.customerId)}')))">View Open Sessions / Client</button>`:""}`;
   $("modal").classList.add("show");
 }
 async function openClient(customerId){
   const d=await apiGet("clientDetail",{customerId});
   $("modalTitle").textContent="Client · "+d.customer.name;
-  $("modalBody").innerHTML=`<p class="muted">${esc(d.customer.phone)} · ${esc(d.customer.address)}</p>${d.statements.map(s=>`<div class="card" style="margin-top:8px"><b>Invoice ${esc(s.invoiceNumber)} · ${esc(s.accountType)}</b><p>Total ${money(s.total)} · Paid ${money(s.paid)} · Balance ${money(s.balance)}</p><p>${s.assets.map(a=>esc(a.assetName)+": "+(a.daysLeft<0?Math.abs(a.daysLeft)+" overdue":a.daysLeft+" days left")).join(" · ")}</p><button class="btn outline" onclick='downloadStatement(${JSON.stringify(s)},${JSON.stringify(d.customer)})'>Download Statement</button></div>`).join("")||"<p class='muted'>No invoices.</p>"}`;
+  $("modalBody").innerHTML=`<p class="muted">${esc(d.customer.phone)} · ${esc(d.customer.address)}</p>${d.statements.map(s=>`<div class="card" style="margin-top:8px"><b>Invoice ${esc(s.invoiceNumber)} · ${esc(s.accountType)}</b><p>Total ${money(s.total)} · Paid ${money(s.paid)} · Balance ${money(s.balance)}</p><p>${s.assets.map(a=>esc(a.assetName)+": "+(a.daysLeft<0?Math.abs(a.daysLeft)+" overdue":a.daysLeft+" days left")).join(" · ")}</p><button class="btn outline" onclick="downloadStatement(JSON.parse(decodeURIComponent('${inlineData(s)}')),JSON.parse(decodeURIComponent('${inlineData(d.customer)}')))">Download Statement</button></div>`).join("")||"<p class='muted'>No invoices.</p>"}`;
 }
 function closeModal(){$("modal").classList.remove("show")}
 async function loadLoad(render=true){
@@ -276,7 +406,7 @@ function renderLoad(){
 function searchCustomers(){
   const q=($("customerSearch")?.value||"").toLowerCase();
   const rows=(lastLoadData?.customers||[]).filter(c=>(c.name+" "+c.phone+" "+c.address).toLowerCase().includes(q)).slice(0,20);
-  $("customerList").innerHTML=rows.map(c=>`<div class="list-row" onclick='chooseCustomer(${JSON.stringify(c)})'><b>${esc(c.name)}</b><span class="muted">${esc(c.phone)} · ${esc(c.address)}</span></div>`).join("")||"<div class='muted'>No customer found. Add a new customer below.</div>";
+  $("customerList").innerHTML=rows.map(c=>`<div class="list-row" onclick="chooseCustomer(JSON.parse(decodeURIComponent('${inlineData(c)}')))"><b>${esc(c.name)}</b><span class="muted">${esc(c.phone)} · ${esc(c.address)}</span></div>`).join("")||"<div class='muted'>No customer found. Add a new customer below.</div>";
 }
 function chooseCustomer(c){selectedCustomer=c;renderCustomerChoice();$("stage2").classList.remove("hidden")}
 function renderCustomerChoice(){$("chosenCustomer").innerHTML=selectedCustomer?`<div class="card" style="margin-top:8px;background:#eff6ff"><b>Selected: ${esc(selectedCustomer.name)}</b><div class="muted">${esc(selectedCustomer.phone)} · ${esc(selectedCustomer.address)}</div></div>`:""}
@@ -284,7 +414,7 @@ async function addCustomer(){
   try{const r=await apiPost("addCustomer",{name:$("newCustName").value,phone:$("newCustPhone").value,address:$("newCustAddress").value});selectedCustomer=r.customer;await loadLoad();$("stage2").classList.remove("hidden");renderCustomerChoice()}catch(e){alert(e.message)}
 }
 function renderAssetSelect(){
-  $("assetSelect").innerHTML=lastLoadData.assets.map(a=>{const id=a.tankId||a.boilerId,name=a.tankName||a.boilerName;return`<div class="asset-pick ${selectedAssets.includes(id)?"sel":""}" onclick="toggleAsset('${esc(id)}')">${esc(name)}<br><small>${esc(a.status)}</small></div>`}).join("");
+  $("assetSelect").innerHTML=lastLoadData.assets.map(a=>{const id=a.tankId||a.boilerId,name=a.tankName||a.boilerName;return`<div class="asset-pick ${selectedAssets.includes(id)?"sel":""}" onclick="toggleAsset(JSON.parse(decodeURIComponent('${inlineData(id)}')))">${esc(name)}<br><small>${esc(a.status)}</small></div>`}).join("");
 }
 function toggleAsset(id){selectedAssets=selectedAssets.includes(id)?selectedAssets.filter(x=>x!==id):[...selectedAssets,id];renderAssetSelect()}
 function goExpenses(){
@@ -317,12 +447,12 @@ async function submitLoad(){
 async function loadEmpty(render=true){
   $("emptyTitle").textContent=loadAccount==="BOILER"?"Empty Boiler":"Empty Tank";
   const d=await apiGet("emptyData",{accountType:loadAccount},render);lastEmptyData=d;
-  if(render)$("emptyWorkspace").innerHTML=d.invoices.length?d.invoices.map(i=>`<div class="card list-row" onclick="openInvoice('${esc(i.invoiceNumber)}')"><div style="display:flex;justify-content:space-between"><b>${esc(i.invoiceNumber)} · ${esc(i.customerName)}</b><span class="badge ${i.balance>0?"occupied":"vacant"}">${money(i.balance)} due</span></div><div class="muted">${i.assets.map(a=>esc(a.assetName)).join(", ")} · Total ${money(i.totalSelling)} · Paid ${money(i.totalPaid)}</div></div>`).join(""):"<div class='card muted'>No open invoices.</div>";
+  if(render)$("emptyWorkspace").innerHTML=d.invoices.length?d.invoices.map(i=>`<div class="card list-row" onclick="openInvoice(JSON.parse(decodeURIComponent('${inlineData(i.invoiceNumber)}')))"><div style="display:flex;justify-content:space-between"><b>${esc(i.invoiceNumber)} · ${esc(i.customerName)}</b><span class="badge ${i.balance>0?"occupied":"vacant"}">${money(i.balance)} due</span></div><div class="muted">${i.assets.map(a=>esc(a.assetName)).join(", ")} · Total ${money(i.totalSelling)} · Paid ${money(i.totalPaid)}</div></div>`).join(""):"<div class='card muted'>No open invoices.</div>";
 }
 async function openInvoice(invoiceNumber){
   const d=await apiGet("invoiceDetail",{invoiceNumber});
   $("modalTitle").textContent="Invoice "+invoiceNumber;
-  $("modalBody").innerHTML=`<div class="grid two"><div><b>Customer</b><p>${esc(d.invoice.customerName)}</p></div><div><b>Account</b><p>${esc(d.invoice.accountType)}</p></div><div><b>Total</b><p>${money(d.total)}</p></div><div><b>Paid</b><p>${money(d.paid)}</p></div><div><b>Balance</b><p>${money(d.balance)}</p></div><div><b>Assets</b><p>${d.sessions.map(s=>esc(s.assetName)).join(", ")}</p></div></div><h4>Expenses</h4><div class="table-wrap"><table class="table"><tr><th>Expense</th><th>Qty</th><th>Selling</th></tr>${d.expenses.map(e=>`<tr><td>${esc(e.expenseName)}</td><td>${e.quantity}</td><td>${money(e.totalSelling)}</td></tr>`).join("")}</table></div><div class="field" style="margin-top:10px"><label>Amount received</label><input id="payAmount" type="number" step="0.01" max="${d.balance}" value="${d.balance}"></div><button class="btn success" onclick="payInvoice('${esc(invoiceNumber)}')">Pay & Issue Receipt</button>`;
+  $("modalBody").innerHTML=`<div class="grid two"><div><b>Customer</b><p>${esc(d.invoice.customerName)}</p></div><div><b>Account</b><p>${esc(d.invoice.accountType)}</p></div><div><b>Total</b><p>${money(d.total)}</p></div><div><b>Paid</b><p>${money(d.paid)}</p></div><div><b>Balance</b><p>${money(d.balance)}</p></div><div><b>Assets</b><p>${d.sessions.map(s=>esc(s.assetName)).join(", ")}</p></div></div><h4>Expenses</h4><div class="table-wrap"><table class="table"><tr><th>Expense</th><th>Qty</th><th>Selling</th></tr>${d.expenses.map(e=>`<tr><td>${esc(e.expenseName)}</td><td>${e.quantity}</td><td>${money(e.totalSelling)}</td></tr>`).join("")}</table></div><div class="field" style="margin-top:10px"><label>Amount received</label><input id="payAmount" type="number" step="0.01" max="${d.balance}" value="${d.balance}"></div><button class="btn success" onclick="payInvoice(JSON.parse(decodeURIComponent('${inlineData(invoiceNumber)}')))">Pay & Issue Receipt</button>`;
   $("modal").classList.add("show");
 }
 async function payInvoice(invoiceNumber){
@@ -336,32 +466,46 @@ function downloadReceipt(r){
 }
 function printReceipt(r){const w=window.open("","_blank");w.document.write(`<h1>ENICAN MINES</h1><h2>Payment Receipt</h2><p>Receipt: ${esc(r.receiptNumber)}</p><p>Invoice: ${esc(r.invoiceNumber)}</p><p>Customer: ${esc(r.customerName)}</p><p>Total: ${money(r.total)}</p><p>Paid: ${money(r.paid)}</p><p>Balance: ${money(r.balance)}</p><script>print()<\/script>`)}
 async function loadLive(render=true){
-  const d=await apiGet("openSessions",{accountType:"TANK"});let all=d.invoices;
+  let all=[];
+  if(user.role==="admin"||user.role==="loader")all=all.concat((await apiGet("openSessions",{accountType:"TANK"})).invoices);
   if(user.role==="admin"||user.role==="boiler")all=all.concat((await apiGet("openSessions",{accountType:"BOILER"})).invoices);
   window.liveInvoices=all;filterLive();
 }
-function filterLive(){const q=($("liveSearch").value||"").toLowerCase();const rows=(window.liveInvoices||[]).filter(i=>(i.customerName+" "+i.invoiceNumber).toLowerCase().includes(q));$("liveList").innerHTML=rows.map(i=>`<div class="list-row" onclick="openClient('${esc(i.customerId)}')"><b>${esc(i.customerName)} · ${esc(i.invoiceNumber)}</b><span class="muted">${esc(i.accountType)} · ${i.assets.map(a=>esc(a.assetName)).join(", ")} · ${money(i.balance)} due</span></div>`).join("")||"<div class='muted'>No active sessions.</div>"}
+function filterLive(){const q=($("liveSearch").value||"").toLowerCase();const rows=(window.liveInvoices||[]).filter(i=>(i.customerName+" "+i.invoiceNumber).toLowerCase().includes(q));$("liveList").innerHTML=rows.map(i=>`<div class="list-row" onclick="openClient(JSON.parse(decodeURIComponent('${inlineData(i.customerId)}')))"><b>${esc(i.customerName)} · ${esc(i.invoiceNumber)}</b><span class="muted">${esc(i.accountType)} · ${i.assets.map(a=>esc(a.assetName)).join(", ")} · ${money(i.balance)} due</span></div>`).join("")||"<div class='muted'>No active sessions.</div>"}
 async function loadReports(render=true){
+  const fixedAccount=user.role==="loader"?"TANK":user.role==="boiler"?"BOILER":"ALL";
+  const selectedCompletedAccount=user.role==="admin"?($("completedAccount")?.value||"ALL"):fixedAccount;
   $("repFrom").value||($("repFrom").value=thisMonth());$("repTo").value||($("repTo").value=today());
   const d=await apiGet("reportSummary",{from:$("repFrom").value,to:$("repTo").value});
-  if(user.role==="admin"){$("adminAccounts").innerHTML=`<div class="grid account-cards"><div class="card account-card" onclick="openAccountReport('TANK')"><h3>Tanks Account</h3><div class="money">${money(d.tanks.profit)}</div><div class="profit">Profit · ${d.tanks.invoices} invoices</div></div><div class="card account-card" onclick="openAccountReport('BOILER')"><h3>Boiler Account</h3><div class="money">${money(d.boiler.profit)}</div><div class="profit">Profit · ${d.boiler.invoices} invoices</div></div><div class="card account-card" onclick="openAccountReport('GRABBER')"><h3>Grabber Account</h3><div class="money">${money(d.grabber.profit)}</div><div class="profit">Profit · ${d.grabber.trips} trips</div></div></div><div class="card" style="margin-top:10px"><b>Overall Mine</b><div class="grid three"><div>Revenue<br><strong>${money(d.overall.revenue)}</strong></div><div>Expenses<br><strong>${money(d.overall.expenses)}</strong></div><div>Monthly Profit<br><strong>${money(d.overall.profit)}</strong></div></div></div>`}else $("adminAccounts").innerHTML="";
-  $("reportBody").innerHTML=`<div class="card" style="margin-top:10px"><div class="grid three"><div><b>Tanks</b><br>${money(d.tanks.profit)} profit</div><div><b>Boilers</b><br>${money(d.boiler.profit)} profit</div><div><b>Grabber</b><br>${money(d.grabber.profit)} profit</div></div></div><div class="card" style="margin-top:10px"><h3>Completed invoices</h3><div class="field" style="margin-top:8px"><select id="completedAccount" onchange="loadCompletedInvoices()"><option value="ALL">All</option><option value="TANK">Tanks</option><option value="BOILER">Boilers</option></select></div><div id="completedList"></div></div>`;
+  if(user.role==="admin"){
+    $("adminAccounts").innerHTML=`<div class="grid account-cards"><div class="card account-card" onclick="openAccountReport('TANK')"><h3>Tanks Account</h3><div class="money">${money(d.tanks.profit)}</div><div class="profit">Profit · ${d.tanks.invoices} invoices</div></div><div class="card account-card" onclick="openAccountReport('BOILER')"><h3>Boiler Account</h3><div class="money">${money(d.boiler.profit)}</div><div class="profit">Profit · ${d.boiler.invoices} invoices</div></div><div class="card account-card" onclick="openAccountReport('GRABBER')"><h3>Grabber Account</h3><div class="money">${money(d.grabber.profit)}</div><div class="profit">Profit · ${d.grabber.trips} trips</div></div></div><div class="card" style="margin-top:10px"><b>Overall Mine</b><div class="grid three"><div>Revenue<br><strong>${money(d.overall.revenue)}</strong></div><div>Expenses<br><strong>${money(d.overall.expenses)}</strong></div><div>Monthly Profit<br><strong>${money(d.overall.profit)}</strong></div></div></div>`;
+  }else $("adminAccounts").innerHTML="";
+  let summaryHtml="";
+  if(user.role==="admin")summaryHtml=`<div><b>Tanks</b><br>${money(d.tanks.profit)} profit</div><div><b>Boilers</b><br>${money(d.boiler.profit)} profit</div><div><b>Grabber</b><br>${money(d.grabber.profit)} profit</div>`;
+  else{const total=user.role==="loader"?d.tanks:d.boiler;const title=user.role==="loader"?"Tanks":"Boilers";summaryHtml=`<div><b>${title} Account</b><br>${money(total.profit)} profit</div><div>Revenue<br>${money(total.revenue)}</div><div>Expenses<br>${money(total.expenses)}</div>`}
+  const accountPicker=user.role==="admin"?`<select id="completedAccount" onchange="loadCompletedInvoices()"><option value="ALL">All</option><option value="TANK">Tanks</option><option value="BOILER">Boilers</option></select>`:`<input type="hidden" id="completedAccount" value="${fixedAccount}">`;
+  $("reportBody").innerHTML=`<div class="card" style="margin-top:10px"><div class="grid three">${summaryHtml}</div></div><div class="card" style="margin-top:10px"><h3>Completed invoices</h3><div class="field" style="margin-top:8px">${accountPicker}</div><div id="completedList"></div></div>`;
+  $("completedAccount").value=selectedCompletedAccount;
   await loadCompletedInvoices();
 }
 async function loadCompletedInvoices(){
   const rows=await apiGet("completedInvoices",{from:$("repFrom").value,to:$("repTo").value,accountType:$("completedAccount")?.value||"ALL"});
-  $("completedList").innerHTML=rows.length?rows.map(i=>`<div class="list-row" onclick="openInvoice('${esc(i.invoiceNumber)}')"><b>${esc(i.invoiceNumber)} · ${esc(i.customerName)}</b><span class="muted">${esc(i.accountType)} · ${money(i.totalSelling)} · ${new Date(i.completedAt).toLocaleString()}</span></div>`).join(""):"<p class='muted'>No completed invoices in this period.</p>";
+  $("completedList").innerHTML=rows.length?rows.map(i=>`<div class="list-row" onclick="openInvoice(JSON.parse(decodeURIComponent('${inlineData(i.invoiceNumber)}')))"><b>${esc(i.invoiceNumber)} · ${esc(i.customerName)}</b><span class="muted">${esc(i.accountType)} · ${money(i.totalSelling)} · ${new Date(i.completedAt).toLocaleString()}</span></div>`).join(""):"<p class='muted'>No completed invoices in this period.</p>";
 }
 function setThisMonth(){$("repFrom").value=thisMonth();$("repTo").value=today();loadReports()}
 async function openAccountReport(account){
-  if(account==="GRABBER"){switchPage("driver");return}
+  if(account==="GRABBER"){activeAccountReport="";switchPage("driver");return}
+  activeAccountReport=account;
   const d=await apiGet("accountReport",{accountType:account,from:$("repFrom").value,to:$("repTo").value});
-  $("reportBody").innerHTML=`<div class="card"><button class="btn outline" onclick="loadReports()">← All reports</button><h3 style="margin-top:10px">${account==="TANK"?"Tanks":"Boiler"} Account</h3><div class="grid three"><div>Revenue<br><strong>${money(d.totals.revenue)}</strong></div><div>Expenses<br><strong>${money(d.totals.expenses)}</strong></div><div>Profit<br><strong>${money(d.totals.profit)}</strong></div></div><h4>Completed invoices</h4><div id="accountInvoices">${d.invoices.map(i=>`<div class="list-row" onclick="openInvoice('${esc(i.invoiceNumber)}')"><b>${esc(i.invoiceNumber)} · ${esc(i.customerName)}</b><span class="muted">${money(i.totalSelling)} · ${esc(i.createdBy)}</span></div>`).join("")}</div><h4>Expenses</h4><div class="table-wrap"><table class="table"><tr><th>Date</th><th>Invoice</th><th>Expense</th><th>Cost</th><th>Added by</th></tr>${d.expenses.map(e=>`<tr><td>${new Date(e.date).toLocaleDateString()}</td><td>${esc(e.invoiceNumber)}</td><td>${esc(e.expenseName)}</td><td>${money(e.cost)}</td><td>${esc(e.addedBy)}</td></tr>`).join("")}</table></div></div>`;
+  $("reportBody").innerHTML=`<div class="card"><button class="btn outline" onclick="showAllReports()">← All reports</button><h3 style="margin-top:10px">${account==="TANK"?"Tanks":"Boiler"} Account</h3><div class="grid three"><div>Revenue<br><strong>${money(d.totals.revenue)}</strong></div><div>Expenses<br><strong>${money(d.totals.expenses)}</strong></div><div>Profit<br><strong>${money(d.totals.profit)}</strong></div></div><h4>Completed invoices</h4><div id="accountInvoices">${d.invoices.map(i=>`<div class="list-row" onclick="openInvoice(JSON.parse(decodeURIComponent('${inlineData(i.invoiceNumber)}')))"><b>${esc(i.invoiceNumber)} · ${esc(i.customerName)}</b><span class="muted">${money(i.totalSelling)} · ${esc(i.createdBy)}</span></div>`).join("")}</div><h4>Expenses</h4><div class="table-wrap"><table class="table"><tr><th>Date</th><th>Invoice</th><th>Expense</th><th>Cost</th><th>Added by</th></tr>${d.expenses.map(e=>`<tr><td>${new Date(e.date).toLocaleDateString()}</td><td>${esc(e.invoiceNumber)}</td><td>${esc(e.expenseName)}</td><td>${money(e.cost)}</td><td>${esc(e.addedBy)}</td></tr>`).join("")}</table></div></div>`;
 }
+function showAllReports(){activeAccountReport="";loadReports(true)}
 async function loadDriver(render=true){
   if(user.role!=="driver"&&user.role!=="admin")return;
+  const selectedTripCustomer=$("tripCustomer")?.value||"";
   $("tripDate").value||($("tripDate").value=today());$("driverExpDate").value||($("driverExpDate").value=today());
   const c=await apiGet("customers");$("tripCustomer").innerHTML=c.map(x=>`<option value="${esc(x.customerId)}">${esc(x.name)} · ${esc(x.phone)}</option>`).join("");
+  if(c.some(x=>x.customerId===selectedTripCustomer))$("tripCustomer").value=selectedTripCustomer;
   const d=await apiGet("driverReport",{from:$("repFrom")?.value||thisMonth(),to:$("repTo")?.value||today()});
   $("driverReport").innerHTML=`<div class="grid three"><div class="card"><small>Revenue</small><div class="money">${money(d.revenue)}</div></div><div class="card"><small>Expenses</small><div class="money">${money(d.expenses)}</div></div><div class="card"><small>Profit</small><div class="money">${money(d.profit)}</div></div></div><div class="card" style="margin-top:10px"><h3>Trips</h3>${d.trips.map(t=>`<div class="list-row"><b>${esc(t.customerName)} · ${money(t.amount)}</b><span class="muted">${esc(t.date)} · ${esc(t.description)}</span></div>`).join("")||"<p class='muted'>No trips.</p>"}</div>`;
 }
@@ -410,7 +554,8 @@ function showInstall(){
 function closeInstall(){ $("installModal").classList.remove("show");localStorage.setItem("installDismissed","1")}
 async function installPwa(){if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;closeInstall()}
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstall=e});
-window.addEventListener("online",()=>setStatus("online"));window.addEventListener("offline",()=>setStatus("offline"));
+window.addEventListener("online",()=>{setStatus("online");if(token)loadPage(true)});window.addEventListener("offline",()=>setStatus("offline"));
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&navigator.onLine&&token)loadPage(true)});
 window.addEventListener("DOMContentLoaded",()=>{if(user&&token)startApp()});
 </script>
 </body>

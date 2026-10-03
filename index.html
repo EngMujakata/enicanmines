@@ -86,6 +86,16 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .refresh-btn:active { transform: scale(.9); }
 .refresh-btn.spinning svg { animation: spin .8s linear; }
 
+.header-actions { display:flex; align-items:center; gap:7px; flex-shrink:0; }
+.install-app-btn { min-height:38px; padding:0 11px; border-radius:999px; background:rgba(255,255,255,.14); color:#fff; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:12px; font-weight:800; border:1px solid rgba(255,255,255,.22); }
+.install-app-btn:active { transform:scale(.96); }
+.install-app-btn svg { flex-shrink:0; }
+.pwa-modal-icon { width:78px; height:78px; border-radius:20px; object-fit:cover; box-shadow:0 10px 28px rgba(6,65,171,.22); }
+.pwa-install-card { background:linear-gradient(145deg,#0641ab,#05328a); color:#fff; border-radius:16px; padding:18px; text-align:center; box-shadow:0 12px 35px rgba(6,65,171,.22); }
+.pwa-install-card .btn { background:#fff; color:#0641ab; margin-top:14px; }
+.pwa-platform-note { background:#f8fafc; border:1px solid var(--gray-2); border-radius:12px; padding:12px; margin-top:12px; text-align:left; font-size:13px; color:#475569; }
+@supports (padding: env(safe-area-inset-bottom)) { body { padding-bottom:calc(80px + env(safe-area-inset-bottom)); } .nav { padding-bottom:env(safe-area-inset-bottom); } }
+
 /* ---------- BOTTOM NAV ---------- */
 .nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--gray-2); display: flex; z-index: 50; max-width: 900px; margin: 0 auto; box-shadow: 0 -2px 10px rgba(0,0,0,.05); overflow-x: auto; }
 .nav-item { flex: 1 0 auto; min-width: 64px; padding: 8px 4px 10px; display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--gray-3); font-size: 10px; font-weight: 600; background: none; transition: color .15s; }
@@ -255,9 +265,11 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
   body { padding-bottom:72px; overflow-x:hidden; }
   .header { padding:10px 10px; }
   .header-left { gap:8px; }
-  .system-brand { font-size:12px; padding-right:8px; }
+  .system-brand { font-size:11px; padding-right:7px; max-width:105px; overflow:hidden; text-overflow:ellipsis; }
   .header-title { font-size:15px; }
-  .header-sub { font-size:10px; }
+  .header-sub { font-size:9px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:130px; }
+  .install-app-btn { min-height:34px; padding:0 9px; }
+  .install-app-btn span { display:none; }
   .refresh-btn { width:34px; height:34px; flex-shrink:0; }
   .card { margin:8px; padding:12px; }
   .section-title { margin:14px 10px 7px; }
@@ -279,6 +291,15 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
   .data-row { gap:10px; }
   .data-row .lbl { min-width:0; }
   .data-row .val { max-width:62%; overflow-wrap:anywhere; }
+}
+@media (max-width: 380px) {
+  body { padding-bottom:70px; }
+  .nav { height:62px; }
+  .nav-item { padding:5px 0 6px; font-size:7px; }
+  .nav-item svg { width:18px; height:18px; }
+  .card { margin:6px; padding:10px; }
+  .report-actions { grid-template-columns:1fr; }
+  .account-box { padding:12px; }
 }
 @media (orientation: landscape) and (max-height: 600px) {
   .modal { max-height:96vh; }
@@ -328,9 +349,14 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
         <div class="header-sub" id="headerSub">Loading...</div>
       </div>
     </div>
-    <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" title="Refresh">
+    <div class="header-actions">
+      <button class="install-app-btn hidden" id="headerInstallBtn" onclick="installPWA()" title="Install Enican Mines System">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg><span>Install</span>
+      </button>
+      <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" title="Refresh">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
-    </button>
+      </button>
+    </div>
   </div>
 
   <div id="pageContent"></div>
@@ -523,7 +549,7 @@ function showApp() {
   buildNav();
   navigate('dashboard');
   startAutoRefresh();
-  if (!isStandaloneApp()) setTimeout(showInstallModal, 1200);
+  if (!isStandaloneApp()) { setInstallButtonVisible(!!deferredPrompt); setTimeout(showInstallModal, 1200); }
 }
 function logout() {
   localStorage.removeItem('enican_user');
@@ -1350,7 +1376,7 @@ async function renderPending(el) {
     ${requisitions.map(r => `
       <div class="list-item" onclick="viewCashRequisition('${r.id}')">
         <div class="avatar">$</div>
-        <div class="info"><div class="name">Cash Requisition · ${r.account}</div><div class="sub">${r.description} · $${Number(r.amount).toFixed(2)} · by ${r.requestedBy}</div></div>
+        <div class="info"><div class="name">Cash Requisition · ${r.account}</div><div class="sub">${r.description} · $${Number(r.amount).toFixed(2)} · by ${r.requestedByName||r.requestedBy}</div></div>
         <span class="badge small amber">Cash</span>
       </div>`).join('')}
   `;
@@ -1360,7 +1386,7 @@ async function viewCashRequisition(id) {
   const r = (res.requisitions || []).find(x => String(x.id) === String(id));
   if (!r) return toast('Requisition not found or already reviewed.', 'error');
   const body = `
-    <div class="data-row"><span class="lbl">Requested by</span><span class="val">${r.requestedBy}</span></div>
+    <div class="data-row"><span class="lbl">Requested by</span><span class="val">${r.requestedByName||r.requestedBy}</span></div>
     <div class="data-row"><span class="lbl">Role</span><span class="val">${r.requestedRole}</span></div>
     <div class="data-row"><span class="lbl">Account</span><span class="val">${r.account}</span></div>
     <div class="data-row"><span class="lbl">Description</span><span class="val">${r.description}</span></div>
@@ -1422,12 +1448,12 @@ async function approvePending(id, btn) {
   setBtnLoading(btn, false);
 }
 async function declinePending(id, btn) {
-  if (!confirm('Decline this price change? The session will remain active at the current approved price.')) return;
+  if (!confirm('Decline this price change? This reverses the transaction, empties/releases the tank or boiler, and allows the same invoice number to be entered again.')) return;
   setBtnLoading(btn, true);
   await withLoader('Declining...', async () => {
     const res = await apiPost({ action: 'declinePending', idempotencyKey: uid('DEC', id), pendingId: id, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
-    toast('Declined', 'success');
+    toast(res.message || 'Declined. Transaction reversed and asset released.', 'success');
     closeModal();
     loadPage();
   });
@@ -1546,7 +1572,7 @@ async function loadFinancialStatement(btn,download){
 function openFinancialStatement(st,download){
   const rows=st.rows||[];
   window._enicanLastStatement=st;
-  const html=`<div class="data-row"><span class="lbl">Period</span><span class="val">${st.from||'All time'} → ${st.to||'Today'}</span></div><div class="data-row"><span class="lbl">Account</span><span class="val">${st.account}</span></div><div class="data-row"><span class="lbl">Revenue</span><span class="val" style="color:#16a34a">$${Number(st.revenue).toFixed(2)}</span></div><div class="data-row"><span class="lbl">Expenses</span><span class="val" style="color:#dc2626">$${Number(st.expenses).toFixed(2)}</span></div><div class="data-row total"><span class="lbl">Gross Profit</span><span class="val">$${Number(st.profit).toFixed(2)}</span></div><div class="section-title" style="margin:16px 0 8px">Income & Expenses</div>${rows.length?`<div style="overflow-x:auto"><table class="statement-table"><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Account</th><th>Amount</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.date}</td><td>${r.type==='income'?'Income':'Expense'}</td><td>${r.description}</td><td>${r.account}</td><td>$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty" style="padding:24px">No transactions for this period.</div>'}<div style="margin-top:14px"><button class="btn" onclick="printFinancialStatement(window._enicanLastStatement)">Download Statement as PDF</button></div>`;
+  const html=`<div class="data-row"><span class="lbl">Period</span><span class="val">${st.from||'All time'} → ${st.to||'Today'}</span></div><div class="data-row"><span class="lbl">Account</span><span class="val">${st.account}</span></div><div class="data-row"><span class="lbl">Revenue</span><span class="val" style="color:#16a34a">$${Number(st.revenue).toFixed(2)}</span></div>${Number(st.grabberRevenue||0)>0&&st.account!=='grabber'?`<div class="data-row"><span class="lbl">Grabber Revenue (informational)</span><span class="val">$${Number(st.grabberRevenue).toFixed(2)}</span></div>`:''}<div class="data-row"><span class="lbl">Expenses</span><span class="val" style="color:#dc2626">$${Number(st.expenses).toFixed(2)}</span></div><div class="data-row total"><span class="lbl">Gross Profit</span><span class="val">$${Number(st.profit).toFixed(2)}</span></div><div class="section-title" style="margin:16px 0 8px">Income & Expenses</div>${rows.length?`<div style="overflow-x:auto"><table class="statement-table"><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Account</th><th>Amount</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.date}</td><td>${r.type==='income'?'Income':'Expense'}</td><td>${r.description}</td><td>${r.account}</td><td>$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty" style="padding:24px">No transactions for this period.</div>'}<div style="margin-top:14px"><button class="btn" onclick="printFinancialStatement(window._enicanLastStatement)">Download Statement as PDF</button></div>`;
   openModal('Enican Mines System — Statement',html);
   if(download)setTimeout(()=>printFinancialStatement(st),250);
 }
@@ -2005,27 +2031,63 @@ function closeModal() { document.querySelectorAll('.modal-overlay').forEach(m =>
 
 // ============ PWA ============
 let deferredPrompt = null;
-function isStandaloneApp(){ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
-window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredPrompt=e; if(!isStandaloneApp()) setTimeout(showInstallModal,900);});
-window.addEventListener('appinstalled',()=>{deferredPrompt=null;closeModal();toast('Enican Mines System installed.','success');});
+function isStandaloneApp(){
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.matchMedia('(display-mode: fullscreen)').matches ||
+         window.navigator.standalone === true;
+}
+function setInstallButtonVisible(show){
+  const b=document.getElementById('headerInstallBtn');
+  if(!b)return;
+  b.classList.toggle('hidden',!show || isStandaloneApp());
+}
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  setInstallButtonVisible(true);
+  if(!isStandaloneApp()) setTimeout(showInstallModal,900);
+});
+window.addEventListener('appinstalled',()=>{
+  deferredPrompt=null;
+  setInstallButtonVisible(false);
+  closeModal();
+  toast('Enican Mines System installed.','success');
+});
 function showInstallModal(){
   if(isStandaloneApp() || document.querySelector('.modal-overlay[data-install-prompt="1"]')) return;
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
   const android=/android/i.test(navigator.userAgent);
   const icon='logo-192.png';
-  const installBtn=deferredPrompt?`<button class="btn" onclick="installPWA()">Install App</button>`:'';
-  const instructions=ios?`<div class="card" style="margin:0;background:#f8fafc"><b>On iPhone/iPad</b><div style="font-size:13px;color:#64748b;margin-top:6px">Tap <b>Share</b> in Safari, then choose <b>Add to Home Screen</b>.</div></div>`:(android&&!deferredPrompt?`<div class="card" style="margin:0;background:#f8fafc"><b>Install on Android</b><div style="font-size:13px;color:#64748b;margin-top:6px">Tap the browser menu ⋮, then choose <b>Add to Home screen</b> or <b>Install app</b>.</div></div>`:'');
-  openModal('Install Enican Mines System',`<div style="text-align:center;padding:8px 0 6px"><img src="${icon}" onerror="this.style.display='none'" style="width:72px;height:72px;border-radius:18px;box-shadow:0 8px 24px rgba(0,0,0,.12)"><h3 style="margin:12px 0 4px;color:#0641ab">Enican Mines System</h3><p style="color:#64748b;font-size:13px;margin-bottom:16px">Install the system for a faster, app-like experience on your device.</p>${installBtn}${instructions}</div><button class="btn btn-outline" style="margin-top:10px" onclick="closeModal()">Maybe later</button>`);
+  const nativeInstall=deferredPrompt
+    ? `<button class="btn" onclick="installPWA()">Install Enican Mines</button>`
+    : '';
+  const instructions=ios
+    ? `<div class="pwa-platform-note"><b>iPhone / iPad</b><br>Open this site in Safari, tap <b>Share</b>, then choose <b>Add to Home Screen</b>.</div>`
+    : (android && !deferredPrompt
+      ? `<div class="pwa-platform-note"><b>Android</b><br>Tap the browser menu <b>⋮</b>, then choose <b>Install app</b> or <b>Add to Home screen</b>.</div>`
+      : (!deferredPrompt ? `<div class="pwa-platform-note">Use your browser's <b>Install app</b> / <b>Add to Home screen</b> option when available.</div>` : ''));
+  openModal('Install Enican Mines System',`
+    <div class="pwa-install-card">
+      <img class="pwa-modal-icon" src="${icon}" alt="Enican Mines System">
+      <h3 style="margin:12px 0 4px;font-size:19px">Enican Mines System</h3>
+      <div style="opacity:.9;font-size:13px;line-height:1.5">Install the system for a native app-like experience, faster access and a full-screen workspace.</div>
+      ${nativeInstall}
+    </div>
+    ${instructions}
+    <button class="btn btn-outline" style="margin-top:10px" onclick="closeModal()">Maybe later</button>
+  `);
   const m=document.querySelector('.modal-overlay'); if(m)m.dataset.installPrompt='1';
 }
 async function installPWA(){
-  if(!deferredPrompt){showInstallModal();return;}
-  deferredPrompt.prompt();
-  const choice=await deferredPrompt.userChoice;
+  if(!deferredPrompt){ showInstallModal(); return; }
+  try{
+    deferredPrompt.prompt();
+    const choice=await deferredPrompt.userChoice;
+    if(choice && choice.outcome==='accepted') closeModal();
+  }catch(e){ showInstallModal(); }
   deferredPrompt=null;
-  if(choice.outcome==='accepted')closeModal();
+  setInstallButtonVisible(false);
 }
-
 // ============ INIT ============
 (async function init() {
   await loadSystemConfig();
@@ -2036,7 +2098,10 @@ async function installPWA(){
       showApp();
     } catch (e) { localStorage.removeItem('enican_user'); }
   }
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js', {scope:'./'}).catch(() => {});
+  }
+  setInstallButtonVisible(!!deferredPrompt);
 })();
 </script>
 </body>

@@ -1,10 +1,8 @@
-const CACHE_NAME = 'enican-mines-v2';
+const CACHE_NAME = 'enican-mines-v1';
 const APP_SHELL = [
   './',
   './index.html',
-  './manifest.json',
-  './logo-192.png',
-  './logo-512.png'
+  './manifest.json'
 ];
 
 self.addEventListener('install', event => {
@@ -12,36 +10,56 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(APP_SHELL))
       .then(() => self.skipWaiting())
-      .catch(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-    )).then(() => self.clients.claim())
+    caches.keys().then(keys =>
+      Promise.all(
+        keys
+          .filter(key => key !== CACHE_NAME)
+          .map(key => caches.delete(key))
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', event => {
   const request = event.request;
-  if (request.method !== 'GET') return;
 
-  const url = new URL(request.url);
-  // Never cache the Apps Script API: reports, payments and operations must be live.
-  if (url.hostname.includes('script.google.com') || url.pathname.includes('/macros/')) return;
+  // Do not cache live Apps Script/API requests.
+  if (
+    request.method !== 'GET' ||
+    request.url.includes('script.google.com') ||
+    request.url.includes('/exec')
+  ) {
+    return;
+  }
 
   event.respondWith(
-    caches.match(request).then(cached => {
-      const network = fetch(request).then(response => {
-        if (response && response.ok && url.origin === self.location.origin) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+    caches.match(request).then(cachedResponse => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      return fetch(request).then(response => {
+        if (
+          !response ||
+          response.status !== 200 ||
+          response.type === 'opaque'
+        ) {
+          return response;
         }
+
+        const responseClone = response.clone();
+
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(request, responseClone);
+        });
+
         return response;
-      }).catch(() => cached);
-      return cached || network;
+      });
     })
   );
 });

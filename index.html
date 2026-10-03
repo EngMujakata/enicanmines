@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0641ab">
-<title>Management System</title>
+<title>Enican Mines System</title>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="logo192.png">
+<link rel="icon" href="logo-192.png">
 <style>
 :root {
   --bg-main: #f4f6f8;
@@ -237,6 +237,57 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .step { flex: 1; height: 4px; background: var(--gray-2); border-radius: 4px; }
 .step.active { background: var(--navy); }
 .step.done { background: var(--green); }
+
+/* ---------- RESPONSIVE / MOBILE ---------- */
+#pageContent { width:100%; max-width:1100px; margin:0 auto; overflow-x:hidden; }
+.card, .section-title, .list-item, .account-box, .stat-box { min-width:0; }
+.info { min-width:0; }
+.nav { width:100%; max-width:1100px; overflow:hidden; }
+.nav-item { min-width:0; flex:1 1 0; }
+.nav-item span { max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.report-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:12px; }
+.report-actions .btn { width:100%; }
+.report-accounts { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.statement-table { width:100%; border-collapse:collapse; font-size:12px; }
+.statement-table th,.statement-table td { padding:8px 6px; border-bottom:1px solid var(--gray-2); text-align:left; }
+.statement-table th:last-child,.statement-table td:last-child { text-align:right; }
+@media (max-width: 700px) {
+  body { padding-bottom:72px; overflow-x:hidden; }
+  .header { padding:10px 10px; }
+  .header-left { gap:8px; }
+  .system-brand { font-size:12px; padding-right:8px; }
+  .header-title { font-size:15px; }
+  .header-sub { font-size:10px; }
+  .refresh-btn { width:34px; height:34px; flex-shrink:0; }
+  .card { margin:8px; padding:12px; }
+  .section-title { margin:14px 10px 7px; }
+  .report-accounts { grid-template-columns:1fr; margin:0 8px !important; }
+  .report-actions { margin:8px; grid-template-columns:1fr; }
+  .list-item { padding:10px; gap:8px; }
+  .list-item .avatar { width:34px; height:34px; font-size:13px; }
+  .list-item .info .name { font-size:13px; }
+  .list-item .info .sub { font-size:10px; }
+  .list-item .amount { font-size:12px; flex-shrink:0; }
+  .grid-3 { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .grid-2 { grid-template-columns:1fr 1fr; }
+  .nav { height:68px; }
+  .nav-item { padding:6px 1px 8px; font-size:8px; gap:1px; }
+  .nav-item svg { width:19px; height:19px; }
+  .modal { max-width:100%; max-height:94vh; border-radius:18px 18px 0 0; }
+  .modal-header { padding:14px 14px 10px; }
+  .modal-body { padding:12px 14px 24px; }
+  .data-row { gap:10px; }
+  .data-row .lbl { min-width:0; }
+  .data-row .val { max-width:62%; overflow-wrap:anywhere; }
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  .modal { max-height:96vh; }
+  body { padding-bottom:62px; }
+  .nav { height:58px; }
+  .nav-item { padding:4px 2px; }
+  .nav-item svg { width:18px; height:18px; }
+}
+
 </style>
 </head>
 <body>
@@ -307,7 +358,10 @@ const state = {
   driverTab: 'trips',
   // Track "user has unsaved work on this page" so auto-refresh never wipes it
   dirty: { load: false, driver: false },
-  systemName: 'Loading...'
+  systemName: 'Loading...',
+  reportInvoicePage: 1,
+  reportInvoiceHasNext: false,
+  reportInvoices: []
 };
 
 // ---------- DRAFT PERSISTENCE (survives refresh / auto-refresh) ----------
@@ -469,6 +523,7 @@ function showApp() {
   buildNav();
   navigate('dashboard');
   startAutoRefresh();
+  if (!isStandaloneApp()) setTimeout(showInstallModal, 1200);
 }
 function logout() {
   localStorage.removeItem('enican_user');
@@ -1275,23 +1330,66 @@ async function downloadStatement(sessionId) {
 
 // ============ PENDING (admin) ============
 async function renderPending(el) {
-  document.getElementById('headerSub').textContent = 'Price change approvals';
-  const res = await apiGet({ action: 'pendingPrices' });
-  const pending = res.pending || [];
+  document.getElementById('headerSub').textContent = 'Pending approvals';
+  const [priceRes, reqRes] = await Promise.all([
+    apiGet({ action: 'pendingPrices' }),
+    apiGet({ action: 'pendingRequisitions', user: state.user.username })
+  ]);
+  const pending = priceRes.pending || [];
+  const requisitions = reqRes.requisitions || [];
+  const total = pending.length + requisitions.length;
   el.innerHTML = `
-    <div class="section-title">Pending Approvals (${pending.length})</div>
-    ${pending.length === 0 ? '<div class="empty">No pending approvals</div>' : pending.map(p => `
+    <div class="section-title">Pending Approvals (${total})</div>
+    ${total === 0 ? '<div class="empty">No pending approvals</div>' : ''}
+    ${pending.map(p => `
       <div class="list-item" onclick="viewPending('${p.id}')">
         <div class="avatar">${p.customerName ? p.customerName[0].toUpperCase() : '?'}</div>
-        <div class="info">
-          <div class="name">${p.customerName}</div>
-          <div class="sub">${p.expenseName}: $${p.oldAmount} → $${p.newAmount} · by ${p.requestedBy}</div>
-        </div>
-        <span class="badge small amber">Pending</span>
-      </div>
-    `).join('')}
+        <div class="info"><div class="name">${p.customerName}</div><div class="sub">${p.expenseName}: $${Number(p.oldAmount).toFixed(2)} → $${Number(p.newAmount).toFixed(2)} · by ${p.requestedBy}</div></div>
+        <span class="badge small amber">Price</span>
+      </div>`).join('')}
+    ${requisitions.map(r => `
+      <div class="list-item" onclick="viewCashRequisition('${r.id}')">
+        <div class="avatar">$</div>
+        <div class="info"><div class="name">Cash Requisition · ${r.account}</div><div class="sub">${r.description} · $${Number(r.amount).toFixed(2)} · by ${r.requestedBy}</div></div>
+        <span class="badge small amber">Cash</span>
+      </div>`).join('')}
   `;
 }
+async function viewCashRequisition(id) {
+  const res = await apiGet({ action: 'pendingRequisitions', user: state.user.username });
+  const r = (res.requisitions || []).find(x => String(x.id) === String(id));
+  if (!r) return toast('Requisition not found or already reviewed.', 'error');
+  const body = `
+    <div class="data-row"><span class="lbl">Requested by</span><span class="val">${r.requestedBy}</span></div>
+    <div class="data-row"><span class="lbl">Role</span><span class="val">${r.requestedRole}</span></div>
+    <div class="data-row"><span class="lbl">Account</span><span class="val">${r.account}</span></div>
+    <div class="data-row"><span class="lbl">Description</span><span class="val">${r.description}</span></div>
+    <div class="data-row total"><span class="lbl">Amount</span><span class="val">$${Number(r.amount).toFixed(2)}</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px">
+      <button class="btn btn-danger" onclick="declineCashRequisition('${r.id}',this)">Decline</button>
+      <button class="btn btn-success" onclick="approveCashRequisition('${r.id}',this)">Approve</button>
+    </div>`;
+  openModal('Cash Requisition', body);
+}
+async function approveCashRequisition(id, btn) {
+  setBtnLoading(btn,true);
+  await withLoader('Approving cash requisition...',async()=>{
+    const res=await apiPost({action:'approveCashRequisition',requisitionId:id,idempotencyKey:uid('REQAPR',id),user:state.user.username});
+    if(!res.success)return toast(res.error,'error');
+    toast('Cash requisition approved and added to account expenses.','success'); closeModal(); loadPage();
+  });
+  setBtnLoading(btn,false);
+}
+async function declineCashRequisition(id, btn) {
+  setBtnLoading(btn,true);
+  await withLoader('Declining cash requisition...',async()=>{
+    const res=await apiPost({action:'declineCashRequisition',requisitionId:id,idempotencyKey:uid('REQDEC',id),user:state.user.username});
+    if(!res.success)return toast(res.error,'error');
+    toast('Cash requisition declined.','success'); closeModal(); loadPage();
+  });
+  setBtnLoading(btn,false);
+}
+
 async function viewPending(id) {
   const res = await apiGet({ action: 'pendingDetails', id });
   if (!res.success) return toast(res.error, 'error');
@@ -1339,19 +1437,18 @@ async function declinePending(id, btn) {
 // ============ REPORTS ============
 async function renderReports(el) {
   document.getElementById('headerSub').textContent = 'Reports & Analytics';
-  if (state.user.role === 'driver') { return renderDriver(el); }
-  const from = state.filter.from || '';
-  const to = state.filter.to || '';
-  const account = state.filter.account || 'all';
-  const [repRes, invRes] = await Promise.all([
-    apiGet({ action: 'reports', from, to }),
-    apiGet({ action: 'completedInvoices', from, to, account })
+  if (state.user.role === 'driver') return renderDriver(el);
+  const from=state.filter.from||'', to=state.filter.to||'', account=state.filter.account||'all';
+  state.reportInvoicePage=1; state.reportInvoices=[];
+  const [repRes,invRes]=await Promise.all([
+    apiGet({action:'reports',from,to,account}),
+    apiGet({action:'completedInvoices',from,to,account,page:1,pageSize:10})
   ]);
-  const monthly = repRes.monthly;
-  const overall = repRes.overall;
-  const invoices = invRes.invoices || [];
-  const showAccount = account;
-  el.innerHTML = `
+  if(!repRes.success)return toast(repRes.error||'Could not load reports','error');
+  const monthly=repRes.monthly, overall=repRes.overall, invoices=invRes.invoices||[];
+  state.reportInvoices=invoices; state.reportInvoiceHasNext=!!invRes.hasNext;
+  const showAccount=account;
+  el.innerHTML=`
     <div class="card">
       <div class="card-title">Filter by Period</div>
       <div class="grid grid-2">
@@ -1360,55 +1457,106 @@ async function renderReports(el) {
       </div>
     </div>
     <div class="section-title">Accounts</div>
-    <div class="grid grid-3" style="margin:0 12px">
-      <div class="account-box ${showAccount==='tank'?'active':''}" onclick="selectAccount('tank')">
-        <div class="label">Tanks Account</div>
-        <div class="value">$${monthly.tank.profit.toFixed(0)}</div>
-        <div class="sub">Profit</div>
-      </div>
-      <div class="account-box boiler ${showAccount==='boiler'?'active':''}" onclick="selectAccount('boiler')">
-        <div class="label">Boiler Account</div>
-        <div class="value">$${monthly.boiler.profit.toFixed(0)}</div>
-        <div class="sub">Profit</div>
-      </div>
-      <div class="account-box grabber ${showAccount==='grabber'?'active':''}" onclick="selectAccount('grabber')">
-        <div class="label">Grabber Account</div>
-        <div class="value">$${monthly.grabber.profit.toFixed(0)}</div>
-        <div class="sub">Profit</div>
-      </div>
+    <div class="grid report-accounts" style="margin:0 12px">
+      <div class="account-box ${showAccount==='tank'?'active':''}" onclick="selectAccount('tank')"><div class="label">Tanks Account</div><div class="value">$${monthly.tank.profit.toFixed(0)}</div><div class="sub">Profit</div></div>
+      <div class="account-box boiler ${showAccount==='boiler'?'active':''}" onclick="selectAccount('boiler')"><div class="label">Boiler Account</div><div class="value">$${monthly.boiler.profit.toFixed(0)}</div><div class="sub">Profit</div></div>
+      <div class="account-box grabber ${showAccount==='grabber'?'active':''}" onclick="selectAccount('grabber')"><div class="label">Grabber Account</div><div class="value">$${monthly.grabber.profit.toFixed(0)}</div><div class="sub">Profit</div></div>
     </div>
     <div class="card" style="margin-top:16px">
       <div class="card-title">Overall (filtered period)</div>
       <div class="data-row"><span class="lbl">Total Revenue</span><span class="val">$${overall.revenue.toFixed(2)}</span></div>
-      <div class="data-row"><span class="lbl">Client Expense Costs</span><span class="val">$${(monthly.tank.clientCosts + monthly.boiler.clientCosts).toFixed(2)}</span></div>
-      <div class="data-row"><span class="lbl">Our Internal Costs</span><span class="val">$${(monthly.tank.ourExpenses + monthly.boiler.ourExpenses).toFixed(2)}</span></div>
+      <div class="data-row"><span class="lbl">Client Cost Expenses</span><span class="val">$${(monthly.tank.clientCosts+monthly.boiler.clientCosts).toFixed(2)}</span></div>
+      <div class="data-row"><span class="lbl">Our Internal Expenses</span><span class="val">$${(monthly.tank.ourExpenses+monthly.boiler.ourExpenses).toFixed(2)}</span></div>
       <div class="data-row"><span class="lbl">Driver Expenses</span><span class="val">$${monthly.grabber.expenses.toFixed(2)}</span></div>
+      <div class="data-row"><span class="lbl">Cash Requisitions</span><span class="val">$${(monthly.tank.requisitions+monthly.boiler.requisitions+monthly.grabber.requisitions).toFixed(2)}</span></div>
       <div class="data-row"><span class="lbl">Total Expenses</span><span class="val">$${overall.expenses.toFixed(2)}</span></div>
-      <div class="data-row total"><span class="lbl">Net Profit</span><span class="val" style="color:${overall.profit>=0?'#16a34a':'#dc2626'}">$${overall.profit.toFixed(2)}</span></div>
-    </div>
-    ${account === 'grabber' ? renderGrabberReport(monthly) : `
-      <div class="card" style="margin-top:16px">
-        <div class="card-title">${account === 'boiler' ? 'Boiler' : 'Tank'} Account Details</div>
-        <div class="data-row"><span class="lbl">Revenue</span><span class="val">$${monthly[account === 'boiler' ? 'boiler' : 'tank'].revenue.toFixed(2)}</span></div>
-        <div class="data-row"><span class="lbl">Client Expense Costs</span><span class="val">$${monthly[account === 'boiler' ? 'boiler' : 'tank'].clientCosts.toFixed(2)}</span></div>
-        <div class="data-row"><span class="lbl">Our Internal Expenses</span><span class="val">$${monthly[account === 'boiler' ? 'boiler' : 'tank'].ourExpenses.toFixed(2)}</span></div>
-        <div class="data-row"><span class="lbl">Total Costs</span><span class="val">$${monthly[account === 'boiler' ? 'boiler' : 'tank'].expenses.toFixed(2)}</span></div>
-        <div class="data-row total"><span class="lbl">Profit</span><span class="val">$${monthly[account === 'boiler' ? 'boiler' : 'tank'].profit.toFixed(2)}</span></div>
+      <div class="data-row total"><span class="lbl">Gross Profit</span><span class="val" style="color:${overall.profit>=0?'#16a34a':'#dc2626'}">$${overall.profit.toFixed(2)}</span></div>
+      <div class="report-actions">
+        <button class="btn btn-outline" onclick="showStatementFilterModal(false)">View Statement</button>
+        <button class="btn btn-outline" onclick="showStatementFilterModal(true)">Download Statement</button>
+        <button class="btn" onclick="showCashRequisitionModal()">Cash Requisition</button>
       </div>
-      <div class="section-title">Completed Invoices (${invoices.length})</div>
-      ${invoices.length === 0 ? '<div class="empty">No completed invoices for this period</div>' : invoices.map(inv => `
-        <div class="list-item" onclick="viewInvoice('${inv.id}')">
-          <div class="avatar">${inv.customerName ? inv.customerName[0].toUpperCase() : '?'}</div>
-          <div class="info">
-            <div class="name">${inv.customerName}</div>
-            <div class="sub">Inv: ${inv.invoiceNumber || inv.id} · ${inv.assetIds} · ${inv.completedAt ? new Date(inv.completedAt).toLocaleDateString() : ''} · Completed by ${inv.completedBy || '-'}</div>
-          </div>
-          <div class="amount">$${Number(inv.totalAmount).toFixed(2)}</div>
-        </div>
-      `).join('')}
-    `}
+    </div>
+    ${account==='grabber'?renderGrabberReport(monthly):`
+      <div class="card" style="margin-top:16px">
+        <div class="card-title">${account==='boiler'?'Boiler':'Tank'} Account Details</div>
+        <div class="data-row"><span class="lbl">Revenue</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].revenue.toFixed(2)}</span></div>
+        <div class="data-row"><span class="lbl">Client Cost Expenses</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].clientCosts.toFixed(2)}</span></div>
+        <div class="data-row"><span class="lbl">Our Internal Expenses</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].ourExpenses.toFixed(2)}</span></div>
+        <div class="data-row"><span class="lbl">Cash Requisitions</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].requisitions.toFixed(2)}</span></div>
+        <div class="data-row"><span class="lbl">Total Costs</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].expenses.toFixed(2)}</span></div>
+        <div class="data-row total"><span class="lbl">Profit</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].profit.toFixed(2)}</span></div>
+      </div>`}
+    <div class="section-title">Completed Invoices — latest 10 of ${invRes.total||0}</div>
+    <div id="completedInvoicesList">${renderInvoiceRows(invoices)}</div>
+    <div id="invoicePager" style="margin:10px 12px 18px;display:${invRes.hasNext?'block':'none'}">
+      <button class="btn btn-outline" onclick="loadMoreInvoices(this)">Next 10</button>
+    </div>
   `;
 }
+function renderInvoiceRows(invoices){
+  if(!invoices.length)return '<div class="empty">No completed invoices for this period</div>';
+  return invoices.map(inv=>`<div class="list-item" onclick="viewInvoice('${inv.id}')"><div class="avatar">${inv.customerName?inv.customerName[0].toUpperCase():'?'}</div><div class="info"><div class="name">${inv.customerName||'-'}</div><div class="sub">Inv: ${inv.invoiceNumber||inv.id} · ${inv.assetIds||''} · ${inv.completedAt?new Date(inv.completedAt).toLocaleDateString():''} · ${inv.completedBy||'-'}</div></div><div class="amount">$${Number(inv.totalAmount).toFixed(2)}</div></div>`).join('');
+}
+async function loadMoreInvoices(btn){
+  if(!state.reportInvoiceHasNext)return;
+  setBtnLoading(btn,true);
+  const next=state.reportInvoicePage+1;
+  const res=await apiGet({action:'completedInvoices',from:state.filter.from||'',to:state.filter.to||'',account:state.filter.account||'all',page:next,pageSize:10});
+  if(!res.success){toast(res.error||'Could not load more invoices','error');setBtnLoading(btn,false);return;}
+  state.reportInvoicePage=next; state.reportInvoiceHasNext=!!res.hasNext; state.reportInvoices=state.reportInvoices.concat(res.invoices||[]);
+  const list=document.getElementById('completedInvoicesList');
+  if(list){ if(state.reportInvoices.length===res.invoices.length) list.innerHTML=renderInvoiceRows(res.invoices); else list.insertAdjacentHTML('beforeend',renderInvoiceRows(res.invoices)); }
+  const pager=document.getElementById('invoicePager'); if(pager)pager.style.display=state.reportInvoiceHasNext?'block':'none';
+  setBtnLoading(btn,false);
+}
+function showCashRequisitionModal(){
+  const role=String(state.user.role||'').toLowerCase();
+  const account=role==='loader'?'tank':role==='boiler'?'boiler':role==='driver'?'grabber':'general';
+  const accountField=role==='admin'?`<div class="field"><label>Account</label><select id="reqAccount"><option value="tank">Tank Account</option><option value="boiler">Boiler Account</option><option value="grabber">Grabber Account</option></select></div>`:`<div class="data-row" style="margin-bottom:14px"><span class="lbl">Account</span><span class="val">${account}</span></div>`;
+  openModal('Cash Requisition',`${accountField}<div class="field"><label>Description</label><textarea id="reqDesc" rows="3" placeholder="What is the cash needed for?"></textarea></div><div class="field"><label>Amount</label><input id="reqAmount" type="number" min="0.01" step="0.01" placeholder="0.00"></div><button class="btn" onclick="submitCashRequisition(this)">Request Cash</button>`);
+}
+async function submitCashRequisition(btn){
+  const description=(document.getElementById('reqDesc')||{}).value||'';
+  const amount=Number((document.getElementById('reqAmount')||{}).value);
+  const account=(document.getElementById('reqAccount')||{}).value||'';
+  if(!description.trim())return toast('Enter a description.','error');
+  if(!Number.isFinite(amount)||amount<=0)return toast('Enter a valid amount.','error');
+  setBtnLoading(btn,true);
+  await withLoader('Submitting cash requisition...',async()=>{
+    const res=await apiPost({action:'requestCashRequisition',idempotencyKey:uid('REQ',state.user.username+':'+description+':'+amount),description:description.trim(),amount,account,user:state.user.username});
+    if(!res.success)return toast(res.error,'error');
+    toast('Cash requisition sent to Admin for approval.','success'); closeModal();
+  });
+  setBtnLoading(btn,false);
+}
+function showStatementFilterModal(downloadAfter){
+  const from=state.filter.from||'',to=state.filter.to||'',account=state.filter.account||'all';
+  openModal('View Statement',`<div class="field"><label>From</label><input type="date" id="stFrom" value="${from}"></div><div class="field"><label>To</label><input type="date" id="stTo" value="${to}"></div><div class="field"><label>Account</label><select id="stAccount"><option value="all" ${account==='all'?'selected':''}>All Accounts</option><option value="tank" ${account==='tank'?'selected':''}>Tank Account</option><option value="boiler" ${account==='boiler'?'selected':''}>Boiler Account</option><option value="grabber" ${account==='grabber'?'selected':''}>Grabber Account</option></select></div><button class="btn" onclick="loadFinancialStatement(this,${downloadAfter?'true':'false'})">${downloadAfter?'Build & Download':'View Statement'}</button>`);
+}
+async function loadFinancialStatement(btn,download){
+  const from=(document.getElementById('stFrom')||{}).value||'',to=(document.getElementById('stTo')||{}).value||'',account=(document.getElementById('stAccount')||{}).value||'all';
+  if(from&&to&&from>to)return toast('From date cannot be after To date.','error');
+  setBtnLoading(btn,true);
+  const res=await apiGet({action:'financialStatement',from,to,account,user:state.user.username});
+  setBtnLoading(btn,false);
+  if(!res.success)return toast(res.error||'Could not build statement','error');
+  openFinancialStatement(res,download);
+}
+function openFinancialStatement(st,download){
+  const rows=st.rows||[];
+  window._enicanLastStatement=st;
+  const html=`<div class="data-row"><span class="lbl">Period</span><span class="val">${st.from||'All time'} → ${st.to||'Today'}</span></div><div class="data-row"><span class="lbl">Account</span><span class="val">${st.account}</span></div><div class="data-row"><span class="lbl">Revenue</span><span class="val" style="color:#16a34a">$${Number(st.revenue).toFixed(2)}</span></div><div class="data-row"><span class="lbl">Expenses</span><span class="val" style="color:#dc2626">$${Number(st.expenses).toFixed(2)}</span></div><div class="data-row total"><span class="lbl">Gross Profit</span><span class="val">$${Number(st.profit).toFixed(2)}</span></div><div class="section-title" style="margin:16px 0 8px">Income & Expenses</div>${rows.length?`<div style="overflow-x:auto"><table class="statement-table"><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Account</th><th>Amount</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.date}</td><td>${r.type==='income'?'Income':'Expense'}</td><td>${r.description}</td><td>${r.account}</td><td>$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty" style="padding:24px">No transactions for this period.</div>'}<div style="margin-top:14px"><button class="btn" onclick="printFinancialStatement(window._enicanLastStatement)">Download Statement as PDF</button></div>`;
+  openModal('Enican Mines System — Statement',html);
+  if(download)setTimeout(()=>printFinancialStatement(st),250);
+}
+function printFinancialStatement(st){
+  const rows=st.rows||[];
+  const w=window.open('','_blank'); if(!w)return toast('Please allow pop-ups to download the statement.','error');
+  w.document.write(`<html><head><title>${state.systemName} Statement</title><style>body{font-family:Arial,sans-serif;padding:28px;color:#0f172a}h1{color:#0641ab;margin-bottom:2px}.sub{color:#64748b;font-size:12px;margin-bottom:18px}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.box{border:1px solid #dbe3ee;border-radius:8px;padding:10px}.box b{display:block;margin-top:4px;font-size:18px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#f4f6fa}.right{text-align:right}.expense{color:#dc2626}.income{color:#15803d}</style></head><body><h1>${state.systemName}</h1><div class="sub">Enican Mines System · Financial Statement · ${st.from||'All time'} to ${st.to||'Today'} · ${st.account}</div><div class="summary"><div class="box">Revenue<b>$${Number(st.revenue).toFixed(2)}</b></div><div class="box">Expenses<b>$${Number(st.expenses).toFixed(2)}</b></div><div class="box">Gross Profit<b>$${Number(st.profit).toFixed(2)}</b></div></div><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Account</th><th class="right">Amount</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.date}</td><td class="${r.type}">${r.type}</td><td>${r.category}</td><td>${r.description}</td><td>${r.account}</td><td class="right">$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table><script>setTimeout(()=>window.print(),250)<\/script></body></html>`);
+  w.document.close();
+}
+
 function renderGrabberReport(monthly) {
   return `
     <div class="card" style="margin-top:16px">
@@ -1857,23 +2005,25 @@ function closeModal() { document.querySelectorAll('.modal-overlay').forEach(m =>
 
 // ============ PWA ============
 let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; showInstallBanner(); });
-function showInstallBanner() {
-  if (document.querySelector('.install-banner')) return;
-  const banner = document.createElement('div');
-  banner.className = 'install-banner';
-  banner.innerHTML = `
-    <div style="flex:1;font-size:13px">Install ${state.systemName} for quick access</div>
-    <button class="btn" onclick="installPWA()">Install</button>
-    <button style="background:transparent;color:white;font-size:18px;width:30px" onclick="this.parentElement.remove()">×</button>
-  `;
-  document.body.appendChild(banner);
+function isStandaloneApp(){ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
+window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredPrompt=e; if(!isStandaloneApp()) setTimeout(showInstallModal,900);});
+window.addEventListener('appinstalled',()=>{deferredPrompt=null;closeModal();toast('Enican Mines System installed.','success');});
+function showInstallModal(){
+  if(isStandaloneApp() || document.querySelector('.modal-overlay[data-install-prompt="1"]')) return;
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const android=/android/i.test(navigator.userAgent);
+  const icon='logo-192.png';
+  const installBtn=deferredPrompt?`<button class="btn" onclick="installPWA()">Install App</button>`:'';
+  const instructions=ios?`<div class="card" style="margin:0;background:#f8fafc"><b>On iPhone/iPad</b><div style="font-size:13px;color:#64748b;margin-top:6px">Tap <b>Share</b> in Safari, then choose <b>Add to Home Screen</b>.</div></div>`:(android&&!deferredPrompt?`<div class="card" style="margin:0;background:#f8fafc"><b>Install on Android</b><div style="font-size:13px;color:#64748b;margin-top:6px">Tap the browser menu ⋮, then choose <b>Add to Home screen</b> or <b>Install app</b>.</div></div>`:'');
+  openModal('Install Enican Mines System',`<div style="text-align:center;padding:8px 0 6px"><img src="${icon}" onerror="this.style.display='none'" style="width:72px;height:72px;border-radius:18px;box-shadow:0 8px 24px rgba(0,0,0,.12)"><h3 style="margin:12px 0 4px;color:#0641ab">Enican Mines System</h3><p style="color:#64748b;font-size:13px;margin-bottom:16px">Install the system for a faster, app-like experience on your device.</p>${installBtn}${instructions}</div><button class="btn btn-outline" style="margin-top:10px" onclick="closeModal()">Maybe later</button>`);
+  const m=document.querySelector('.modal-overlay'); if(m)m.dataset.installPrompt='1';
 }
-async function installPWA() {
-  if (!deferredPrompt) { alert('To install:\n\nAndroid Chrome: Tap ⋮ menu → "Add to Home screen"\niOS Safari: Tap Share icon → "Add to Home Screen"'); return; }
+async function installPWA(){
+  if(!deferredPrompt){showInstallModal();return;}
   deferredPrompt.prompt();
-  await deferredPrompt.userChoice;
-  deferredPrompt = null;
+  const choice=await deferredPrompt.userChoice;
+  deferredPrompt=null;
+  if(choice.outcome==='accepted')closeModal();
 }
 
 // ============ INIT ============

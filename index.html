@@ -3,14 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0641ab">\n<meta name="description" content="Enican Mines Management System">
+<meta name="theme-color" content="#0641ab">
 <title>Enican Mines System</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="logo-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Enican Mines">
 <style>
 :root {
   --bg-main: #f4f6f8;
@@ -375,7 +371,6 @@ const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyRU-izhftUIblHcqncJ
 // ============ STATE ============
 const state = {
   user: null,
-  sessionToken: null,
   page: 'dashboard',
   data: {},
   refreshTimer: null,
@@ -461,53 +456,25 @@ function applySystemName() {
 }
 
 // ============ API ============
-function handleSessionFailure(result) {
-  const msg = String((result && result.error) || '').toLowerCase();
-  if (msg.includes('session is invalid') || msg.includes('session is invalid or expired') || msg.includes('session expired')) {
-    state.user = null;
-    state.sessionToken = null;
-    try {
-      localStorage.removeItem('enican_user');
-      localStorage.removeItem('enican_session');
-    } catch (e) {}
-    stopAutoRefresh();
-    document.getElementById('app').classList.add('hidden');
-    document.getElementById('loginScreen').classList.remove('hidden');
-    toast('Your login session expired. Please sign in again.', 'error');
-    return true;
-  }
-  return false;
-}
-
 async function apiGet(params, options) {
-  const request = Object.assign({}, params || {});
-  if (request.action !== 'login' && state.sessionToken) request.sessionToken = state.sessionToken;
-  const qs = new URLSearchParams(request).toString();
+  const qs = new URLSearchParams(params).toString();
   const showApiLoader = !state.loading && !(options && options.silent);
   if (showApiLoader) showLoader('Loading...');
   try {
-    const res = await fetch(WEBAPP_URL + '?' + qs, { cache: 'no-store' });
-    const result = await res.json();
-    handleSessionFailure(result);
-    return result;
-  } catch (e) {
-    throw e;
+    const res = await fetch(WEBAPP_URL + '?' + qs);
+    return await res.json();
   } finally {
     if (showApiLoader) hideLoader();
   }
 }
 async function apiPost(body) {
-  const request = Object.assign({}, body || {});
-  if (request.action !== 'login' && state.sessionToken) request.sessionToken = state.sessionToken;
   const res = await fetch(WEBAPP_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8', 'Cache-Control': 'no-cache' },
-    body: JSON.stringify(request),
-    cache: 'no-store'
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(body)
   });
   const result = await res.json();
-  handleSessionFailure(result);
-  if (result && result.success && request && request.idempotencyKey) clearUid(request.idempotencyKey);
+  if (result && result.success && body && body.idempotencyKey) clearUid(body.idempotencyKey);
   return result;
 }
 // Persistent client idempotency tokens: if the network drops after the
@@ -568,9 +535,7 @@ async function doLogin() {
     const res = await apiGet({ action: 'login', username, password });
     if (!res.success) { toast(res.error || 'Login failed', 'error'); return; }
     state.user = res.user;
-    state.sessionToken = res.sessionToken;
     localStorage.setItem('enican_user', JSON.stringify(res.user));
-    localStorage.setItem('enican_session', res.sessionToken);
     showApp();
   } catch (e) {
     toast('Connection error', 'error');
@@ -586,15 +551,9 @@ function showApp() {
   startAutoRefresh();
   if (!isStandaloneApp()) { setInstallButtonVisible(!!deferredPrompt); setTimeout(showInstallModal, 1200); }
 }
-async function logout() {
-  const token = state.sessionToken;
-  try {
-    if (token) await fetch(WEBAPP_URL + '?' + new URLSearchParams({action:'logout',sessionToken:token}).toString(), {cache:'no-store'});
-  } catch (e) {}
+function logout() {
   localStorage.removeItem('enican_user');
-  localStorage.removeItem('enican_session');
   state.user = null;
-  state.sessionToken = null;
   stopAutoRefresh();
   document.getElementById('app').classList.add('hidden');
   document.getElementById('loginScreen').classList.remove('hidden');
@@ -1400,7 +1359,7 @@ async function renderPending(el) {
   document.getElementById('headerSub').textContent = 'Pending approvals';
   const [priceRes, reqRes] = await Promise.all([
     apiGet({ action: 'pendingPrices' }),
-    apiGet({ action: 'pendingRequisitions' })
+    apiGet({ action: 'pendingRequisitions', user: state.user.username })
   ]);
   const pending = priceRes.pending || [];
   const requisitions = reqRes.requisitions || [];
@@ -1423,26 +1382,15 @@ async function renderPending(el) {
   `;
 }
 async function viewCashRequisition(id) {
-  const res = await apiGet({ action: 'pendingRequisitions' });
+  const res = await apiGet({ action: 'pendingRequisitions', user: state.user.username });
   const r = (res.requisitions || []).find(x => String(x.id) === String(id));
   if (!r) return toast('Requisition not found or already reviewed.', 'error');
-
-  const requested = Number(r.amount) || 0;
   const body = `
     <div class="data-row"><span class="lbl">Requested by</span><span class="val">${r.requestedByName||r.requestedBy}</span></div>
     <div class="data-row"><span class="lbl">Role</span><span class="val">${r.requestedRole}</span></div>
     <div class="data-row"><span class="lbl">Account</span><span class="val">${r.account}</span></div>
     <div class="data-row"><span class="lbl">Description</span><span class="val">${r.description}</span></div>
-    <div class="data-row"><span class="lbl">Requested Amount</span><span class="val">$${requested.toFixed(2)}</span></div>
-    <div class="field" style="margin-top:12px">
-      <label>Approved Amount</label>
-      <input id="reqApprovedAmount" type="number" min="0.01" step="0.01" value="${requested.toFixed(2)}">
-      <div style="font-size:11px;color:#64748b;margin-top:5px">Admin can change this before approving. The approved amount is recorded separately.</div>
-    </div>
-    <div class="field" style="margin-top:12px">
-      <label>Decline Note <span style="font-weight:400;text-transform:none">(required when declining)</span></label>
-      <textarea id="reqDeclineNote" rows="3" placeholder="Explain why this requisition is being declined."></textarea>
-    </div>
+    <div class="data-row total"><span class="lbl">Amount</span><span class="val">$${Number(r.amount).toFixed(2)}</span></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px">
       <button class="btn btn-danger" onclick="declineCashRequisition('${r.id}',this)">Decline</button>
       <button class="btn btn-success" onclick="approveCashRequisition('${r.id}',this)">Approve</button>
@@ -1450,28 +1398,24 @@ async function viewCashRequisition(id) {
   openModal('Cash Requisition', body);
 }
 async function approveCashRequisition(id, btn) {
-  const amount = Number((document.getElementById('reqApprovedAmount')||{}).value);
-  if (!Number.isFinite(amount) || amount <= 0) return toast('Enter a valid approved amount.', 'error');
   setBtnLoading(btn,true);
   await withLoader('Approving cash requisition...',async()=>{
-    const res=await apiPost({action:'approveCashRequisition',requisitionId:id,approvedAmount:amount,idempotencyKey:uid('REQAPR',id)});
+    const res=await apiPost({action:'approveCashRequisition',requisitionId:id,idempotencyKey:uid('REQAPR',id),user:state.user.username});
     if(!res.success)return toast(res.error,'error');
-    toast(res.changedAmount ? 'Approved with the updated amount.' : 'Cash requisition approved.','success');
-    closeModal(); loadPage();
+    toast('Cash requisition approved and added to account expenses.','success'); closeModal(); loadPage();
   });
   setBtnLoading(btn,false);
 }
 async function declineCashRequisition(id, btn) {
-  const note = String((document.getElementById('reqDeclineNote')||{}).value || '').trim();
-  if (!note) return toast('Write a decline note before declining.','error');
   setBtnLoading(btn,true);
   await withLoader('Declining cash requisition...',async()=>{
-    const res=await apiPost({action:'declineCashRequisition',requisitionId:id,declineNote:note,idempotencyKey:uid('REQDEC',id)});
+    const res=await apiPost({action:'declineCashRequisition',requisitionId:id,idempotencyKey:uid('REQDEC',id),user:state.user.username});
     if(!res.success)return toast(res.error,'error');
     toast('Cash requisition declined.','success'); closeModal(); loadPage();
   });
   setBtnLoading(btn,false);
 }
+
 async function viewPending(id) {
   const res = await apiGet({ action: 'pendingDetails', id });
   if (!res.success) return toast(res.error, 'error');
@@ -1569,41 +1513,13 @@ async function renderReports(el) {
         <div class="data-row"><span class="lbl">Total Costs</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].expenses.toFixed(2)}</span></div>
         <div class="data-row total"><span class="lbl">Profit</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].profit.toFixed(2)}</span></div>
       </div>`}
-    <div class="section-title">${state.user.role === 'admin' ? 'Cash Requisitions' : 'My Cash Requisitions'}</div>
-    <div class="card" id="cashRequisitionReportCard">
-      <div class="loading">Loading requisitions...</div>
-    </div>
     <div class="section-title">Completed Invoices — latest 10 of ${invRes.total||0}</div>
     <div id="completedInvoicesList">${renderInvoiceRows(invoices)}</div>
     <div id="invoicePager" style="margin:10px 12px 18px;display:${invRes.hasNext?'block':'none'}">
       <button class="btn btn-outline" onclick="loadMoreInvoices(this)">Next 10</button>
     </div>
   `;
-  loadCashRequisitionReport();
 }
-async function loadCashRequisitionReport(){
-  const card=document.getElementById('cashRequisitionReportCard');
-  if(!card)return;
-  const res=await apiGet({action:'myCashRequisitions'});
-  if(!res.success){card.innerHTML='<div style="color:#dc2626;font-size:13px">'+(res.error||'Could not load requisitions')+'</div>';return;}
-  const rows=res.requisitions||[];
-  if(!rows.length){card.innerHTML='<div class="empty" style="padding:20px">No cash requisitions yet.</div>';return;}
-  card.innerHTML=rows.slice(0,20).map(r=>{
-    const st=String(r.status||'').toLowerCase();
-    const cls=st==='approved'?'green':st==='declined'?'red':'amber';
-    const approved=(r.approvedAmount!==''&&r.approvedAmount!=null)?Number(r.approvedAmount):null;
-    return `<div class="list-item" style="margin:0 0 8px;cursor:default">
-      <div class="info">
-        <div class="name">${r.description||'Cash requisition'}</div>
-        <div class="sub">${r.account||'-'} · Requested $${Number(r.amount||0).toFixed(2)} · ${r.requestDate?new Date(r.requestDate).toLocaleDateString():''}</div>
-        ${st==='approved'&&approved!==null?`<div class="sub" style="color:#15803d;font-weight:700">Approved amount: $${approved.toFixed(2)}</div>`:''}
-        ${st==='declined'&&r.declineNote?`<div style="margin-top:7px;padding:8px;border-radius:8px;background:#fff1f2;color:#9f1239;font-size:12px"><b>Admin note:</b> ${r.declineNote}</div>`:''}
-      </div>
-      <span class="badge small ${cls}">${st||'pending'}</span>
-    </div>`;
-  }).join('');
-}
-
 function renderInvoiceRows(invoices){
   if(!invoices.length)return '<div class="empty">No completed invoices for this period</div>';
   return invoices.map(inv=>`<div class="list-item" onclick="viewInvoice('${inv.id}')"><div class="avatar">${inv.customerName?inv.customerName[0].toUpperCase():'?'}</div><div class="info"><div class="name">${inv.customerName||'-'}</div><div class="sub">Inv: ${inv.invoiceNumber||inv.id} · ${inv.assetIds||''} · ${inv.completedAt?new Date(inv.completedAt).toLocaleDateString():''} · ${inv.completedBy||'-'}</div></div><div class="amount">$${Number(inv.totalAmount).toFixed(2)}</div></div>`).join('');
@@ -1634,7 +1550,7 @@ async function submitCashRequisition(btn){
   if(!Number.isFinite(amount)||amount<=0)return toast('Enter a valid amount.','error');
   setBtnLoading(btn,true);
   await withLoader('Submitting cash requisition...',async()=>{
-    const res=await apiPost({action:'requestCashRequisition',idempotencyKey:uid('REQ',state.user.username+':'+description+':'+amount),description:description.trim(),amount,account});
+    const res=await apiPost({action:'requestCashRequisition',idempotencyKey:uid('REQ',state.user.username+':'+description+':'+amount),description:description.trim(),amount,account,user:state.user.username});
     if(!res.success)return toast(res.error,'error');
     toast('Cash requisition sent to Admin for approval.','success'); closeModal();
   });
@@ -1648,7 +1564,7 @@ async function loadFinancialStatement(btn,download){
   const from=(document.getElementById('stFrom')||{}).value||'',to=(document.getElementById('stTo')||{}).value||'',account=(document.getElementById('stAccount')||{}).value||'all';
   if(from&&to&&from>to)return toast('From date cannot be after To date.','error');
   setBtnLoading(btn,true);
-  const res=await apiGet({action:'financialStatement',from,to,account});
+  const res=await apiGet({action:'financialStatement',from,to,account,user:state.user.username});
   setBtnLoading(btn,false);
   if(!res.success)return toast(res.error||'Could not build statement','error');
   openFinancialStatement(res,download);
@@ -2175,31 +2091,15 @@ async function installPWA(){
 // ============ INIT ============
 (async function init() {
   await loadSystemConfig();
-
-  const savedUser = localStorage.getItem('enican_user');
-  const savedToken = localStorage.getItem('enican_session');
-
-  if (savedUser && savedToken) {
+  const saved = localStorage.getItem('enican_user');
+  if (saved) {
     try {
-      const check = await apiGet({action:'validateSession',sessionToken:savedToken},{silent:true});
-      if (check && check.success && check.user) {
-        state.user = check.user;
-        state.sessionToken = savedToken;
-        localStorage.setItem('enican_user', JSON.stringify(check.user));
-        showApp();
-      } else {
-        localStorage.removeItem('enican_user');
-        localStorage.removeItem('enican_session');
-      }
-    } catch (e) {
-      // Do not invent a logged-in state when the server cannot validate it.
-      localStorage.removeItem('enican_user');
-      localStorage.removeItem('enican_session');
-    }
+      state.user = JSON.parse(saved);
+      showApp();
+    } catch (e) { localStorage.removeItem('enican_user'); }
   }
-
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js', {scope:'./', updateViaCache:'none'}).catch(() => {});
+    navigator.serviceWorker.register('./sw.js', {scope:'./'}).catch(() => {});
   }
   setInstallButtonVisible(!!deferredPrompt);
 })();

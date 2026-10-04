@@ -1,8 +1,10 @@
-const CACHE_NAME = 'enican-mines-v1';
+const CACHE_NAME = 'enican-mines-shell-v2';
 const APP_SHELL = [
   './',
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  './logo-192.png',
+  './logo-512.png'
 ];
 
 self.addEventListener('install', event => {
@@ -15,51 +17,41 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
+    caches.keys()
+      .then(keys => Promise.all(
         keys
           .filter(key => key !== CACHE_NAME)
           .map(key => caches.delete(key))
-      )
-    ).then(() => self.clients.claim())
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', event => {
   const request = event.request;
+  if (request.method !== 'GET') return;
 
-  // Do not cache live Apps Script/API requests.
-  if (
-    request.method !== 'GET' ||
-    request.url.includes('script.google.com') ||
-    request.url.includes('/exec')
-  ) {
+  const url = new URL(request.url);
+
+  // Never cache the Google Apps Script API. Live account/report data must
+  // always come from the server and must not be replaced by stale cache data.
+  if (url.hostname.includes('script.google.com') || url.hostname.includes('script.googleusercontent.com')) {
     return;
   }
 
-  event.respondWith(
-    caches.match(request).then(cachedResponse => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      return fetch(request).then(response => {
-        if (
-          !response ||
-          response.status !== 200 ||
-          response.type === 'opaque'
-        ) {
+  // Navigation and the app shell use network-first so deployments update
+  // quickly. If offline, fall back to the cached shell.
+  if (request.mode === 'navigate' || url.origin === self.location.origin) {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' })
+        .then(response => {
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(request, copy)).catch(() => {});
+          }
           return response;
-        }
-
-        const responseClone = response.clone();
-
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(request, responseClone);
-        });
-
-        return response;
-      });
-    })
-  );
+        })
+        .catch(() => caches.match(request).then(cached => cached || caches.match('./index.html')))
+    );
+  }
 });

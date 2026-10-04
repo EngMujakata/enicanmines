@@ -334,6 +334,7 @@ const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyRU-izhftUIblHcqncJ
 
 const state = {
   user: null,
+  token: null,
   page: 'dashboard',
   data: {},
   refreshTimer: null,
@@ -353,6 +354,8 @@ const state = {
 };
 
 const DRAFT_KEY = 'enican_drafts_v1';
+const SESSION_KEY = 'enican_session_v3';
+
 function saveDraft() {
   try {
     const d = {
@@ -392,6 +395,33 @@ function loadDraft() {
 }
 function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} }
 
+function saveSession() {
+  try {
+    if (state.user && state.token) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ user: state.user, token: state.token }));
+    }
+  } catch (e) {}
+}
+function loadSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) {
+      // migrate from old key if present
+      const old = localStorage.getItem('enican_user');
+      if (old) {
+        const u = JSON.parse(old);
+        localStorage.removeItem('enican_user');
+        return { user: u, token: null };
+      }
+      return null;
+    }
+    return JSON.parse(raw);
+  } catch (e) { return null; }
+}
+function clearSession() {
+  try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+}
+
 async function loadSystemConfig() {
   try {
     const res = await apiGet({ action: 'systemConfig' }, { silent: true });
@@ -411,31 +441,55 @@ function applySystemName() {
 }
 
 async function apiGet(params, options) {
-  const qs = new URLSearchParams(params).toString();
+  const p = Object.assign({}, params);
+  if (state.token && !p.token) p.token = state.token;
+  const qs = new URLSearchParams(p).toString();
   const showApiLoader = !state.loading && !(options && options.silent);
   if (showApiLoader) showLoader('Loading...');
   try {
     const res = await fetch(WEBAPP_URL + '?' + qs);
-    return await res.json();
+    const data = await res.json();
+    if (data && data.error && /session (expired|is invalid)/i.test(data.error)) {
+      handleAuthFailure();
+    }
+    return data;
   } finally {
     if (showApiLoader) hideLoader();
   }
 }
 async function apiPost(body) {
+  const payload = Object.assign({}, body);
+  if (state.token && !payload.token) payload.token = state.token;
+  if (state.user && !payload.user) payload.user = state.user.username;
   const res = await fetch(WEBAPP_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify(body)
+    body: JSON.stringify(payload)
   });
   const result = await res.json();
+  if (result && result.error && /session (expired|is invalid)/i.test(result.error)) {
+    handleAuthFailure();
+  }
   if (result && body && body.idempotencyKey) {
     if (result.success === true && !result._replayed) {
       clearUid(body.idempotencyKey);
-    } else if (result.error && /session is invalid|not authorised|inactive|missing idempotency/i.test(result.error)) {
+    } else if (result.error && /session (expired|is invalid)|not authorised|inactive|missing idempotency/i.test(result.error)) {
       clearUid(body.idempotencyKey);
     }
   }
   return result;
+}
+function handleAuthFailure() {
+  // Clear client session and bounce back to login. Never cache the failure.
+  clearSession();
+  state.user = null;
+  state.token = null;
+  stopAutoRefresh();
+  const appEl = document.getElementById('app');
+  const loginEl = document.getElementById('loginScreen');
+  if (appEl) appEl.classList.add('hidden');
+  if (loginEl) loginEl.classList.remove('hidden');
+  toast('Your session ended. Please sign in again.', 'error');
 }
 function uid(prefix, scope) {
   const p = prefix || 'W';
@@ -485,10 +539,11 @@ async function doLogin() {
   const btn = document.getElementById('loginBtn');
   setBtnLoading(btn, true);
   try {
-    const res = await apiGet({ action: 'login', username, password });
+    const res = await apiGet({ action: 'login', username, password }, { silent: true });
     if (!res.success) { toast(res.error || 'Login failed', 'error'); return; }
     state.user = res.user;
-    localStorage.setItem('enican_user', JSON.stringify(res.user));
+    state.token = res.token || null;
+    saveSession();
     showApp();
   } catch (e) {
     toast('Connection error', 'error');
@@ -505,11 +560,16 @@ function showApp() {
   if (!isStandaloneApp()) { setInstallButtonVisible(!!deferredPrompt); setTimeout(showInstallModal, 1200); }
 }
 function logout() {
-  localStorage.removeItem('enican_user');
+  const token = state.token;
+  clearSession();
   state.user = null;
+  state.token = null;
   stopAutoRefresh();
   document.getElementById('app').classList.add('hidden');
   document.getElementById('loginScreen').classList.remove('hidden');
+  if (token) {
+    fetch(WEBAPP_URL + '?action=logout&token=' + encodeURIComponent(token)).catch(() => {});
+  }
 }
 
 function buildNav() {
@@ -1782,7 +1842,7 @@ async function submitTrip(btn) {
       user: state.user.username,
       customerId, customerName: customer ? customer.name : '', trips, amountPerTrip: rate, tripDate, notes
     });
-    if (!res.success) { toast(res.error, 'error'); return; }
+    if (!res.success) { toast(res.error, 'error'); setBtnLoading(btn, false); return; }
     toast('Trip logged', 'success');
     try { const d = loadDraft() || {}; d.driverTrip = {}; localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch(e){}
     loadPage();
@@ -1802,7 +1862,7 @@ async function submitDriverExpense(btn) {
       user: state.user.username,
       description, amount, expenseDate
     });
-    if (!res.success) { toast(res.error, 'error'); return; }
+    if (!res.success) { toast(res.error, 'error'); setBtnLoading(btn, false); return; }
     toast('Expense logged', 'success');
     try { const d = loadDraft() || {}; d.driverExpense = {}; localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch(e){}
     loadPage();
@@ -2097,12 +2157,11 @@ async function installPWA(){
 
 (async function init() {
   await loadSystemConfig();
-  const saved = localStorage.getItem('enican_user');
-  if (saved) {
-    try {
-      state.user = JSON.parse(saved);
-      showApp();
-    } catch (e) { localStorage.removeItem('enican_user'); }
+  const session = loadSession();
+  if (session && session.user) {
+    state.user = session.user;
+    state.token = session.token || null;
+    showApp();
   }
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
@@ -2110,3 +2169,5 @@ async function installPWA(){
   setInstallButtonVisible(!!deferredPrompt);
 })();
 </script>
+</body>
+</html>

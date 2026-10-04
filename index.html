@@ -428,7 +428,13 @@ async function apiPost(body) {
     body: JSON.stringify(body)
   });
   const result = await res.json();
-  if (result && result.success === true && !result._replayed && body && body.idempotencyKey) clearUid(body.idempotencyKey);
+  if (result && body && body.idempotencyKey) {
+    if (result.success === true && !result._replayed) {
+      clearUid(body.idempotencyKey);
+    } else if (result.error && /session is invalid|not authorised|inactive|missing idempotency/i.test(result.error)) {
+      clearUid(body.idempotencyKey);
+    }
+  }
   return result;
 }
 function uid(prefix, scope) {
@@ -1384,7 +1390,6 @@ async function declinePending(id, btn) {
   setBtnLoading(btn, false);
 }
 
-/* ============ END OF PART 1 ============ */
 async function renderReports(el) {
   document.getElementById('headerSub').textContent = 'Reports & Analytics';
   if (state.user.role === 'driver') return renderDriver(el);
@@ -1774,7 +1779,7 @@ async function submitTrip(btn) {
     const res = await apiPost({
       action: 'logTrip',
       idempotencyKey: uid('TRIP', customerId + ':' + trips + ':' + rate + ':' + tripDate),
-      driverUsername: state.user.username,
+      user: state.user.username,
       customerId, customerName: customer ? customer.name : '', trips, amountPerTrip: rate, tripDate, notes
     });
     if (!res.success) { toast(res.error, 'error'); return; }
@@ -1794,7 +1799,7 @@ async function submitDriverExpense(btn) {
     const res = await apiPost({
       action: 'logDriverExpense',
       idempotencyKey: uid('DEXP', description + ':' + amount + ':' + expenseDate),
-      driverUsername: state.user.username,
+      user: state.user.username,
       description, amount, expenseDate
     });
     if (!res.success) { toast(res.error, 'error'); return; }
@@ -2012,9 +2017,7 @@ async function createUser(btn) {
   setBtnLoading(btn, false);
 }
 
-/* ============ END OF PART 2 ============ */
-
-  function openModal(title, bodyHtml) {
+function openModal(title, bodyHtml) {
   closeModal();
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -2107,5 +2110,3 @@ async function installPWA(){
   setInstallButtonVisible(!!deferredPrompt);
 })();
 </script>
-</body>
-</html>

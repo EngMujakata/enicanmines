@@ -7,6 +7,12 @@
 <title>Enican Mines System</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="logo-192.png">
+<link rel="apple-touch-icon" href="logo-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Enican Mines">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Enican Mines">
 <style>
 :root {
   --bg-main: #f4f6f8;
@@ -42,7 +48,6 @@ body { padding-bottom: 80px; }
 button { font-family: inherit; cursor: pointer; border: none; outline: none; background: none; }
 input, select, textarea { font-family: inherit; font-size: 16px; }
 
-/* ---------- LOADING MODAL OVERLAY ---------- */
 #pageLoader { position: fixed; inset: 0; background: rgba(10,31,68,0.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); z-index: 9999; display: none; align-items: center; justify-content: center; animation: fadeIn 0.15s ease; }
 #pageLoader.active { display: flex; }
 #pageLoader .loader-box { background: #ffffff; border-radius: 16px; padding: 28px 36px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.35); min-width: 200px; animation: popIn 0.2s cubic-bezier(.2,.8,.2,1); }
@@ -55,7 +60,6 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .btn.is-loading::after { content: ""; display: inline-block; width: 14px; height: 14px; margin-left: 8px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; }
 .hidden { display: none !important; }
 
-/* ---------- LOGIN ---------- */
 #loginScreen { position: fixed; inset: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(160deg, var(--navy) 0%, #05122a 100%); padding: 20px; z-index: 10000; }
 .login-card { background: var(--white); border-radius: 16px; padding: 32px 24px; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
 .login-card h1 { color: var(--navy); margin: 0 0 6px; font-size: 24px; text-align: center; }
@@ -66,7 +70,6 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .field input, .field select, .field textarea { width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-2); border-radius: 10px; background: var(--white); transition: border .15s; }
 .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--navy); outline: none; }
 
-/* ---------- BUTTONS ---------- */
 .btn { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 12px 16px; border-radius: 10px; font-weight: 700; font-size: 14px; background: var(--navy); color: var(--white); transition: background .15s; gap: 8px; border: none; }
 .btn:hover { background: var(--navy-light); }
 .btn:disabled { opacity: .6; cursor: not-allowed; }
@@ -76,7 +79,6 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .btn-success { background: var(--success); }
 .btn-sm { padding: 8px 14px; font-size: 13px; width: auto; border-radius: 8px; }
 
-/* ---------- HEADER ---------- */
 .header-left { display:flex; align-items:center; gap:14px; min-width:0; }
 .system-brand { font-size:15px; font-weight:800; letter-spacing:.5px; white-space:nowrap; border-right:1px solid rgba(255,255,255,.25); padding-right:14px; }
 .header { background: var(--navy); color: var(--white); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 10px rgba(0,0,0,.15); }
@@ -96,26 +98,20 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .pwa-platform-note { background:#f8fafc; border:1px solid var(--gray-2); border-radius:12px; padding:12px; margin-top:12px; text-align:left; font-size:13px; color:#475569; }
 @supports (padding: env(safe-area-inset-bottom)) { body { padding-bottom:calc(80px + env(safe-area-inset-bottom)); } .nav { padding-bottom:env(safe-area-inset-bottom); } }
 
-/* ---------- BOTTOM NAV ---------- */
 .nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--gray-2); display: flex; z-index: 50; max-width: 900px; margin: 0 auto; box-shadow: 0 -2px 10px rgba(0,0,0,.05); overflow-x: auto; }
 .nav-item { flex: 1 0 auto; min-width: 64px; padding: 8px 4px 10px; display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--gray-3); font-size: 10px; font-weight: 600; background: none; transition: color .15s; }
 .nav-item.active { color: var(--navy); }
 .nav-item svg { width: 22px; height: 22px; }
 
-/* ---------- CARDS ---------- */
 .card { background: var(--white); border-radius: 14px; padding: 16px; margin: 12px; box-shadow: 0 1px 3px rgba(10,31,68,.06); }
 .card-title { font-size: 15px; font-weight: 700; color: var(--navy); margin: 0 0 12px; display: flex; align-items: center; justify-content: space-between; }
 .section-title { font-size: 13px; font-weight: 700; color: var(--gray-3); text-transform: uppercase; letter-spacing: .5px; margin: 20px 16px 8px; }
 
-/* ---------- GRIDS ---------- */
 .grid { display: grid; gap: 10px; }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-tanks { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
 
-/* ================================================================ */
-/* ---------- NEW TANK CARD STYLE (from attached system) ---------- */
-/* ================================================================ */
 .tank-grid-wrapper { flex: 1; overflow-y: auto; padding-bottom: 8px; }
 .tank-grid { display: grid; gap: 10px; align-content: start; }
 .tank-grid.grid-9-row { grid-template-columns: repeat(9, minmax(0, 1fr)); }
@@ -123,36 +119,17 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 @media (max-width: 1200px) { .tank-grid.grid-9-row { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } }
 @media (max-width: 767px) { .tank-grid.grid-9-row, .tank-grid.grid-standard { grid-template-columns: repeat(2, 1fr); } }
 
-.tank-card {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: box-shadow 0.2s, transform 0.15s;
-}
+.tank-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.2s, transform 0.15s; }
 .tank-card:hover { box-shadow: var(--shadow-md); }
 .tank-card:active { transform: scale(0.98); }
-
-.tank-header {
-  padding: 8px 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f8fafc;
-  border-bottom: 1px solid var(--border-color);
-}
+.tank-header { padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border-bottom: 1px solid var(--border-color); }
 .tank-title { font-weight: 800; font-size: 0.85rem; color: var(--text-main); }
-
 .badge { padding: 3px 8px; border-radius: 6px; font-size: 0.62rem; font-weight: 800; text-transform: uppercase; color: #ffffff; letter-spacing: 0.3px; white-space: nowrap; }
 .badge-vacant { background-color: var(--success) !important; color: #ffffff !important; }
 .badge-occupied { background-color: var(--warning) !important; color: #ffffff !important; }
 .badge-ready { background-color: #d97706 !important; color: #ffffff !important; }
 .badge-overdue { background-color: var(--danger) !important; color: #ffffff !important; }
 .badge-completed { background-color: #0284c7 !important; color: #ffffff !important; }
-
 .tank-body { padding: 8px 10px; flex: 1; font-size: 0.75rem; line-height: 1.3; }
 .tank-field { margin-bottom: 4px; }
 .tank-field-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
@@ -161,7 +138,6 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .progress-bar-fill { height: 100%; background: var(--accent); transition: width 0.3s ease; }
 .progress-bar-fill.overdue { background: var(--danger); }
 
-/* ---------- STAT BOXES ---------- */
 .stat-box { background: var(--white); border-radius: 12px; padding: 14px; text-align: center; }
 .stat-box .label { font-size: 11px; color: var(--gray-3); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
 .stat-box .value { font-size: 22px; font-weight: 800; color: var(--navy); margin-top: 4px; }
@@ -169,7 +145,6 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .stat-box.red .value { color: var(--red); }
 .stat-box.amber .value { color: var(--amber); }
 
-/* ---------- ACCOUNT BOXES ---------- */
 .account-box { background: linear-gradient(140deg, var(--navy) 0%, var(--navy-light) 100%); color: white; border-radius: 14px; padding: 18px; text-align: left; cursor: pointer; }
 .account-box .label { font-size: 12px; opacity: .85; text-transform: uppercase; letter-spacing: .5px; }
 .account-box .value { font-size: 26px; font-weight: 800; margin-top: 6px; }
@@ -178,7 +153,6 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .account-box.grabber { background: linear-gradient(140deg, #16a34a 0%, #15803d 100%); }
 .account-box.boiler { background: linear-gradient(140deg, #b45309 0%, #92400e 100%); }
 
-/* ---------- LIST ITEMS ---------- */
 .list-item { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--white); border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--gray-2); transition: all .12s; cursor: pointer; }
 .list-item:active { background: var(--gray); transform: scale(.99); }
 .list-item .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--navy); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0; }
@@ -189,11 +163,9 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .list-item .amount.red { color: var(--red); }
 .list-item .amount.green { color: var(--green); }
 
-/* ---------- SEARCH ---------- */
 .search-bar { display: flex; align-items: center; gap: 8px; background: var(--white); border-radius: 12px; padding: 4px 12px; border: 1.5px solid var(--gray-2); }
 .search-bar input { flex: 1; border: none; padding: 10px 0; background: transparent; outline: none; }
 
-/* ---------- MODAL ---------- */
 .modal-overlay { position: fixed; inset: 0; background: rgba(5,18,42,.6); display: flex; align-items: flex-end; justify-content: center; z-index: 200; animation: fadeIn .2s; }
 .modal { background: var(--white); border-radius: 20px 20px 0 0; width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; animation: slideUp .25s cubic-bezier(.2,.8,.2,1); }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -202,13 +174,11 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .modal-close { background: var(--gray); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--gray-3); }
 .modal-body { padding: 16px 20px 30px; }
 
-/* ---------- TOAST ---------- */
 .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: var(--navy); color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 300; animation: toastIn .3s; box-shadow: 0 8px 24px rgba(0,0,0,.2); max-width: 90%; text-align: center; }
 .toast.error { background: var(--red); }
 .toast.success { background: var(--green); }
 @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
-/* ---------- DATA ROWS ---------- */
 .data-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; border-bottom: 1px dashed var(--gray-2); }
 .data-row:last-child { border-bottom: none; }
 .data-row .lbl { color: var(--gray-3); }
@@ -216,39 +186,32 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .data-row.total { border-top: 2px solid var(--navy); margin-top: 6px; padding-top: 10px; font-size: 15px; }
 .data-row.total .val { font-size: 17px; }
 
-/* ---------- BADGES (small) ---------- */
 .badge.small { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; }
 .badge.small.green { background: #dcfce7; color: #15803d; }
 .badge.small.red { background: #fee2e2; color: #b91c1c; }
 .badge.small.amber { background: #fef3c7; color: #b45309; }
 .badge.small.blue { background: #dbeafe; color: #1e40af; }
 
-/* ---------- LOADING/EMPTY ---------- */
 .loading { text-align: center; padding: 40px; color: var(--gray-3); }
 .spinner { width: 30px; height: 30px; border: 3px solid var(--gray-2); border-top-color: var(--navy); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px; }
 .empty { text-align: center; padding: 40px 20px; color: var(--gray-3); }
 
-/* ---------- PWA INSTALL ---------- */
 .install-banner { position: fixed; bottom: 80px; left: 12px; right: 12px; background: var(--navy); color: white; padding: 14px; border-radius: 12px; display: flex; align-items: center; gap: 12px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
 .install-banner .btn { width: auto; padding: 8px 14px; font-size: 13px; background: white; color: var(--navy); }
 
-/* ---------- TABS ---------- */
 .tabs { display: flex; gap: 6px; background: var(--gray); padding: 4px; border-radius: 10px; margin-bottom: 12px; }
 .tab { flex: 1; padding: 8px; text-align: center; font-size: 13px; font-weight: 600; border-radius: 8px; background: transparent; color: var(--gray-3); }
 .tab.active { background: var(--white); color: var(--navy); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
 
-/* ---------- CHECK ROW ---------- */
 .check-row { display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--gray); border-radius: 10px; margin-bottom: 6px; }
 .check-row input { width: 20px; height: 20px; }
 .check-row .label { flex: 1; font-size: 14px; }
 
-/* ---------- STEPS ---------- */
 .steps { display: flex; align-items: center; gap: 6px; margin: 12px; }
 .step { flex: 1; height: 4px; background: var(--gray-2); border-radius: 4px; }
 .step.active { background: var(--navy); }
 .step.done { background: var(--green); }
 
-/* ---------- RESPONSIVE / MOBILE ---------- */
 #pageContent { width:100%; max-width:1100px; margin:0 auto; overflow-x:hidden; }
 .card, .section-title, .list-item, .account-box, .stat-box { min-width:0; }
 .info { min-width:0; }
@@ -261,6 +224,12 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .statement-table { width:100%; border-collapse:collapse; font-size:12px; }
 .statement-table th,.statement-table td { padding:8px 6px; border-bottom:1px solid var(--gray-2); text-align:left; }
 .statement-table th:last-child,.statement-table td:last-child { text-align:right; }
+.requisition-note { background:#fffbeb; border-left:4px solid #f59e0b; padding:10px 12px; border-radius:8px; font-size:12.5px; color:#78350f; margin:8px 0; line-height:1.45; }
+.requisition-note.declined { background:#fef2f2; border-left-color:#dc2626; color:#991b1b; }
+.requisition-note.approved { background:#f0fdf4; border-left-color:#16a34a; color:#14532d; }
+.asset-card { background: #fff; border: 1.5px solid #86efac; border-radius: 10px; padding: 12px 8px; text-align: center; cursor: pointer; transition: all .15s; }
+.asset-card .id { font-weight: 800; font-size: 14px; color: var(--navy); }
+.asset-card .status { font-size: 10px; text-transform: uppercase; color: var(--gray-3); margin-top: 2px; }
 @media (max-width: 700px) {
   body { padding-bottom:72px; overflow-x:hidden; }
   .header { padding:10px 10px; }
@@ -308,12 +277,10 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
   .nav-item { padding:4px 2px; }
   .nav-item svg { width:18px; height:18px; }
 }
-
 </style>
 </head>
 <body>
 
-<!-- ================= LOADING MODAL OVERLAY ================= -->
 <div id="pageLoader">
   <div class="loader-box">
     <div class="spinner-lg"></div>
@@ -321,7 +288,6 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
   </div>
 </div>
 
-<!-- ================= LOGIN ================= -->
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">EM</div>
@@ -339,7 +305,6 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
   </div>
 </div>
 
-<!-- ================= APP ================= -->
 <div id="app" class="app hidden">
   <div class="header">
     <div class="header-left">
@@ -365,10 +330,8 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 </div>
 
 <script>
-// ============ CONFIG ============
 const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyRU-izhftUIblHcqncJa5ooQ3M7I0Ts7UXwt85PKJTQbTBo88QiKrdVJGKrEHLnQ/exec';
 
-// ============ STATE ============
 const state = {
   user: null,
   page: 'dashboard',
@@ -382,7 +345,6 @@ const state = {
   invoiceNumber: '',
   filter: { from: '', to: '', account: 'all' },
   driverTab: 'trips',
-  // Track "user has unsaved work on this page" so auto-refresh never wipes it
   dirty: { load: false, driver: false },
   systemName: 'Loading...',
   reportInvoicePage: 1,
@@ -390,7 +352,6 @@ const state = {
   reportInvoices: []
 };
 
-// ---------- DRAFT PERSISTENCE (survives refresh / auto-refresh) ----------
 const DRAFT_KEY = 'enican_drafts_v1';
 function saveDraft() {
   try {
@@ -406,7 +367,6 @@ function saveDraft() {
         _pendingPriceChange: e._pendingPriceChange || null
       })),
       assetType: state.assetType || '',
-      // driver form drafts
       driverTrip: {
         customerId: (document.getElementById('tripCustomer') || {}).value || '',
         trips: (document.getElementById('tripCount') || {}).value || '',
@@ -421,7 +381,7 @@ function saveDraft() {
       }
     };
     localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
-  } catch (e) { /* ignore */ }
+  } catch (e) {}
 }
 function loadDraft() {
   try {
@@ -430,11 +390,8 @@ function loadDraft() {
     return JSON.parse(raw);
   } catch (e) { return null; }
 }
-function clearDraft() {
-  try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
-}
+function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} }
 
-// ============ SYSTEM CONFIG ============
 async function loadSystemConfig() {
   try {
     const res = await apiGet({ action: 'systemConfig' }, { silent: true });
@@ -442,9 +399,7 @@ async function loadSystemConfig() {
       state.systemName = res.config.systemName || 'System';
       applySystemName();
     }
-  } catch (e) {
-    // Configuration is cosmetic; the application can still proceed.
-  }
+  } catch (e) {}
 }
 function applySystemName() {
   const name = state.systemName || 'System';
@@ -455,7 +410,6 @@ function applySystemName() {
   document.title = name + ' — Management System';
 }
 
-// ============ API ============
 async function apiGet(params, options) {
   const qs = new URLSearchParams(params).toString();
   const showApiLoader = !state.loading && !(options && options.silent);
@@ -474,12 +428,9 @@ async function apiPost(body) {
     body: JSON.stringify(body)
   });
   const result = await res.json();
-  if (result && result.success && body && body.idempotencyKey) clearUid(body.idempotencyKey);
+  if (result && result.success === true && !result._replayed && body && body.idempotencyKey) clearUid(body.idempotencyKey);
   return result;
 }
-// Persistent client idempotency tokens: if the network drops after the
-// server has written successfully, the next click reuses the same key and
-// the backend safely replays the original result instead of duplicating it.
 function uid(prefix, scope) {
   const p = prefix || 'W';
   const slot = p + ':' + String(scope || 'default');
@@ -502,7 +453,6 @@ function clearUid(key) {
   } catch (e) {}
 }
 
-// ============ LOADER ============
 function showLoader(text) {
   document.getElementById('pageLoaderText').textContent = text || 'Loading...';
   document.getElementById('pageLoader').classList.add('active');
@@ -514,8 +464,6 @@ function setBtnLoading(btn, loading) {
   if (loading) { btn.classList.add('is-loading'); btn.disabled = true; }
   else { btn.classList.remove('is-loading'); btn.disabled = false; }
 }
-
-// ============ TOAST ============
 function toast(msg, type) {
   const el = document.createElement('div');
   el.className = 'toast ' + (type || '');
@@ -524,7 +472,6 @@ function toast(msg, type) {
   setTimeout(() => el.remove(), 2600);
 }
 
-// ============ LOGIN ============
 async function doLogin() {
   const username = document.getElementById('loginUser').value.trim();
   const password = document.getElementById('loginPass').value;
@@ -559,7 +506,6 @@ function logout() {
   document.getElementById('loginScreen').classList.remove('hidden');
 }
 
-// ============ NAV ============
 function buildNav() {
   const role = state.user.role;
   let items = [];
@@ -585,7 +531,7 @@ function buildNav() {
       { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
       { id: 'profile', label: 'Account', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>' }
     ];
-  } else { // admin
+  } else {
     items = [
       { id: 'dashboard', label: 'Dashboard', icon: '<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>' },
       { id: 'loadTank', label: 'Load', icon: '<path d="M12 5v14"/><path d="M5 12h14"/>' },
@@ -605,12 +551,10 @@ function buildNav() {
   nav.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => navigate(b.dataset.nav));
 }
 
-// ============ NAVIGATE ============
 function navigate(page) {
   const wasLoad = (state.page === 'loadTank' || state.page === 'loadBoiler');
   const willBeLoad = (page === 'loadTank' || page === 'loadBoiler');
   if (wasLoad && !willBeLoad) {
-    // Leaving load workspace fully — reset staged work
     state.selectedCustomer = null;
     state.selectedAssets = [];
     state.selectedExpenses = [];
@@ -635,20 +579,13 @@ const PAGE_TITLES = {
   settings: 'Settings'
 };
 
-// ============ FORM PRESERVATION ============
-// Capture every editable field before a page is re-rendered. This prevents
-// auto-sync/manual refresh/navigation from deleting text the user is typing.
 function captureEditableState() {
   const root = document.getElementById('pageContent');
   if (!root) return {};
   const values = {};
   root.querySelectorAll('input[id], select[id], textarea[id]').forEach(el => {
     if (el.type === 'button' || el.type === 'submit') return;
-    values[el.id] = {
-      value: el.value,
-      checked: !!el.checked,
-      type: el.type
-    };
+    values[el.id] = { value: el.value, checked: !!el.checked, type: el.type };
   });
   return values;
 }
@@ -667,20 +604,15 @@ function pageHasEditableWork() {
   if (!root) return false;
   const active = document.activeElement;
   if (active && root.contains(active) && ['INPUT','SELECT','TEXTAREA'].includes(active.tagName)) return true;
-  // Form pages should not auto-re-render while they contain an editable form.
-  // This is intentionally lightweight and guarantees typed data is never wiped.
   return ['loadTank','loadBoiler','driver','settings'].includes(state.page) &&
     root.querySelectorAll('input, select, textarea').length > 0;
 }
 
-// ============ AUTO REFRESH ============
 function startAutoRefresh() {
   stopAutoRefresh();
   state.refreshTimer = setInterval(() => {
     if (document.visibilityState !== 'visible') return;
     if (state.loading) return;
-    // Never auto-sync over an active form. All form pages are protected,
-    // including driver, so names/text/amounts cannot disappear mid-entry.
     if (pageHasEditableWork()) return;
     loadPage(true);
   }, 10000);
@@ -693,13 +625,11 @@ function manualRefresh() {
   loadPage(false);
 }
 
-// ============ PAGE LOADER ============
 async function loadPage(silent) {
   if (state.loading) return;
   state.loading = true;
   const el = document.getElementById('pageContent');
   const preservedFields = captureEditableState();
-  // Persist active forms before any re-render as an extra safety layer.
   if (state.page === 'loadTank' || state.page === 'loadBoiler') saveDraft();
   if (state.page === 'driver') saveDriverDraft();
   if (!silent) {
@@ -725,7 +655,6 @@ async function loadPage(silent) {
   }
 }
 
-// ============ DASHBOARD ============
 async function renderDashboard(el) {
   const res = await apiGet({ action: 'dashboard' });
   if (!res.success) throw new Error(res.error);
@@ -757,7 +686,6 @@ async function renderDashboard(el) {
   renderTankCardsTo('boilerGrid', boilers.items || []);
 }
 
-// Convert raw asset items to the beautiful tank-card markup
 function renderTankCardsTo(gridId, items) {
   const grid = document.getElementById(gridId);
   if (!grid) return;
@@ -789,7 +717,6 @@ function renderTankCardsTo(gridId, items) {
   }).join('');
 }
 
-// ============ VIEW ASSET ============
 async function viewAsset(type, id) {
   const action = type === 'boiler' ? 'getBoiler' : 'getTank';
   const res = await apiGet({ action, id });
@@ -879,7 +806,6 @@ async function viewSession(id) {
   openModal('Session Details', body);
 }
 
-// ============ LOAD WORKSPACE ============
 async function renderLoad(el, type) {
   document.getElementById('headerSub').textContent = (type === 'boiler' ? 'Boiler' : 'Tank') + ' loading';
   const [custRes, expRes, ourExpRes, dashRes] = await Promise.all([
@@ -889,14 +815,10 @@ async function renderLoad(el, type) {
     apiGet({ action: 'dashboard' })
   ]);
   const customers = custRes.customers || [];
-  // Expenses are ALWAYS sourced from the backend. The frontend never owns a
-  // hardcoded expense catalogue. Only active expenses assigned to this asset
-  // type are allowed into the loading workflow.
   const allExpenses = (expRes.expenses || []).filter(e => String(e.active).toUpperCase() === 'TRUE' && String(e.assetType || '').toLowerCase() === type);
   const allOurExpenses = (ourExpRes.expenses || []).filter(e => String(e.active).toUpperCase() === 'TRUE' && String(e.assetType || '').toLowerCase() === type);
   const assets = (type === 'boiler' ? dashRes.boilers.items : dashRes.tanks.items).filter(a => String(a.status).toLowerCase() === 'vacant');
 
-  // Restore any saved draft
   const draft = loadDraft() || {};
   const sameType = draft.assetType === type;
   const preservedCustomer = sameType && draft.customerId
@@ -1013,7 +935,7 @@ function renderCustomers(customers) {
 
 function filterCustomers(q) {
   q = q.toLowerCase();
-  const filtered = state.allCustomers.filter(c => 
+  const filtered = state.allCustomers.filter(c =>
     c.name.toLowerCase().includes(q) || String(c.phone || '').includes(q)
   );
   renderCustomers(filtered);
@@ -1181,7 +1103,6 @@ async function submitLoad(type, btn) {
       toast('Session created successfully', 'success');
     }
 
-    // clear draft & staged state
     state.selectedCustomer = null;
     state.selectedAssets = [];
     state.selectedExpenses = [];
@@ -1219,7 +1140,6 @@ async function createCustomer(btn) {
   setBtnLoading(btn, false);
 }
 
-// ============ EMPTY TANK ============
 async function renderEmpty(el) {
   document.getElementById('headerSub').textContent = 'Open sessions';
   const assetType = state.user.role === 'boiler' ? 'boiler' : 'tank';
@@ -1277,7 +1197,6 @@ async function submitPayment(invoiceId, sessionId, btn) {
   setBtnLoading(btn, false);
 }
 
-// ============ RECEIPT PDF ============
 function generateReceiptPDF(receipt) {
   const html = `
     <html><head><style>
@@ -1314,7 +1233,6 @@ function generateReceiptPDF(receipt) {
   setTimeout(() => w.print(), 300);
 }
 
-// ============ STATEMENT DOWNLOAD ============
 async function downloadStatement(sessionId) {
   const res = await apiGet({ action: 'sessionDetails', id: sessionId });
   if (!res.success) return toast(res.error, 'error');
@@ -1354,7 +1272,6 @@ async function downloadStatement(sessionId) {
   setTimeout(() => w.print(), 300);
 }
 
-// ============ PENDING (admin) ============
 async function renderPending(el) {
   document.getElementById('headerSub').textContent = 'Pending approvals';
   const [priceRes, reqRes] = await Promise.all([
@@ -1390,7 +1307,9 @@ async function viewCashRequisition(id) {
     <div class="data-row"><span class="lbl">Role</span><span class="val">${r.requestedRole}</span></div>
     <div class="data-row"><span class="lbl">Account</span><span class="val">${r.account}</span></div>
     <div class="data-row"><span class="lbl">Description</span><span class="val">${r.description}</span></div>
-    <div class="data-row total"><span class="lbl">Amount</span><span class="val">$${Number(r.amount).toFixed(2)}</span></div>
+    <div class="data-row"><span class="lbl">Requested amount</span><span class="val">$${Number(r.amount).toFixed(2)}</span></div>
+    <div class="field"><label>Approved amount (you can edit)</label><input id="reqApproveAmount" type="number" step="0.01" min="0.01" value="${Number(r.amount).toFixed(2)}"></div>
+    <div class="field"><label>Note (optional on approve, required on decline)</label><textarea id="reqNote" rows="3" placeholder="Add a note for the applicant"></textarea></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px">
       <button class="btn btn-danger" onclick="declineCashRequisition('${r.id}',this)">Decline</button>
       <button class="btn btn-success" onclick="approveCashRequisition('${r.id}',this)">Approve</button>
@@ -1398,18 +1317,23 @@ async function viewCashRequisition(id) {
   openModal('Cash Requisition', body);
 }
 async function approveCashRequisition(id, btn) {
+  const approvedAmount = Number((document.getElementById('reqApproveAmount')||{}).value);
+  const adminNote = ((document.getElementById('reqNote')||{}).value||'').trim();
+  if (!Number.isFinite(approvedAmount) || approvedAmount <= 0) return toast('Enter a valid approved amount.', 'error');
   setBtnLoading(btn,true);
   await withLoader('Approving cash requisition...',async()=>{
-    const res=await apiPost({action:'approveCashRequisition',requisitionId:id,idempotencyKey:uid('REQAPR',id),user:state.user.username});
+    const res=await apiPost({action:'approveCashRequisition',requisitionId:id,approvedAmount:approvedAmount,adminNote:adminNote,idempotencyKey:uid('REQAPR',id+':'+approvedAmount),user:state.user.username});
     if(!res.success)return toast(res.error,'error');
-    toast('Cash requisition approved and added to account expenses.','success'); closeModal(); loadPage();
+    toast('Cash requisition approved.','success'); closeModal(); loadPage();
   });
   setBtnLoading(btn,false);
 }
 async function declineCashRequisition(id, btn) {
+  const adminNote = ((document.getElementById('reqNote')||{}).value||'').trim();
+  if (!adminNote) return toast('A note is required when declining.', 'error');
   setBtnLoading(btn,true);
   await withLoader('Declining cash requisition...',async()=>{
-    const res=await apiPost({action:'declineCashRequisition',requisitionId:id,idempotencyKey:uid('REQDEC',id),user:state.user.username});
+    const res=await apiPost({action:'declineCashRequisition',requisitionId:id,adminNote:adminNote,idempotencyKey:uid('REQDEC',id+':'+adminNote),user:state.user.username});
     if(!res.success)return toast(res.error,'error');
     toast('Cash requisition declined.','success'); closeModal(); loadPage();
   });
@@ -1448,33 +1372,41 @@ async function approvePending(id, btn) {
   setBtnLoading(btn, false);
 }
 async function declinePending(id, btn) {
-  if (!confirm('Decline this price change? This reverses the transaction, empties/releases the tank or boiler, and allows the same invoice number to be entered again.')) return;
+  if (!confirm('Decline this price change? The invoice will keep the previously approved price and the session will NOT be cancelled.')) return;
   setBtnLoading(btn, true);
   await withLoader('Declining...', async () => {
     const res = await apiPost({ action: 'declinePending', idempotencyKey: uid('DEC', id), pendingId: id, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
-    toast(res.message || 'Declined. Transaction reversed and asset released.', 'success');
+    toast(res.message || 'Price change declined.', 'success');
     closeModal();
     loadPage();
   });
   setBtnLoading(btn, false);
 }
 
-// ============ REPORTS ============
+/* ============ END OF PART 1 ============ */
 async function renderReports(el) {
   document.getElementById('headerSub').textContent = 'Reports & Analytics';
   if (state.user.role === 'driver') return renderDriver(el);
-  const from=state.filter.from||'', to=state.filter.to||'', account=state.filter.account||'all';
-  state.reportInvoicePage=1; state.reportInvoices=[];
-  const [repRes,invRes]=await Promise.all([
-    apiGet({action:'reports',from,to,account}),
-    apiGet({action:'completedInvoices',from,to,account,page:1,pageSize:10})
+  const from = state.filter.from || '';
+  const to = state.filter.to || '';
+  const account = state.filter.account || 'all';
+  state.reportInvoicePage = 1;
+  state.reportInvoices = [];
+  const [repRes, invRes, myReqRes] = await Promise.all([
+    apiGet({ action: 'reports', from, to, account }),
+    apiGet({ action: 'completedInvoices', from, to, account, page: 1, pageSize: 10 }),
+    apiGet({ action: 'myRequisitions', user: state.user.username }, { silent: true })
   ]);
-  if(!repRes.success)return toast(repRes.error||'Could not load reports','error');
-  const monthly=repRes.monthly, overall=repRes.overall, invoices=invRes.invoices||[];
-  state.reportInvoices=invoices; state.reportInvoiceHasNext=!!invRes.hasNext;
-  const showAccount=account;
-  el.innerHTML=`
+  if (!repRes.success) return toast(repRes.error || 'Could not load reports', 'error');
+  const monthly = repRes.monthly;
+  const overall = repRes.overall;
+  const invoices = invRes.invoices || [];
+  const myReqs = (myReqRes && myReqRes.requisitions) || [];
+  state.reportInvoices = invoices;
+  state.reportInvoiceHasNext = !!invRes.hasNext;
+  const showAccount = account;
+  el.innerHTML = `
     <div class="card">
       <div class="card-title">Filter by Period</div>
       <div class="grid grid-2">
@@ -1503,7 +1435,26 @@ async function renderReports(el) {
         <button class="btn" onclick="showCashRequisitionModal()">Cash Requisition</button>
       </div>
     </div>
-    ${account==='grabber'?renderGrabberReport(monthly):`
+    ${myReqs.length ? `
+      <div class="section-title">My Cash Requisitions (${myReqs.length})</div>
+      ${myReqs.map(r => {
+        const st = (r.status || '').toLowerCase();
+        const cls = st === 'approved' ? 'approved' : (st === 'declined' ? 'declined' : '');
+        const note = r.adminNote ? `<div class="requisition-note ${cls}"><b>Admin note:</b> ${r.adminNote}</div>` : '';
+        const edited = (r.originalAmount !== undefined && r.originalAmount !== '' && Number(r.originalAmount) !== Number(r.amount))
+          ? `<div style="font-size:11px;color:#8a94a6;margin-top:2px">Approved amount adjusted from $${Number(r.originalAmount).toFixed(2)}</div>`
+          : '';
+        return `<div class="list-item" style="align-items:flex-start;flex-direction:column">
+          <div style="display:flex;width:100%;gap:12px;align-items:center">
+            <div class="avatar">$</div>
+            <div class="info"><div class="name">${r.description}</div><div class="sub">${r.account} · ${new Date(r.requestDate||r.createdAt).toLocaleDateString()} · <b style="text-transform:capitalize">${r.status}</b></div>${edited}</div>
+            <div class="amount ${st==='declined'?'red':'green'}">$${Number(r.amount).toFixed(2)}</div>
+          </div>
+          ${note}
+        </div>`;
+      }).join('')}
+    ` : ''}
+    ${account === 'grabber' ? renderGrabberReport(monthly) : `
       <div class="card" style="margin-top:16px">
         <div class="card-title">${account==='boiler'?'Boiler':'Tank'} Account Details</div>
         <div class="data-row"><span class="lbl">Revenue</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].revenue.toFixed(2)}</span></div>
@@ -1520,69 +1471,82 @@ async function renderReports(el) {
     </div>
   `;
 }
-function renderInvoiceRows(invoices){
-  if(!invoices.length)return '<div class="empty">No completed invoices for this period</div>';
-  return invoices.map(inv=>`<div class="list-item" onclick="viewInvoice('${inv.id}')"><div class="avatar">${inv.customerName?inv.customerName[0].toUpperCase():'?'}</div><div class="info"><div class="name">${inv.customerName||'-'}</div><div class="sub">Inv: ${inv.invoiceNumber||inv.id} · ${inv.assetIds||''} · ${inv.completedAt?new Date(inv.completedAt).toLocaleDateString():''} · ${inv.completedBy||'-'}</div></div><div class="amount">$${Number(inv.totalAmount).toFixed(2)}</div></div>`).join('');
+function renderInvoiceRows(invoices) {
+  if (!invoices.length) return '<div class="empty">No completed invoices for this period</div>';
+  return invoices.map(inv => `<div class="list-item" onclick="viewInvoice('${inv.id}')"><div class="avatar">${inv.customerName?inv.customerName[0].toUpperCase():'?'}</div><div class="info"><div class="name">${inv.customerName||'-'}</div><div class="sub">Inv: ${inv.invoiceNumber||inv.id} · ${inv.assetIds||''} · ${inv.completedAt?new Date(inv.completedAt).toLocaleDateString():''} · ${inv.completedBy||'-'}</div></div><div class="amount">$${Number(inv.totalAmount).toFixed(2)}</div></div>`).join('');
 }
-async function loadMoreInvoices(btn){
-  if(!state.reportInvoiceHasNext)return;
-  setBtnLoading(btn,true);
-  const next=state.reportInvoicePage+1;
-  const res=await apiGet({action:'completedInvoices',from:state.filter.from||'',to:state.filter.to||'',account:state.filter.account||'all',page:next,pageSize:10});
-  if(!res.success){toast(res.error||'Could not load more invoices','error');setBtnLoading(btn,false);return;}
-  state.reportInvoicePage=next; state.reportInvoiceHasNext=!!res.hasNext; state.reportInvoices=state.reportInvoices.concat(res.invoices||[]);
-  const list=document.getElementById('completedInvoicesList');
-  if(list){ if(state.reportInvoices.length===res.invoices.length) list.innerHTML=renderInvoiceRows(res.invoices); else list.insertAdjacentHTML('beforeend',renderInvoiceRows(res.invoices)); }
-  const pager=document.getElementById('invoicePager'); if(pager)pager.style.display=state.reportInvoiceHasNext?'block':'none';
-  setBtnLoading(btn,false);
+async function loadMoreInvoices(btn) {
+  if (!state.reportInvoiceHasNext) return;
+  setBtnLoading(btn, true);
+  const next = state.reportInvoicePage + 1;
+  const res = await apiGet({ action: 'completedInvoices', from: state.filter.from || '', to: state.filter.to || '', account: state.filter.account || 'all', page: next, pageSize: 10 });
+  if (!res.success) { toast(res.error || 'Could not load more invoices', 'error'); setBtnLoading(btn, false); return; }
+  state.reportInvoicePage = next;
+  state.reportInvoiceHasNext = !!res.hasNext;
+  state.reportInvoices = state.reportInvoices.concat(res.invoices || []);
+  const list = document.getElementById('completedInvoicesList');
+  if (list) {
+    if (state.reportInvoices.length === res.invoices.length) list.innerHTML = renderInvoiceRows(res.invoices);
+    else list.insertAdjacentHTML('beforeend', renderInvoiceRows(res.invoices));
+  }
+  const pager = document.getElementById('invoicePager');
+  if (pager) pager.style.display = state.reportInvoiceHasNext ? 'block' : 'none';
+  setBtnLoading(btn, false);
 }
-function showCashRequisitionModal(){
-  const role=String(state.user.role||'').toLowerCase();
-  const account=role==='loader'?'tank':role==='boiler'?'boiler':role==='driver'?'grabber':'general';
-  const accountField=role==='admin'?`<div class="field"><label>Account</label><select id="reqAccount"><option value="tank">Tank Account</option><option value="boiler">Boiler Account</option><option value="grabber">Grabber Account</option></select></div>`:`<div class="data-row" style="margin-bottom:14px"><span class="lbl">Account</span><span class="val">${account}</span></div>`;
-  openModal('Cash Requisition',`${accountField}<div class="field"><label>Description</label><textarea id="reqDesc" rows="3" placeholder="What is the cash needed for?"></textarea></div><div class="field"><label>Amount</label><input id="reqAmount" type="number" min="0.01" step="0.01" placeholder="0.00"></div><button class="btn" onclick="submitCashRequisition(this)">Request Cash</button>`);
+function showCashRequisitionModal() {
+  const role = String(state.user.role || '').toLowerCase();
+  const account = role === 'loader' ? 'tank' : role === 'boiler' ? 'boiler' : role === 'driver' ? 'grabber' : 'general';
+  const accountField = role === 'admin'
+    ? `<div class="field"><label>Account</label><select id="reqAccount"><option value="tank">Tank Account</option><option value="boiler">Boiler Account</option><option value="grabber">Grabber Account</option></select></div>`
+    : `<div class="data-row" style="margin-bottom:14px"><span class="lbl">Account</span><span class="val">${account}</span></div>`;
+  openModal('Cash Requisition', `${accountField}<div class="field"><label>Description</label><textarea id="reqDesc" rows="3" placeholder="What is the cash needed for?"></textarea></div><div class="field"><label>Amount</label><input id="reqAmount" type="number" min="0.01" step="0.01" placeholder="0.00"></div><button class="btn" onclick="submitCashRequisition(this)">Request Cash</button>`);
 }
-async function submitCashRequisition(btn){
-  const description=(document.getElementById('reqDesc')||{}).value||'';
-  const amount=Number((document.getElementById('reqAmount')||{}).value);
-  const account=(document.getElementById('reqAccount')||{}).value||'';
-  if(!description.trim())return toast('Enter a description.','error');
-  if(!Number.isFinite(amount)||amount<=0)return toast('Enter a valid amount.','error');
-  setBtnLoading(btn,true);
-  await withLoader('Submitting cash requisition...',async()=>{
-    const res=await apiPost({action:'requestCashRequisition',idempotencyKey:uid('REQ',state.user.username+':'+description+':'+amount),description:description.trim(),amount,account,user:state.user.username});
-    if(!res.success)return toast(res.error,'error');
-    toast('Cash requisition sent to Admin for approval.','success'); closeModal();
+async function submitCashRequisition(btn) {
+  const description = (document.getElementById('reqDesc') || {}).value || '';
+  const amount = Number((document.getElementById('reqAmount') || {}).value);
+  const account = (document.getElementById('reqAccount') || {}).value || '';
+  if (!description.trim()) return toast('Enter a description.', 'error');
+  if (!Number.isFinite(amount) || amount <= 0) return toast('Enter a valid amount.', 'error');
+  setBtnLoading(btn, true);
+  await withLoader('Submitting cash requisition...', async () => {
+    const res = await apiPost({ action: 'requestCashRequisition', idempotencyKey: uid('REQ', state.user.username + ':' + description + ':' + amount), description: description.trim(), amount, account, user: state.user.username });
+    if (!res.success) return toast(res.error, 'error');
+    toast('Cash requisition sent to Admin for approval.', 'success');
+    closeModal();
   });
-  setBtnLoading(btn,false);
+  setBtnLoading(btn, false);
 }
-function showStatementFilterModal(downloadAfter){
-  const from=state.filter.from||'',to=state.filter.to||'',account=state.filter.account||'all';
-  openModal('View Statement',`<div class="field"><label>From</label><input type="date" id="stFrom" value="${from}"></div><div class="field"><label>To</label><input type="date" id="stTo" value="${to}"></div><div class="field"><label>Account</label><select id="stAccount"><option value="all" ${account==='all'?'selected':''}>All Accounts</option><option value="tank" ${account==='tank'?'selected':''}>Tank Account</option><option value="boiler" ${account==='boiler'?'selected':''}>Boiler Account</option><option value="grabber" ${account==='grabber'?'selected':''}>Grabber Account</option></select></div><button class="btn" onclick="loadFinancialStatement(this,${downloadAfter?'true':'false'})">${downloadAfter?'Build & Download':'View Statement'}</button>`);
+function showStatementFilterModal(downloadAfter) {
+  const from = state.filter.from || '';
+  const to = state.filter.to || '';
+  const account = state.filter.account || 'all';
+  openModal('View Statement', `<div class="field"><label>From</label><input type="date" id="stFrom" value="${from}"></div><div class="field"><label>To</label><input type="date" id="stTo" value="${to}"></div><div class="field"><label>Account</label><select id="stAccount"><option value="all" ${account==='all'?'selected':''}>All Accounts</option><option value="tank" ${account==='tank'?'selected':''}>Tank Account</option><option value="boiler" ${account==='boiler'?'selected':''}>Boiler Account</option><option value="grabber" ${account==='grabber'?'selected':''}>Grabber Account</option></select></div><button class="btn" onclick="loadFinancialStatement(this,${downloadAfter?'true':'false'})">${downloadAfter?'Build & Download':'View Statement'}</button>`);
 }
-async function loadFinancialStatement(btn,download){
-  const from=(document.getElementById('stFrom')||{}).value||'',to=(document.getElementById('stTo')||{}).value||'',account=(document.getElementById('stAccount')||{}).value||'all';
-  if(from&&to&&from>to)return toast('From date cannot be after To date.','error');
-  setBtnLoading(btn,true);
-  const res=await apiGet({action:'financialStatement',from,to,account,user:state.user.username});
-  setBtnLoading(btn,false);
-  if(!res.success)return toast(res.error||'Could not build statement','error');
-  openFinancialStatement(res,download);
+async function loadFinancialStatement(btn, download) {
+  const from = (document.getElementById('stFrom') || {}).value || '';
+  const to = (document.getElementById('stTo') || {}).value || '';
+  const account = (document.getElementById('stAccount') || {}).value || 'all';
+  if (from && to && from > to) return toast('From date cannot be after To date.', 'error');
+  setBtnLoading(btn, true);
+  const res = await apiGet({ action: 'financialStatement', from, to, account, user: state.user.username });
+  setBtnLoading(btn, false);
+  if (!res.success) return toast(res.error || 'Could not build statement', 'error');
+  openFinancialStatement(res, download);
 }
-function openFinancialStatement(st,download){
-  const rows=st.rows||[];
-  window._enicanLastStatement=st;
-  const html=`<div class="data-row"><span class="lbl">Period</span><span class="val">${st.from||'All time'} → ${st.to||'Today'}</span></div><div class="data-row"><span class="lbl">Account</span><span class="val">${st.account}</span></div><div class="data-row"><span class="lbl">Revenue</span><span class="val" style="color:#16a34a">$${Number(st.revenue).toFixed(2)}</span></div>${Number(st.grabberRevenue||0)>0&&st.account!=='grabber'?`<div class="data-row"><span class="lbl">Grabber Revenue (informational)</span><span class="val">$${Number(st.grabberRevenue).toFixed(2)}</span></div>`:''}<div class="data-row"><span class="lbl">Expenses</span><span class="val" style="color:#dc2626">$${Number(st.expenses).toFixed(2)}</span></div><div class="data-row total"><span class="lbl">Gross Profit</span><span class="val">$${Number(st.profit).toFixed(2)}</span></div><div class="section-title" style="margin:16px 0 8px">Income & Expenses</div>${rows.length?`<div style="overflow-x:auto"><table class="statement-table"><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Account</th><th>Amount</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.date}</td><td>${r.type==='income'?'Income':'Expense'}</td><td>${r.description}</td><td>${r.account}</td><td>$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty" style="padding:24px">No transactions for this period.</div>'}<div style="margin-top:14px"><button class="btn" onclick="printFinancialStatement(window._enicanLastStatement)">Download Statement as PDF</button></div>`;
-  openModal('Enican Mines System — Statement',html);
-  if(download)setTimeout(()=>printFinancialStatement(st),250);
+function openFinancialStatement(st, download) {
+  const rows = st.rows || [];
+  window._enicanLastStatement = st;
+  const html = `<div class="data-row"><span class="lbl">Period</span><span class="val">${st.from||'All time'} → ${st.to||'Today'}</span></div><div class="data-row"><span class="lbl">Account</span><span class="val">${st.account}</span></div><div class="data-row"><span class="lbl">Revenue</span><span class="val" style="color:#16a34a">$${Number(st.revenue).toFixed(2)}</span></div>${Number(st.grabberRevenue||0)>0&&st.account!=='grabber'?`<div class="data-row"><span class="lbl">Grabber Revenue (informational)</span><span class="val">$${Number(st.grabberRevenue).toFixed(2)}</span></div>`:''}<div class="data-row"><span class="lbl">Expenses</span><span class="val" style="color:#dc2626">$${Number(st.expenses).toFixed(2)}</span></div><div class="data-row total"><span class="lbl">Gross Profit</span><span class="val">$${Number(st.profit).toFixed(2)}</span></div><div class="section-title" style="margin:16px 0 8px">Income & Expenses</div>${rows.length?`<div style="overflow-x:auto"><table class="statement-table"><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Account</th><th>Amount</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.date}</td><td>${r.type==='income'?'Income':'Expense'}</td><td>${r.description}</td><td>${r.account}</td><td>$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty" style="padding:24px">No transactions for this period.</div>'}<div style="margin-top:14px"><button class="btn" onclick="printFinancialStatement(window._enicanLastStatement)">Download Statement as PDF</button></div>`;
+  openModal('Enican Mines System — Statement', html);
+  if (download) setTimeout(() => printFinancialStatement(st), 250);
 }
-function printFinancialStatement(st){
-  const rows=st.rows||[];
-  const w=window.open('','_blank'); if(!w)return toast('Please allow pop-ups to download the statement.','error');
+function printFinancialStatement(st) {
+  const rows = st.rows || [];
+  const w = window.open('', '_blank');
+  if (!w) return toast('Please allow pop-ups to download the statement.', 'error');
   w.document.write(`<html><head><title>${state.systemName} Statement</title><style>body{font-family:Arial,sans-serif;padding:28px;color:#0f172a}h1{color:#0641ab;margin-bottom:2px}.sub{color:#64748b;font-size:12px;margin-bottom:18px}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.box{border:1px solid #dbe3ee;border-radius:8px;padding:10px}.box b{display:block;margin-top:4px;font-size:18px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#f4f6fa}.right{text-align:right}.expense{color:#dc2626}.income{color:#15803d}</style></head><body><h1>${state.systemName}</h1><div class="sub">Enican Mines System · Financial Statement · ${st.from||'All time'} to ${st.to||'Today'} · ${st.account}</div><div class="summary"><div class="box">Revenue<b>$${Number(st.revenue).toFixed(2)}</b></div><div class="box">Expenses<b>$${Number(st.expenses).toFixed(2)}</b></div><div class="box">Gross Profit<b>$${Number(st.profit).toFixed(2)}</b></div></div><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Account</th><th class="right">Amount</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.date}</td><td class="${r.type}">${r.type}</td><td>${r.category}</td><td>${r.description}</td><td>${r.account}</td><td class="right">$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table><script>setTimeout(()=>window.print(),250)<\/script></body></html>`);
   w.document.close();
 }
-
 function renderGrabberReport(monthly) {
   return `
     <div class="card" style="margin-top:16px">
@@ -1625,26 +1589,26 @@ async function viewInvoice(id) {
   openModal('Invoice Details', body);
 }
 
-// ============ DRIVER (preserves in-progress form on refresh) ============
 async function renderDriver(el) {
   document.getElementById('headerSub').textContent = 'Driver · Trips & Expenses';
   const from = state.filter.from || '';
   const to = state.filter.to || '';
-  const [repRes, custRes] = await Promise.all([
+  const [repRes, custRes, myReqRes] = await Promise.all([
     apiGet({ action: 'driverReport', driver: state.user.username, from, to }),
-    apiGet({ action: 'listCustomers' })
+    apiGet({ action: 'listCustomers' }),
+    apiGet({ action: 'myRequisitions', user: state.user.username }, { silent: true })
   ]);
   const rep = repRes;
   const customers = custRes.customers || [];
+  const myReqs = (myReqRes && myReqRes.requisitions) || [];
   state.allCustomers = customers;
 
-  // Restore drafts (don't wipe while typing)
   const draft = loadDraft() || {};
   const dt = draft.driverTrip || {};
   const de = draft.driverExpense || {};
   const curr = document.activeElement;
   const isTypingTrip = curr && ['tripCustomer','tripCount','tripRate','tripDate','tripNotes'].includes(curr.id);
-  const isTypingExp  = curr && ['expDesc','expAmt','expDate'].includes(curr.id);
+  const isTypingExp = curr && ['expDesc','expAmt','expDate'].includes(curr.id);
   const trip = isTypingTrip ? {
     customerId: (document.getElementById('tripCustomer')||{}).value || dt.customerId || '',
     trips: (document.getElementById('tripCount')||{}).value || dt.trips || '1',
@@ -1722,6 +1686,22 @@ async function renderDriver(el) {
         <div class="amount red">-$${Number(e.amount).toFixed(2)}</div>
       </div>
     `).join('') || '<div class="empty">No expenses</div>'}
+    ${myReqs.length ? `
+      <div class="section-title">My Cash Requisitions (${myReqs.length})</div>
+      ${myReqs.map(r => {
+        const st = (r.status || '').toLowerCase();
+        const cls = st === 'approved' ? 'approved' : (st === 'declined' ? 'declined' : '');
+        const note = r.adminNote ? `<div class="requisition-note ${cls}"><b>Admin note:</b> ${r.adminNote}</div>` : '';
+        return `<div class="list-item" style="align-items:flex-start;flex-direction:column">
+          <div style="display:flex;width:100%;gap:12px;align-items:center">
+            <div class="avatar">$</div>
+            <div class="info"><div class="name">${r.description}</div><div class="sub">${r.account} · ${new Date(r.requestDate||r.createdAt).toLocaleDateString()} · <b style="text-transform:capitalize">${r.status}</b></div></div>
+            <div class="amount ${st==='declined'?'red':'green'}">$${Number(r.amount).toFixed(2)}</div>
+          </div>
+          ${note}
+        </div>`;
+      }).join('')}
+    ` : ''}
   `;
   if (state.driverTab === 'expense') {
     const tabBtn = el.querySelector('.tabs .tab:nth-child(2)');
@@ -1792,13 +1772,13 @@ async function submitTrip(btn) {
   setBtnLoading(btn, true);
   await withLoader('Logging trip...', async () => {
     const res = await apiPost({
-      action: 'logTrip', idempotencyKey: uid('TRIP', customerId + ':' + trips + ':' + rate + ':' + tripDate),
+      action: 'logTrip',
+      idempotencyKey: uid('TRIP', customerId + ':' + trips + ':' + rate + ':' + tripDate),
       driverUsername: state.user.username,
       customerId, customerName: customer ? customer.name : '', trips, amountPerTrip: rate, tripDate, notes
     });
     if (!res.success) { toast(res.error, 'error'); return; }
     toast('Trip logged', 'success');
-    // clear trip draft
     try { const d = loadDraft() || {}; d.driverTrip = {}; localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch(e){}
     loadPage();
   });
@@ -1812,7 +1792,8 @@ async function submitDriverExpense(btn) {
   setBtnLoading(btn, true);
   await withLoader('Logging expense...', async () => {
     const res = await apiPost({
-      action: 'logDriverExpense', idempotencyKey: uid('DEXP', description + ':' + amount + ':' + expenseDate),
+      action: 'logDriverExpense',
+      idempotencyKey: uid('DEXP', description + ':' + amount + ':' + expenseDate),
       driverUsername: state.user.username,
       description, amount, expenseDate
     });
@@ -1829,22 +1810,38 @@ function driverFilter() {
   loadPage();
 }
 
-// ============ PROFILE ============
 async function renderProfile(el) {
   const u = state.user;
+  const myReqRes = await apiGet({ action: 'myRequisitions', user: u.username }, { silent: true });
+  const myReqs = (myReqRes && myReqRes.requisitions) || [];
   el.innerHTML = `
     <div class="card" style="text-align:center">
       <div class="avatar" style="width:70px;height:70px;font-size:28px;margin:0 auto 10px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:700">${u.fullName ? u.fullName[0].toUpperCase() : u.username[0].toUpperCase()}</div>
       <h2 style="margin:0;color:#0641ab">${u.fullName || u.username}</h2>
       <p style="color:#8a94a6;margin:4px 0 0;text-transform:capitalize">${u.role}</p>
     </div>
+    ${myReqs.length ? `
+      <div class="section-title">My Cash Requisitions (${myReqs.length})</div>
+      ${myReqs.map(r => {
+        const st = (r.status || '').toLowerCase();
+        const cls = st === 'approved' ? 'approved' : (st === 'declined' ? 'declined' : '');
+        const note = r.adminNote ? `<div class="requisition-note ${cls}"><b>Admin note:</b> ${r.adminNote}</div>` : '';
+        return `<div class="list-item" style="align-items:flex-start;flex-direction:column">
+          <div style="display:flex;width:100%;gap:12px;align-items:center">
+            <div class="avatar">$</div>
+            <div class="info"><div class="name">${r.description}</div><div class="sub">${r.account} · ${new Date(r.requestDate||r.createdAt).toLocaleDateString()} · <b style="text-transform:capitalize">${r.status}</b></div></div>
+            <div class="amount ${st==='declined'?'red':'green'}">$${Number(r.amount).toFixed(2)}</div>
+          </div>
+          ${note}
+        </div>`;
+      }).join('')}
+    ` : ''}
     <div class="card">
       <button class="btn btn-danger" onclick="logout()">Sign Out</button>
     </div>
   `;
 }
 
-// ============ SETTINGS (admin only) ============
 async function renderSettings(el) {
   if (!state.user || state.user.role !== 'admin') {
     el.innerHTML = '<div class="card"><p style="color:#dc2626">Access denied. Admin only.</p></div>';
@@ -1894,7 +1891,7 @@ async function renderSettings(el) {
           <div class="avatar">${(u.fullName || u.username)[0].toUpperCase()}</div>
           <div class="info">
             <div class="name">${u.fullName || u.username}</div>
-            <div class="sub">@${u.username} · ${u.active === 'TRUE' || u.active === true ? 'Active' : 'Inactive'}</div>
+            <div class="sub">@${u.username} · ${String(u.active).toUpperCase() === 'TRUE' || u.active === true ? 'Active' : 'Inactive'}</div>
           </div>
           <select onchange="changeUserRole('${u.username}', this.value)" style="padding:6px;border-radius:8px;border:1px solid var(--border-color);font-size:12px;">
             <option value="loader" ${u.role==='loader'?'selected':''}>Loader</option>
@@ -1984,16 +1981,21 @@ async function addNewExpense(btn) {
   });
   setBtnLoading(btn, false);
 }
-
 async function addOurExpense(btn) {
-  const name=document.getElementById('oeName').value.trim(); const amountPerUnit=Number(document.getElementById('oeAmount').value); const assetType=document.getElementById('oeAssetType').value;
-  if(!name) return toast('Name required','error'); if(!Number.isFinite(amountPerUnit)||amountPerUnit<0) return toast('Valid unit cost required','error');
-  setBtnLoading(btn,true); await withLoader('Adding internal expense...',async()=>{
-    const res=await apiPost({action:'createOurExpenseType',idempotencyKey:uid('OEXP',name+':'+amountPerUnit+':'+assetType),name,amountPerUnit,assetType,user:state.user.username});
-    if(!res.success){toast(res.error,'error');return;} toast('Internal expense added','success'); loadPage();
-  }); setBtnLoading(btn,false);
+  const name = document.getElementById('oeName').value.trim();
+  const amountPerUnit = Number(document.getElementById('oeAmount').value);
+  const assetType = document.getElementById('oeAssetType').value;
+  if (!name) return toast('Name required', 'error');
+  if (!Number.isFinite(amountPerUnit) || amountPerUnit < 0) return toast('Valid unit cost required', 'error');
+  setBtnLoading(btn, true);
+  await withLoader('Adding internal expense...', async () => {
+    const res = await apiPost({ action: 'createOurExpenseType', idempotencyKey: uid('OEXP', name + ':' + amountPerUnit + ':' + assetType), name, amountPerUnit, assetType, user: state.user.username });
+    if (!res.success) { toast(res.error, 'error'); return; }
+    toast('Internal expense added', 'success');
+    loadPage();
+  });
+  setBtnLoading(btn, false);
 }
-
 async function createUser(btn) {
   const fullName = document.getElementById('nuName').value.trim();
   const username = document.getElementById('nuUser').value.trim();
@@ -2010,8 +2012,9 @@ async function createUser(btn) {
   setBtnLoading(btn, false);
 }
 
-// ============ MODAL ============
-function openModal(title, bodyHtml) {
+/* ============ END OF PART 2 ============ */
+
+  function openModal(title, bodyHtml) {
   closeModal();
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -2029,7 +2032,6 @@ function openModal(title, bodyHtml) {
 }
 function closeModal() { document.querySelectorAll('.modal-overlay').forEach(m => m.remove()); }
 
-// ============ PWA ============
 let deferredPrompt = null;
 function isStandaloneApp(){
   return window.matchMedia('(display-mode: standalone)').matches ||
@@ -2037,36 +2039,36 @@ function isStandaloneApp(){
          window.navigator.standalone === true;
 }
 function setInstallButtonVisible(show){
-  const b=document.getElementById('headerInstallBtn');
-  if(!b)return;
-  b.classList.toggle('hidden',!show || isStandaloneApp());
+  const b = document.getElementById('headerInstallBtn');
+  if (!b) return;
+  b.classList.toggle('hidden', !show || isStandaloneApp());
 }
-window.addEventListener('beforeinstallprompt',(e)=>{
+window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
-  deferredPrompt=e;
+  deferredPrompt = e;
   setInstallButtonVisible(true);
-  if(!isStandaloneApp()) setTimeout(showInstallModal,900);
+  if (!isStandaloneApp()) setTimeout(showInstallModal, 900);
 });
-window.addEventListener('appinstalled',()=>{
-  deferredPrompt=null;
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
   setInstallButtonVisible(false);
   closeModal();
-  toast('Enican Mines System installed.','success');
+  toast('Enican Mines System installed.', 'success');
 });
 function showInstallModal(){
-  if(isStandaloneApp() || document.querySelector('.modal-overlay[data-install-prompt="1"]')) return;
-  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
-  const android=/android/i.test(navigator.userAgent);
-  const icon='logo-192.png';
-  const nativeInstall=deferredPrompt
+  if (isStandaloneApp() || document.querySelector('.modal-overlay[data-install-prompt="1"]')) return;
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const android = /android/i.test(navigator.userAgent);
+  const icon = 'logo-192.png';
+  const nativeInstall = deferredPrompt
     ? `<button class="btn" onclick="installPWA()">Install Enican Mines</button>`
     : '';
-  const instructions=ios
+  const instructions = ios
     ? `<div class="pwa-platform-note"><b>iPhone / iPad</b><br>Open this site in Safari, tap <b>Share</b>, then choose <b>Add to Home Screen</b>.</div>`
     : (android && !deferredPrompt
       ? `<div class="pwa-platform-note"><b>Android</b><br>Tap the browser menu <b>⋮</b>, then choose <b>Install app</b> or <b>Add to Home screen</b>.</div>`
       : (!deferredPrompt ? `<div class="pwa-platform-note">Use your browser's <b>Install app</b> / <b>Add to Home screen</b> option when available.</div>` : ''));
-  openModal('Install Enican Mines System',`
+  openModal('Install Enican Mines System', `
     <div class="pwa-install-card">
       <img class="pwa-modal-icon" src="${icon}" alt="Enican Mines System">
       <h3 style="margin:12px 0 4px;font-size:19px">Enican Mines System</h3>
@@ -2076,19 +2078,20 @@ function showInstallModal(){
     ${instructions}
     <button class="btn btn-outline" style="margin-top:10px" onclick="closeModal()">Maybe later</button>
   `);
-  const m=document.querySelector('.modal-overlay'); if(m)m.dataset.installPrompt='1';
+  const m = document.querySelector('.modal-overlay');
+  if (m) m.dataset.installPrompt = '1';
 }
 async function installPWA(){
-  if(!deferredPrompt){ showInstallModal(); return; }
-  try{
+  if (!deferredPrompt) { showInstallModal(); return; }
+  try {
     deferredPrompt.prompt();
-    const choice=await deferredPrompt.userChoice;
-    if(choice && choice.outcome==='accepted') closeModal();
-  }catch(e){ showInstallModal(); }
-  deferredPrompt=null;
+    const choice = await deferredPrompt.userChoice;
+    if (choice && choice.outcome === 'accepted') closeModal();
+  } catch (e) { showInstallModal(); }
+  deferredPrompt = null;
   setInstallButtonVisible(false);
 }
-// ============ INIT ============
+
 (async function init() {
   await loadSystemConfig();
   const saved = localStorage.getItem('enican_user');
@@ -2099,7 +2102,7 @@ async function installPWA(){
     } catch (e) { localStorage.removeItem('enican_user'); }
   }
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js', {scope:'./'}).catch(() => {});
+    navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
   }
   setInstallButtonVisible(!!deferredPrompt);
 })();

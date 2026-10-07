@@ -92,6 +92,8 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .install-app-btn { min-height:38px; padding:0 11px; border-radius:999px; background:rgba(255,255,255,.14); color:#fff; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:12px; font-weight:800; border:1px solid rgba(255,255,255,.22); }
 .install-app-btn:active { transform:scale(.96); }
 .install-app-btn svg { flex-shrink:0; }
+.menu-btn { background: rgba(255,255,255,.15); color: white; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink:0; }
+.menu-btn:active { transform: scale(.9); }
 .pwa-modal-icon { width:78px; height:78px; border-radius:20px; object-fit:cover; box-shadow:0 10px 28px rgba(6,65,171,.22); }
 .pwa-install-card { background:linear-gradient(145deg,#0641ab,#05328a); color:#fff; border-radius:16px; padding:18px; text-align:center; box-shadow:0 12px 35px rgba(6,65,171,.22); }
 .pwa-install-card .btn { background:#fff; color:#0641ab; margin-top:14px; }
@@ -167,11 +169,11 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .search-bar input { flex: 1; border: none; padding: 10px 0; background: transparent; outline: none; }
 
 .modal-overlay { position: fixed; inset: 0; background: rgba(5,18,42,.6); display: flex; align-items: flex-end; justify-content: center; z-index: 200; animation: fadeIn .2s; }
-.modal { background: var(--white); border-radius: 20px 20px 0 0; width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; animation: slideUp .25s cubic-bezier(.2,.8,.2,1); }
+.modal { background: var(--white); border-radius: 20px 20px 0 0; width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; animation: slideUp .25s cubic-bezier(.2,.8,.2,1); position: relative; }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 .modal-header { padding: 18px 20px 12px; border-bottom: 1px solid var(--gray-2); position: sticky; top: 0; background: var(--white); z-index: 10; display: flex; align-items: center; justify-content: space-between; }
-.modal-header h2 { margin: 0; font-size: 18px; color: var(--navy); }
-.modal-close { background: var(--gray); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--gray-3); }
+.modal-header h2 { margin: 0; font-size: 18px; color: var(--navy); padding-right: 40px; }
+.modal-close { background: var(--gray); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--gray-3); position: absolute; top: 14px; right: 14px; z-index: 11; }
 .modal-body { padding: 16px 20px 30px; }
 
 .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: var(--navy); color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 300; animation: toastIn .3s; box-shadow: 0 8px 24px rgba(0,0,0,.2); max-width: 90%; text-align: center; }
@@ -230,6 +232,27 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .asset-card { background: #fff; border: 1.5px solid #86efac; border-radius: 10px; padding: 12px 8px; text-align: center; cursor: pointer; transition: all .15s; }
 .asset-card .id { font-weight: 800; font-size: 14px; color: var(--navy); }
 .asset-card .status { font-size: 10px; text-transform: uppercase; color: var(--gray-3); margin-top: 2px; }
+
+/* Hamburger drawer */
+.drawer-overlay { position: fixed; inset: 0; background: rgba(5,18,42,.55); z-index: 500; animation: fadeIn .18s; }
+.drawer { position: fixed; top: 0; bottom: 0; right: 0; width: 82vw; max-width: 340px; background: #ffffff; z-index: 501; display: flex; flex-direction: column; animation: slideLeft .22s cubic-bezier(.2,.8,.2,1); box-shadow: -12px 0 40px rgba(0,0,0,.22); }
+@keyframes slideLeft { from { transform: translateX(100%); } to { transform: translateX(0); } }
+.drawer-head { padding: 18px 16px; background: var(--navy); color: #fff; display:flex; align-items:center; justify-content:space-between; }
+.drawer-head .title { font-weight: 800; font-size: 15px; letter-spacing:.3px; }
+.drawer-head .sub { font-size: 11px; opacity:.85; margin-top: 3px; }
+.drawer-body { padding: 10px 0; overflow-y: auto; flex: 1; }
+.drawer-item { display:flex; align-items:center; gap:12px; padding: 12px 16px; color: var(--text-main); font-weight: 600; font-size: 14px; }
+.drawer-item svg { width: 20px; height: 20px; color: var(--navy); flex-shrink:0; }
+.drawer-item.active { background: #eef2ff; color: var(--navy); }
+.drawer-item:active { background: #f1f5f9; }
+.drawer-close { background: rgba(255,255,255,.15); border-radius: 50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; color:#fff; }
+
+/* assignments */
+.assignment-note { background:#eef6ff; border-left:4px solid #0641ab; padding:10px 12px; border-radius:8px; font-size:12.5px; color:#0b2e6f; margin:8px 0; line-height:1.45; }
+.assignment-note.done-on-time { background:#f0fdf4; border-left-color:#16a34a; color:#14532d; }
+.assignment-note.done-late { background:#fef2f2; border-left-color:#dc2626; color:#991b1b; }
+.assignment-desc { background:#f8fafc; border:1px dashed #cbd5e1; border-radius:10px; padding:12px; font-size:13.5px; line-height:1.5; color:#334155; white-space:pre-wrap; word-break:break-word; margin: 8px 0 12px; }
+
 @media (max-width: 700px) {
   body { padding-bottom:72px; overflow-x:hidden; }
   .header { padding:10px 10px; }
@@ -239,7 +262,7 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
   .header-sub { font-size:9px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:130px; }
   .install-app-btn { min-height:34px; padding:0 9px; }
   .install-app-btn span { display:none; }
-  .refresh-btn { width:34px; height:34px; flex-shrink:0; }
+  .refresh-btn, .menu-btn { width:34px; height:34px; flex-shrink:0; }
   .card { margin:8px; padding:12px; }
   .section-title { margin:14px 10px 7px; }
   .report-accounts { grid-template-columns:1fr; margin:0 8px !important; }
@@ -321,6 +344,9 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
       <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" title="Refresh">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
       </button>
+      <button class="menu-btn hidden" id="menuBtn" onclick="openDrawer()" title="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
     </div>
   </div>
 
@@ -328,7 +354,6 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 
   <div class="nav" id="bottomNav"></div>
 </div>
-
 <script>
 const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyRU-izhftUIblHcqncJa5ooQ3M7I0Ts7UXwt85PKJTQbTBo88QiKrdVJGKrEHLnQ/exec';
 
@@ -350,11 +375,18 @@ const state = {
   systemName: 'Loading...',
   reportInvoicePage: 1,
   reportInvoiceHasNext: false,
-  reportInvoices: []
+  reportInvoices: [],
+  assignmentShownThisSession: false,
+  superAssignmentsShownThisSession: false,
+  menuOpen: false
 };
 
 const DRAFT_KEY = 'enican_drafts_v1';
 const SESSION_KEY = 'enican_session_v3';
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 
 function saveDraft() {
   try {
@@ -406,7 +438,6 @@ function loadSession() {
   try {
     const raw = localStorage.getItem(SESSION_KEY);
     if (!raw) {
-      // migrate from old key if present
       const old = localStorage.getItem('enican_user');
       if (old) {
         const u = JSON.parse(old);
@@ -480,7 +511,6 @@ async function apiPost(body) {
   return result;
 }
 function handleAuthFailure() {
-  // Clear client session and bounce back to login. Never cache the failure.
   clearSession();
   state.user = null;
   state.token = null;
@@ -543,6 +573,8 @@ async function doLogin() {
     if (!res.success) { toast(res.error || 'Login failed', 'error'); return; }
     state.user = res.user;
     state.token = res.token || null;
+    state.assignmentShownThisSession = false;
+    state.superAssignmentsShownThisSession = false;
     saveSession();
     showApp();
   } catch (e) {
@@ -558,6 +590,9 @@ function showApp() {
   navigate('dashboard');
   startAutoRefresh();
   if (!isStandaloneApp()) { setInstallButtonVisible(!!deferredPrompt); setTimeout(showInstallModal, 1200); }
+  setTimeout(checkAssignmentsOnLoad, 800);
+  updateMenuButtonVisibility();
+  window.addEventListener('resize', updateMenuButtonVisibility);
 }
 function logout() {
   const token = state.token;
@@ -565,11 +600,74 @@ function logout() {
   state.user = null;
   state.token = null;
   stopAutoRefresh();
+  state.assignmentShownThisSession = false;
+  state.superAssignmentsShownThisSession = false;
   document.getElementById('app').classList.add('hidden');
   document.getElementById('loginScreen').classList.remove('hidden');
+  closeDrawer();
   if (token) {
     fetch(WEBAPP_URL + '?action=logout&token=' + encodeURIComponent(token)).catch(() => {});
   }
+}
+
+function isSuperAdmin() {
+  return state.user && String(state.user.role).toLowerCase() === 'superadmin';
+}
+function isAdminLike() {
+  const r = state.user ? String(state.user.role).toLowerCase() : '';
+  return r === 'admin' || r === 'superadmin';
+}
+
+function updateMenuButtonVisibility() {
+  const btn = document.getElementById('menuBtn');
+  if (!btn) return;
+  if (!state.user) { btn.classList.add('hidden'); return; }
+  const narrow = window.innerWidth < 720;
+  if (isSuperAdmin() && narrow) btn.classList.remove('hidden');
+  else btn.classList.add('hidden');
+}
+
+function openDrawer() {
+  closeDrawer();
+  const overlay = document.createElement('div');
+  overlay.className = 'drawer-overlay';
+  overlay.onclick = closeDrawer;
+  const items = [
+    { id: 'dashboard', label: 'Dashboard', icon: '<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>' },
+    { id: 'loadTank', label: 'Load Tank', icon: '<path d="M12 5v14"/><path d="M5 12h14"/>' },
+    { id: 'loadBoiler', label: 'Load Boiler', icon: '<path d="M12 5v14"/><path d="M5 12h14"/>' },
+    { id: 'empty', label: 'Empty Assets', icon: '<path d="M12 19V5"/><path d="M5 12l7 7 7-7"/>' },
+    { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
+    { id: 'pending', label: 'Pending Approvals', icon: '<path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/>' },
+    { id: 'assignments', label: 'Assignments', icon: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>' },
+    { id: 'settings', label: 'Settings', icon: '<path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>' }
+  ];
+  const drawer = document.createElement('div');
+  drawer.className = 'drawer';
+  drawer.innerHTML = `
+    <div class="drawer-head">
+      <div>
+        <div class="title">${esc(state.systemName)}</div>
+        <div class="sub">${esc(state.user.fullName || state.user.username)} · ${esc(state.user.role)}</div>
+      </div>
+      <button class="drawer-close" onclick="closeDrawer()">×</button>
+    </div>
+    <div class="drawer-body">
+      ${items.map(it => `
+        <div class="drawer-item ${state.page===it.id?'active':''}" onclick="closeDrawer();navigate('${it.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${it.icon}</svg>
+          <span>${esc(it.label)}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.body.appendChild(drawer);
+  state.menuOpen = true;
+}
+function closeDrawer() {
+  document.querySelectorAll('.drawer-overlay, .drawer').forEach(el => el.remove());
+  state.menuOpen = false;
 }
 
 function buildNav() {
@@ -597,6 +695,16 @@ function buildNav() {
       { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
       { id: 'profile', label: 'Account', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>' }
     ];
+  } else if (role === 'superadmin') {
+    items = [
+      { id: 'dashboard', label: 'Dashboard', icon: '<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>' },
+      { id: 'loadTank', label: 'Load', icon: '<path d="M12 5v14"/><path d="M5 12h14"/>' },
+      { id: 'empty', label: 'Empty', icon: '<path d="M12 19V5"/><path d="M5 12l7 7 7-7"/>' },
+      { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
+      { id: 'pending', label: 'Pending', icon: '<path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/>' },
+      { id: 'assignments', label: 'Assign', icon: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>' },
+      { id: 'settings', label: 'Settings', icon: '<path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>' }
+    ];
   } else {
     items = [
       { id: 'dashboard', label: 'Dashboard', icon: '<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>' },
@@ -604,6 +712,7 @@ function buildNav() {
       { id: 'empty', label: 'Empty', icon: '<path d="M12 19V5"/><path d="M5 12l7 7 7-7"/>' },
       { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
       { id: 'pending', label: 'Pending', icon: '<path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/>' },
+      { id: 'assignments', label: 'Assign', icon: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>' },
       { id: 'settings', label: 'Settings', icon: '<path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>' }
     ];
   }
@@ -611,10 +720,11 @@ function buildNav() {
   nav.innerHTML = items.map(it => `
     <button class="nav-item ${state.page === it.id ? 'active' : ''}" data-nav="${it.id}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${it.icon}</svg>
-      <span>${it.label}</span>
+      <span>${esc(it.label)}</span>
     </button>
   `).join('');
   nav.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => navigate(b.dataset.nav));
+  updateMenuButtonVisibility();
 }
 
 function navigate(page) {
@@ -629,6 +739,7 @@ function navigate(page) {
     clearDraft();
   }
   state.page = page;
+  closeDrawer();
   buildNav();
   loadPage();
 }
@@ -642,7 +753,8 @@ const PAGE_TITLES = {
   pending: 'Pending Approvals',
   driver: 'Driver Trips',
   profile: 'Account',
-  settings: 'Settings'
+  settings: 'Settings',
+  assignments: 'Assignments'
 };
 
 function captureEditableState() {
@@ -670,7 +782,7 @@ function pageHasEditableWork() {
   if (!root) return false;
   const active = document.activeElement;
   if (active && root.contains(active) && ['INPUT','SELECT','TEXTAREA'].includes(active.tagName)) return true;
-  return ['loadTank','loadBoiler','driver','settings'].includes(state.page) &&
+  return ['loadTank','loadBoiler','driver','settings','assignments'].includes(state.page) &&
     root.querySelectorAll('input, select, textarea').length > 0;
 }
 
@@ -712,15 +824,238 @@ async function loadPage(silent) {
     else if (state.page === 'driver') await renderDriver(el);
     else if (state.page === 'profile') await renderProfile(el);
     else if (state.page === 'settings') await renderSettings(el);
+    else if (state.page === 'assignments') await renderAssignments(el);
     restoreEditableState(preservedFields);
   } catch (e) {
-    el.innerHTML = '<div class="card"><p style="color:red">Error: ' + e.message + '</p></div>';
+    el.innerHTML = '<div class="card"><p style="color:red">Error: ' + esc(e.message) + '</p></div>';
   } finally {
     state.loading = false;
     if (!silent) hideLoader();
   }
 }
 
+// ============ ASSIGNMENTS FRONTEND ============
+
+async function checkAssignmentsOnLoad() {
+  if (!state.user || !state.token) return;
+  if (isSuperAdmin()) {
+    await showSuperAdminCompletionModalIfAny();
+  } else {
+    await showUserOpenAssignmentIfAny();
+  }
+}
+
+async function showUserOpenAssignmentIfAny() {
+  if (state.assignmentShownThisSession) return;
+  try {
+    const res = await apiGet({ action: 'myOpenAssignments', user: state.user.username }, { silent: true });
+    if (!res.success) return;
+    const list = res.assignments || [];
+    if (list.length === 0) return;
+    state.assignmentShownThisSession = true;
+    const a = list[0];
+    const dueTxt = a.dueDate ? new Date(a.dueDate).toLocaleString() : '-';
+    const bodyHtml = `
+      <div class="data-row"><span class="lbl">From</span><span class="val">${esc(a.assignedByName || a.assignedBy || '')}</span></div>
+      <div class="data-row"><span class="lbl">Due</span><span class="val">${esc(dueTxt)}</span></div>
+      <div class="assignment-desc">${esc(a.description)}</div>
+      ${list.length > 1 ? `<div style="font-size:12px;color:#8a94a6;margin-bottom:10px">You have ${list.length} open assignments. This is the most recent.</div>` : ''}
+      <button class="btn btn-success" onclick="markAssignmentComplete('${esc(a.id)}', this)">Completed</button>
+      <button class="btn btn-outline" style="margin-top:8px" onclick="closeModal()">Later</button>
+    `;
+    openModal('You have a new assignment', bodyHtml, { dismissible: true });
+  } catch (e) {}
+}
+
+async function markAssignmentComplete(id, btn) {
+  setBtnLoading(btn, true);
+  try {
+    const res = await apiPost({ action: 'completeAssignment', idempotencyKey: uid('ASGC', id), assignmentId: id, user: state.user.username });
+    if (!res.success) { toast(res.error, 'error'); return; }
+    toast('Assignment marked complete.', 'success');
+    closeModal();
+    if (state.page === 'profile' || state.page === 'dashboard') loadPage();
+  } finally {
+    setBtnLoading(btn, false);
+  }
+}
+
+async function showSuperAdminCompletionModalIfAny() {
+  if (state.superAssignmentsShownThisSession) return;
+  try {
+    const res = await apiGet({ action: 'allAssignments', user: state.user.username }, { silent: true });
+    if (!res.success) return;
+    const completed = res.completed || [];
+    if (completed.length === 0) return;
+    const recent = completed.sort((a,b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()).slice(0, 3);
+    state.superAssignmentsShownThisSession = true;
+    const bodyHtml = `
+      ${recent.map(a => {
+        const cs = String(a.completionStatus || '').toLowerCase();
+        const tone = cs.indexOf('late') >= 0 ? 'done-late' : 'done-on-time';
+        return `
+          <div class="assignment-note ${tone}" style="margin-bottom:10px">
+            <b>${esc(a.title)}</b> — completed by <b>${esc(a.assignedToName || a.assignedTo)}</b><br>
+            <span style="font-size:12px">${esc(cs ? (cs.charAt(0).toUpperCase() + cs.slice(1)) : 'Completed')}${a.completedAt ? ' · ' + esc(new Date(a.completedAt).toLocaleString()) : ''}</span>
+          </div>
+        `;
+      }).join('')}
+      <button class="btn" onclick="closeModal();navigate('assignments')">View all assignments</button>
+      <button class="btn btn-outline" style="margin-top:8px" onclick="closeModal()">Close</button>
+    `;
+    openModal('Assignments Completed', bodyHtml, { dismissible: true });
+  } catch (e) {}
+}
+
+async function renderAssignments(el) {
+  if (!isSuperAdmin()) {
+    el.innerHTML = '<div class="card"><p style="color:#dc2626">Access denied. Super Admin only.</p></div>';
+    return;
+  }
+  document.getElementById('headerSub').textContent = 'Assignments';
+  const res = await apiGet({ action: 'allAssignments', user: state.user.username });
+  if (!res.success) {
+    el.innerHTML = '<div class="card"><p style="color:#dc2626">' + esc(res.error) + '</p></div>';
+    return;
+  }
+  const users = res.users || [];
+  const all = res.assignments || [];
+  const open = res.open || [];
+  const completed = res.completed || [];
+  const today = new Date().toISOString().slice(0, 10);
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">New Assignment</div>
+      <div class="field"><label>Title</label><input id="asgTitle" type="text" placeholder="e.g. Clean boiler B3"></div>
+      <div class="field"><label>Description</label><textarea id="asgDesc" rows="4" placeholder="Describe the task in detail..."></textarea></div>
+      <div class="field"><label>Assign To</label>
+        <select id="asgUser">
+          <option value="">-- Select user --</option>
+          ${users.map(u => `<option value="${esc(u.username)}">${esc(u.fullName || u.username)} (@${esc(u.username)} · ${esc(u.role)})</option>`).join('')}
+        </select>
+      </div>
+      <div class="field"><label>Due Date</label><input id="asgDue" type="date" min="${today}" value="${today}"></div>
+      <button class="btn" onclick="submitAssignment(this)">Create Assignment</button>
+    </div>
+
+    <div class="section-title">Open Assignments (${open.length})</div>
+    ${open.length === 0 ? '<div class="empty">No open assignments</div>' :
+      open.map(a => `
+        <div class="list-item" onclick="viewAssignment('${esc(a.id)}')">
+          <div class="avatar">${esc((a.assignedToName || a.assignedTo || '?')[0].toUpperCase())}</div>
+          <div class="info">
+            <div class="name">${esc(a.title)}</div>
+            <div class="sub">To ${esc(a.assignedToName || a.assignedTo)} · Due ${esc(a.dueDate ? new Date(a.dueDate).toLocaleDateString() : '-')}</div>
+          </div>
+          <span class="badge small amber">OPEN</span>
+        </div>
+      `).join('')
+    }
+
+    <div class="section-title">Completed Assignments (${completed.length})</div>
+    ${completed.length === 0 ? '<div class="empty">No completed assignments yet</div>' :
+      completed
+        .slice()
+        .sort((a,b) => new Date(b.completedAt || b.createdAt).getTime() - new Date(a.completedAt || a.createdAt).getTime())
+        .map(a => {
+          const cs = String(a.completionStatus || '').toLowerCase();
+          const late = cs.indexOf('late') >= 0;
+          const badge = late ? `<span class="badge small red">${esc(a.completionStatus)}</span>` : `<span class="badge small green">${esc(a.completionStatus || 'On time')}</span>`;
+          return `
+            <div class="list-item" onclick="viewAssignment('${esc(a.id)}')">
+              <div class="avatar">${esc((a.assignedToName || a.assignedTo || '?')[0].toUpperCase())}</div>
+              <div class="info">
+                <div class="name">${esc(a.title)}</div>
+                <div class="sub">${esc(a.assignedToName || a.assignedTo)} · done ${esc(a.completedAt ? new Date(a.completedAt).toLocaleString() : '')}</div>
+              </div>
+              ${badge}
+            </div>
+          `;
+        }).join('')
+    }
+
+    <div class="section-title">All Assignments (${all.length})</div>
+    ${all.length === 0 ? '<div class="empty">No assignments created yet</div>' : ''}
+  `;
+}
+
+function viewAssignment(id) {
+  withLoader('Loading assignment...', async () => {
+    const res = await apiGet({ action: 'allAssignments', user: state.user.username }, { silent: true });
+    if (!res.success) { toast(res.error || 'Could not load', 'error'); return; }
+    const a = (res.assignments || []).find(x => String(x.id) === String(id));
+    if (!a) { toast('Assignment not found', 'error'); return; }
+    const cs = String(a.completionStatus || '').toLowerCase();
+    const statusBadge = String(a.status).toLowerCase() === 'completed'
+      ? (cs.indexOf('late') >= 0
+        ? `<span class="badge small red">${esc(a.completionStatus || 'Completed')}</span>`
+        : `<span class="badge small green">${esc(a.completionStatus || 'On time')}</span>`)
+      : `<span class="badge small amber">OPEN</span>`;
+    const body = `
+      <div class="data-row"><span class="lbl">Title</span><span class="val">${esc(a.title)}</span></div>
+      <div class="data-row"><span class="lbl">Assigned to</span><span class="val">${esc(a.assignedToName || a.assignedTo)}</span></div>
+      <div class="data-row"><span class="lbl">Assigned by</span><span class="val">${esc(a.assignedByName || a.assignedBy)}</span></div>
+      <div class="data-row"><span class="lbl">Due</span><span class="val">${esc(a.dueDate ? new Date(a.dueDate).toLocaleString() : '-')}</span></div>
+      <div class="data-row"><span class="lbl">Status</span><span class="val">${statusBadge}</span></div>
+      ${a.completedAt ? `<div class="data-row"><span class="lbl">Completed at</span><span class="val">${esc(new Date(a.completedAt).toLocaleString())}</span></div>` : ''}
+      ${a.completionStatus ? `<div class="data-row"><span class="lbl">Timing</span><span class="val">${esc(a.completionStatus)}</span></div>` : ''}
+      <div class="assignment-desc">${esc(a.description)}</div>
+    `;
+    openModal('Assignment Details', body, { dismissible: true });
+  });
+}
+
+async function submitAssignment(btn) {
+  const title = (document.getElementById('asgTitle') || {}).value || '';
+  const description = (document.getElementById('asgDesc') || {}).value || '';
+  const assignedTo = (document.getElementById('asgUser') || {}).value || '';
+  const dueDate = (document.getElementById('asgDue') || {}).value || '';
+  if (!title.trim()) return toast('Title is required.', 'error');
+  if (!description.trim()) return toast('Description is required.', 'error');
+  if (!assignedTo) return toast('Select a user.', 'error');
+  if (!dueDate) return toast('Select a due date.', 'error');
+  setBtnLoading(btn, true);
+  await withLoader('Creating assignment...', async () => {
+    const res = await apiPost({
+      action: 'createAssignment',
+      idempotencyKey: uid('ASGN', assignedTo + ':' + dueDate + ':' + title),
+      title: title.trim(),
+      description: description.trim(),
+      assignedTo,
+      dueDate,
+      user: state.user.username
+    });
+    if (!res.success) { toast(res.error, 'error'); return; }
+    toast('Assignment created.', 'success');
+    loadPage();
+  });
+  setBtnLoading(btn, false);
+}
+
+// ============ MY ASSIGNMENTS (for regular users) ============
+async function loadMyAssignmentsForProfile() {
+  try {
+    const res = await apiGet({ action: 'assignmentsForUser', user: state.user.username }, { silent: true });
+    if (!res.success) return [];
+    return res.assignments || [];
+  } catch (e) { return []; }
+}
+async function openMyAssignmentModal(id) {
+  const res = await apiGet({ action: 'assignmentsForUser', user: state.user.username }, { silent: true });
+  if (!res.success) return toast('Could not load assignment.', 'error');
+  const a = (res.assignments || []).find(x => String(x.id) === String(id));
+  if (!a) return toast('Assignment not found.', 'error');
+  const body = `
+    <div class="data-row"><span class="lbl">From</span><span class="val">${esc(a.assignedByName || a.assignedBy || '')}</span></div>
+    <div class="data-row"><span class="lbl">Due</span><span class="val">${esc(a.dueDate ? new Date(a.dueDate).toLocaleString() : '-')}</span></div>
+    <div class="data-row"><span class="lbl">Status</span><span class="val">${String(a.status).toLowerCase()==='completed'?'Completed':'Open'}</span></div>
+    <div class="assignment-desc">${esc(a.description)}</div>
+    ${String(a.status).toLowerCase()==='open' ? `<button class="btn btn-success" onclick="markAssignmentComplete('${esc(a.id)}', this)">Mark Completed</button>` : ''}
+  `;
+  openModal('Assignment', body, { dismissible: true });
+}
+// ============ DASHBOARD ============
 async function renderDashboard(el) {
   const res = await apiGet({ action: 'dashboard' });
   if (!res.success) throw new Error(res.error);
@@ -762,20 +1097,20 @@ function renderTankCardsTo(gridId, items) {
     const isVacant = status === 'vacant';
     const badgeClass = isVacant ? 'badge-vacant' : 'badge-occupied';
     const displayStatus = isVacant ? 'VACANT' : 'OCCUPIED';
-    const customer = a.customerName || (isVacant ? 'Vacant' : '—');
-    const invoice = a.invoiceNumber || '—';
+    const customer = esc(a.customerName || (isVacant ? 'Vacant' : '—'));
+    const invoice = esc(a.invoiceNumber || '—');
     const daysLeft = a.daysLeft != null ? a.daysLeft + ' Days Left' : '';
     const pct = a.percent != null ? a.percent : (isVacant ? 0 : 40);
     return `
-      <div class="tank-card" onclick="viewAsset('${a.type || 'tank'}','${a.id}')">
+      <div class="tank-card" onclick="viewAsset('${a.type || 'tank'}','${esc(a.id)}')">
         <div class="tank-header">
-          <div class="tank-title">${a.name || a.id}</div>
+          <div class="tank-title">${esc(a.name || a.id)}</div>
           <span class="badge ${badgeClass}">${displayStatus}</span>
         </div>
         <div class="tank-body">
           <div class="tank-field"><div class="tank-field-label">Invoice</div><div class="tank-field-value">${invoice}</div></div>
           <div class="tank-field"><div class="tank-field-label">Customer</div><div class="tank-field-value">${customer}</div></div>
-          ${!isVacant && daysLeft ? `<div class="tank-field"><div class="tank-field-label">Days Left</div><div class="tank-field-value">${daysLeft}</div></div>` : ''}
+          ${!isVacant && daysLeft ? `<div class="tank-field"><div class="tank-field-label">Days Left</div><div class="tank-field-value">${esc(daysLeft)}</div></div>` : ''}
           ${!isVacant ? `<div class="progress-bar-container"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>` : ''}
         </div>
       </div>
@@ -792,18 +1127,18 @@ async function viewAsset(type, id) {
   const invoice = res.invoice;
   const items = res.items || [];
   let body = `
-    <div class="data-row"><span class="lbl">Asset</span><span class="val">${asset.name} (${asset.id})</span></div>
-    <div class="data-row"><span class="lbl">Status</span><span class="val">${asset.status}</span></div>
-    <div class="data-row"><span class="lbl">Capacity</span><span class="val">${asset.capacity}</span></div>
+    <div class="data-row"><span class="lbl">Asset</span><span class="val">${esc(asset.name)} (${esc(asset.id)})</span></div>
+    <div class="data-row"><span class="lbl">Status</span><span class="val">${esc(asset.status)}</span></div>
+    <div class="data-row"><span class="lbl">Capacity</span><span class="val">${esc(asset.capacity)}</span></div>
   `;
   if (session) {
     const daysLeft = session.endDate ? Math.ceil((new Date(session.endDate) - new Date()) / 86400000) : 0;
     body += `
       <hr style="margin:14px 0;border:none;border-top:1px solid #e2e7f0">
-      <div class="data-row"><span class="lbl">Customer</span><span class="val">${session.customerName}</span></div>
-      <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${session.invoiceNumber || '-'}</span></div>
-      <div class="data-row"><span class="lbl">Started</span><span class="val">${new Date(session.startDate).toLocaleDateString()}</span></div>
-      <div class="data-row"><span class="lbl">Ends</span><span class="val">${new Date(session.endDate).toLocaleDateString()}</span></div>
+      <div class="data-row"><span class="lbl">Customer</span><span class="val">${esc(session.customerName)}</span></div>
+      <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${esc(session.invoiceNumber || '-')}</span></div>
+      <div class="data-row"><span class="lbl">Started</span><span class="val">${esc(new Date(session.startDate).toLocaleDateString())}</span></div>
+      <div class="data-row"><span class="lbl">Ends</span><span class="val">${esc(new Date(session.endDate).toLocaleDateString())}</span></div>
       <div class="data-row"><span class="lbl">Days Left</span><span class="val">${daysLeft > 0 ? daysLeft + ' days' : 'Due'}</span></div>
     `;
   }
@@ -815,14 +1150,14 @@ async function viewAsset(type, id) {
       <div class="data-row"><span class="lbl">Paid</span><span class="val">$${Number(invoice.paidAmount).toFixed(2)}</span></div>
       <div class="data-row"><span class="lbl">Balance</span><span class="val" style="color:${bal>0?'#dc2626':'#16a34a'}">$${bal.toFixed(2)}</span></div>
       <div class="section-title" style="margin:14px 0 6px">Expenses</div>
-      ${items.map(i => `<div class="data-row"><span class="lbl">${i.expenseName} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
+      ${items.map(i => `<div class="data-row"><span class="lbl">${esc(i.expenseName)} × ${esc(i.quantity)}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
       <button class="btn" style="margin-top:14px" onclick="viewOpenSessions('${type}')">View Open Sessions</button>
     `;
   } else {
     body += `<p style="text-align:center;color:#8a94a6;margin:20px 0">This ${type} is vacant</p>`;
-    if (type === 'tank' && (state.user.role === 'loader' || state.user.role === 'admin')) {
+    if (type === 'tank' && (state.user.role === 'loader' || isAdminLike())) {
       body += `<button class="btn" onclick="closeModal();navigate('loadTank')">Load This Tank</button>`;
-    } else if (type === 'boiler' && (state.user.role === 'boiler' || state.user.role === 'admin')) {
+    } else if (type === 'boiler' && (state.user.role === 'boiler' || isAdminLike())) {
       body += `<button class="btn" onclick="closeModal();navigate('loadBoiler')">Load This Boiler</button>`;
     }
   }
@@ -836,11 +1171,11 @@ async function viewOpenSessions(assetType) {
   let body = '';
   if (sessions.length === 0) body = '<div class="empty">No open sessions</div>';
   else body = sessions.map(s => `
-    <div class="list-item" onclick="viewSession('${s.id}')">
-      <div class="avatar">${s.customerName ? s.customerName[0].toUpperCase() : '?'}</div>
+    <div class="list-item" onclick="viewSession('${esc(s.id)}')">
+      <div class="avatar">${esc(s.customerName ? s.customerName[0].toUpperCase() : '?')}</div>
       <div class="info">
-        <div class="name">${s.customerName}</div>
-        <div class="sub">${s.assetIds} · ${s.daysLeft > 0 ? s.daysLeft + ' days left' : 'Due'}</div>
+        <div class="name">${esc(s.customerName)}</div>
+        <div class="sub">${esc(s.assetIds)} · ${s.daysLeft > 0 ? s.daysLeft + ' days left' : 'Due'}</div>
       </div>
       <div class="amount ${Number(s.balance)>0?'red':'green'}">$${Number(s.balance).toFixed(2)}</div>
     </div>
@@ -853,21 +1188,21 @@ async function viewSession(id) {
   if (!res.success) return toast(res.error, 'error');
   const { session, invoice, items, payments, customer, daysLeft } = res;
   let body = `
-    <div class="data-row"><span class="lbl">Customer</span><span class="val">${session.customerName}</span></div>
-    <div class="data-row"><span class="lbl">Phone</span><span class="val">${customer ? customer.phone : '-'}</span></div>
-    <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${session.invoiceNumber || '-'}</span></div>
-    <div class="data-row"><span class="lbl">Assets</span><span class="val">${session.assetIds}</span></div>
-    <div class="data-row"><span class="lbl">Created by</span><span class="val">${session.createdBy || '-'}</span></div>
-    <div class="data-row"><span class="lbl">Completed by</span><span class="val">${session.completedBy || '-'}</span></div>
+    <div class="data-row"><span class="lbl">Customer</span><span class="val">${esc(session.customerName)}</span></div>
+    <div class="data-row"><span class="lbl">Phone</span><span class="val">${esc(customer ? customer.phone : '-')}</span></div>
+    <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${esc(session.invoiceNumber || '-')}</span></div>
+    <div class="data-row"><span class="lbl">Assets</span><span class="val">${esc(session.assetIds)}</span></div>
+    <div class="data-row"><span class="lbl">Created by</span><span class="val">${esc(session.createdBy || '-')}</span></div>
+    <div class="data-row"><span class="lbl">Completed by</span><span class="val">${esc(session.completedBy || '-')}</span></div>
     <div class="data-row"><span class="lbl">Days Left</span><span class="val">${daysLeft > 0 ? daysLeft + ' days' : 'Due'}</span></div>
     <div class="section-title" style="margin:14px 0 6px">Invoice Items</div>
-    ${items.map(i => `<div class="data-row"><span class="lbl">${i.expenseName} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
+    ${items.map(i => `<div class="data-row"><span class="lbl">${esc(i.expenseName)} × ${esc(i.quantity)}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
     <div class="data-row total"><span class="lbl">Total</span><span class="val">$${Number(invoice.totalAmount).toFixed(2)}</span></div>
     <div class="section-title" style="margin:14px 0 6px">Internal Cost (not on invoice)</div>
     <div class="data-row"><span class="lbl">Our session cost</span><span class="val">$${Number(session.ourExpensesTotal||0).toFixed(2)}</span></div>
     <div class="data-row"><span class="lbl">Paid</span><span class="val">$${Number(invoice.paidAmount).toFixed(2)}</span></div>
     <div class="data-row total"><span class="lbl">Balance Due</span><span class="val" style="color:${Number(invoice.balance)>0?'#dc2626':'#16a34a'}">$${Number(invoice.balance).toFixed(2)}</span></div>
-    <button class="btn btn-outline" style="margin-top:14px" onclick="downloadStatement('${session.id}')">Download Statement</button>
+    <button class="btn btn-outline" style="margin-top:14px" onclick="downloadStatement('${esc(session.id)}')">Download Statement</button>
   `;
   openModal('Session Details', body);
 }
@@ -930,7 +1265,7 @@ async function renderLoad(el, type) {
     <div class="card">
       <div class="card-title">Step 1 · Invoice Number</div>
       <div class="field">
-        <input id="loadInvoiceNum" type="text" placeholder="e.g. INV-2024-001" value="${preservedInvoice}">
+        <input id="loadInvoiceNum" type="text" placeholder="e.g. INV-2024-001" value="${esc(preservedInvoice)}">
       </div>
     </div>
     <div class="card" id="step1Card">
@@ -940,8 +1275,8 @@ async function renderLoad(el, type) {
         <input id="custSearch" placeholder="Search customer by name or phone" oninput="filterCustomers(this.value)">
       </div>
       ${preservedCustomer ? `<div class="list-item" style="margin-top:12px;border-color:#0641ab;background:#eff6ff">
-        <div class="avatar">${preservedCustomer.name[0].toUpperCase()}</div>
-        <div class="info"><div class="name">${preservedCustomer.name}</div><div class="sub">Selected</div></div>
+        <div class="avatar">${esc(preservedCustomer.name[0].toUpperCase())}</div>
+        <div class="info"><div class="name">${esc(preservedCustomer.name)}</div><div class="sub">Selected</div></div>
         <span class="badge small blue">Selected</span>
       </div>` : ''}
       <div id="custList" style="margin-top:12px"></div>
@@ -989,11 +1324,11 @@ function renderCustomers(customers) {
   if (!list) return;
   if (customers.length === 0) { list.innerHTML = '<div class="empty" style="padding:20px">No customers found</div>'; return; }
   list.innerHTML = customers.map(c => `
-    <div class="list-item" onclick="selectCustomer('${c.id}')">
-      <div class="avatar">${c.name[0].toUpperCase()}</div>
+    <div class="list-item" onclick="selectCustomer('${esc(c.id)}')">
+      <div class="avatar">${esc(c.name[0].toUpperCase())}</div>
       <div class="info">
-        <div class="name">${c.name}</div>
-        <div class="sub">${c.phone || ''} ${c.address ? '· ' + c.address : ''}</div>
+        <div class="name">${esc(c.name)}</div>
+        <div class="sub">${esc(c.phone || '')} ${c.address ? '· ' + esc(c.address) : ''}</div>
       </div>
     </div>
   `).join('');
@@ -1029,9 +1364,9 @@ function renderAssets(assets) {
   list.innerHTML = assets.map(a => {
     const selected = state.selectedAssets.includes(a.id);
     return `
-      <div class="asset-card vacant" data-id="${a.id}" onclick="toggleAsset('${a.id}')"
+      <div class="asset-card vacant" data-id="${esc(a.id)}" onclick="toggleAsset('${esc(a.id)}')"
            style="${selected ? 'background:#0641ab;color:white;border-color:#0641ab;' : ''}">
-        <div class="id" style="${selected ? 'color:white;' : ''}">${a.id}</div>
+        <div class="id" style="${selected ? 'color:white;' : ''}">${esc(a.id)}</div>
         <div class="status" style="${selected ? 'color:white;' : ''}">${selected ? 'selected' : 'vacant'}</div>
       </div>
     `;
@@ -1078,11 +1413,11 @@ function renderExpenses() {
   list.innerHTML = state.selectedExpenses.map((e, i) => `
     <div class="check-row">
       <div class="label">
-        <div style="font-weight:600;color:#0641ab">${e.expenseName}</div>
-        <div style="font-size:11px;color:#8a94a6">${e.description || ''}${e._pendingPriceChange ? ' · <span style="color:#d97706">Price change pending approval</span>' : ''}</div>
+        <div style="font-weight:600;color:#0641ab">${esc(e.expenseName)}</div>
+        <div style="font-size:11px;color:#8a94a6">${esc(e.description || '')}${e._pendingPriceChange ? ' · <span style="color:#d97706">Price change pending approval</span>' : ''}</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
-        <input type="number" value="${e.amountPerAsset}" min="0" step="0.01" style="width:80px;padding:6px;border:1px solid #e2e7f0;border-radius:6px;text-align:right" onchange="changeExpensePrice(${i}, this.value)">
+        <input type="number" value="${esc(e.amountPerAsset)}" min="0" step="0.01" style="width:80px;padding:6px;border:1px solid #e2e7f0;border-radius:6px;text-align:right" onchange="changeExpensePrice(${i}, this.value)">
         <span style="color:#8a94a6;font-size:12px">× ${qty}</span>
         <button style="background:#fee2e2;color:#dc2626;width:28px;height:28px;border-radius:6px" onclick="removeExpense(${i})">×</button>
       </div>
@@ -1095,25 +1430,29 @@ function renderOurExpenses() {
   const list=document.getElementById('ourExpenseList'); if(!list) return;
   const qty=state.selectedAssets.length||1;
   const rows=state.selectedOurExpenses||[];
-  list.innerHTML=rows.length ? rows.map(e=>`<div class="check-row"><div class="label"><div style="font-weight:600;color:#374151">${e.name}</div><div style="font-size:11px;color:#8a94a6">$${Number(e.amountPerUnit).toFixed(2)} per ${String(e.assetType||state.assetType).toUpperCase()} × ${qty}</div></div><div style="font-weight:600;color:#dc2626">-$${(Number(e.amountPerUnit)*qty).toFixed(2)}</div></div>`).join('') : '<div class="empty">No internal expenses configured for this account</div>';
+  list.innerHTML=rows.length ? rows.map(e=>`<div class="check-row"><div class="label"><div style="font-weight:600;color:#374151">${esc(e.name)}</div><div style="font-size:11px;color:#8a94a6">$${Number(e.amountPerUnit).toFixed(2)} per ${esc(String(e.assetType||state.assetType).toUpperCase())} × ${qty}</div></div><div style="font-weight:600;color:#dc2626">-$${(Number(e.amountPerUnit)*qty).toFixed(2)}</div></div>`).join('') : '<div class="empty">No internal expenses configured for this account</div>';
 }
 
 function changeExpensePrice(i, val) {
   const newAmt = Number(val);
   const oldAmt = state.selectedExpenses[i].amountPerAsset;
   state.selectedExpenses[i].amountPerAsset = newAmt;
-  if (newAmt !== oldAmt && state.user.role !== 'admin') {
+  const changed = Math.abs(newAmt - oldAmt) > 0.000001;
+  if (changed && !isAdminLike()) {
     state.selectedExpenses[i]._pendingPriceChange = { oldAmount: oldAmt, newAmount: newAmt };
+  } else {
+    state.selectedExpenses[i]._pendingPriceChange = null;
   }
   saveDraft();
   updateLoadTotal();
+  renderExpenses();
 }
 function removeExpense(i) { state.selectedExpenses.splice(i, 1); saveDraft(); renderExpenses(); }
 
 function updateLoadTotal() {
   const qty = state.selectedAssets.length || 0;
   const total = state.selectedExpenses.reduce((s, e) => {
-    const approvedAmount = e._pendingPriceChange && state.user.role !== 'admin' ? Number(e._pendingPriceChange.oldAmount) : Number(e.amountPerAsset);
+    const approvedAmount = e._pendingPriceChange && !isAdminLike() ? Number(e._pendingPriceChange.oldAmount) : Number(e.amountPerAsset);
     return s + approvedAmount * qty;
   }, 0);
   const ourTotal = (state.selectedOurExpenses || []).reduce((s,e) => s + Number(e.amountPerUnit) * qty, 0);
@@ -1150,7 +1489,7 @@ async function submitLoad(type, btn) {
     if (!res.success) { toast(res.error, 'error'); setBtnLoading(btn, false); return; }
 
     const priceChanges = state.selectedExpenses.filter(e => e._pendingPriceChange);
-    if (state.user.role !== 'admin' && priceChanges.length > 0) {
+    if (!isAdminLike() && priceChanges.length > 0) {
       for (const e of priceChanges) {
         await apiPost({
           action: 'updateExpensePrice',
@@ -1164,7 +1503,7 @@ async function submitLoad(type, btn) {
           user: state.user.username
         });
       }
-      toast('Submitted with price changes pending admin approval', 'success');
+      toast('Submitted with price changes pending Super Admin approval', 'success');
     } else {
       toast('Session created successfully', 'success');
     }
@@ -1214,11 +1553,11 @@ async function renderEmpty(el) {
   el.innerHTML = `
     <div class="section-title">Open Sessions (${sessions.length})</div>
     ${sessions.length === 0 ? '<div class="empty">No open sessions</div>' : sessions.map(s => `
-      <div class="list-item" onclick="emptySession('${s.id}')">
-        <div class="avatar">${s.customerName ? s.customerName[0].toUpperCase() : '?'}</div>
+      <div class="list-item" onclick="emptySession('${esc(s.id)}')">
+        <div class="avatar">${esc(s.customerName ? s.customerName[0].toUpperCase() : '?')}</div>
         <div class="info">
-          <div class="name">${s.customerName}</div>
-          <div class="sub">Inv: ${s.invoiceNumber || '—'} · ${s.assetIds} · ${s.daysLeft > 0 ? s.daysLeft + ' days left' : 'Due now'}</div>
+          <div class="name">${esc(s.customerName)}</div>
+          <div class="sub">Inv: ${esc(s.invoiceNumber || '—')} · ${esc(s.assetIds)} · ${s.daysLeft > 0 ? s.daysLeft + ' days left' : 'Due now'}</div>
         </div>
         <div class="amount ${Number(s.balance)>0?'red':'green'}">$${Number(s.balance).toFixed(2)}</div>
       </div>
@@ -1230,13 +1569,13 @@ async function emptySession(id) {
   if (!res.success) return toast(res.error, 'error');
   const { session, invoice, items, payments, customer, daysLeft } = res;
   let body = `
-    <div class="data-row"><span class="lbl">Customer</span><span class="val">${session.customerName}</span></div>
-    <div class="data-row"><span class="lbl">Phone</span><span class="val">${customer ? customer.phone : '-'}</span></div>
-    <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${session.invoiceNumber || '-'}</span></div>
-    <div class="data-row"><span class="lbl">Assets</span><span class="val">${session.assetIds}</span></div>
+    <div class="data-row"><span class="lbl">Customer</span><span class="val">${esc(session.customerName)}</span></div>
+    <div class="data-row"><span class="lbl">Phone</span><span class="val">${esc(customer ? customer.phone : '-')}</span></div>
+    <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${esc(session.invoiceNumber || '-')}</span></div>
+    <div class="data-row"><span class="lbl">Assets</span><span class="val">${esc(session.assetIds)}</span></div>
     <div class="data-row"><span class="lbl">Days Left</span><span class="val">${daysLeft > 0 ? daysLeft + ' days' : 'Due'}</span></div>
     <div class="section-title" style="margin:14px 0 6px">Items</div>
-    ${items.map(i => `<div class="data-row"><span class="lbl">${i.expenseName} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
+    ${items.map(i => `<div class="data-row"><span class="lbl">${esc(i.expenseName)} × ${esc(i.quantity)}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
     <div class="data-row total"><span class="lbl">Total</span><span class="val">$${Number(invoice.totalAmount).toFixed(2)}</span></div>
     <div class="data-row"><span class="lbl">Paid</span><span class="val">$${Number(invoice.paidAmount).toFixed(2)}</span></div>
     <div class="data-row total"><span class="lbl">Balance Due</span><span class="val" style="color:#dc2626">$${Number(invoice.balance).toFixed(2)}</span></div>
@@ -1244,7 +1583,7 @@ async function emptySession(id) {
       <label>Amount Received</label>
       <input id="payAmount" type="number" step="0.01" min="0" value="${Number(invoice.balance).toFixed(2)}">
     </div>
-    <button class="btn btn-success" onclick="submitPayment('${invoice.id}','${session.id}', this)">Pay & Download Receipt</button>
+    <button class="btn btn-success" onclick="submitPayment('${esc(invoice.id)}','${esc(session.id)}', this)">Pay & Download Receipt</button>
   `;
   openModal('Empty Tank · ' + session.customerName, body);
 }
@@ -1275,16 +1614,16 @@ function generateReceiptPDF(receipt) {
       th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e2e7f0; font-size: 12px; }
       th { background: #f4f6fa; }
     </style></head><body>
-      <h1>${state.systemName}</h1>
+      <h1>${esc(state.systemName)}</h1>
       <div class="sub">Payment Receipt</div>
-      <div class="row"><span>Receipt No.</span><span>${receipt.paymentId}</span></div>
-      <div class="row"><span>Date</span><span>${new Date(receipt.date).toLocaleString()}</span></div>
-      <div class="row"><span>Customer</span><span>${receipt.customer ? receipt.customer.name : '-'}</span></div>
-      <div class="row"><span>Phone</span><span>${receipt.customer ? receipt.customer.phone : '-'}</span></div>
-      <div class="row"><span>Assets</span><span>${receipt.session ? receipt.session.assetIds : '-'}</span></div>
+      <div class="row"><span>Receipt No.</span><span>${esc(receipt.paymentId)}</span></div>
+      <div class="row"><span>Date</span><span>${esc(new Date(receipt.date).toLocaleString())}</span></div>
+      <div class="row"><span>Customer</span><span>${esc(receipt.customer ? receipt.customer.name : '-')}</span></div>
+      <div class="row"><span>Phone</span><span>${esc(receipt.customer ? receipt.customer.phone : '-')}</span></div>
+      <div class="row"><span>Assets</span><span>${esc(receipt.session ? receipt.session.assetIds : '-')}</span></div>
       <table>
         <tr><th>Item</th><th>Qty</th><th>Amount</th></tr>
-        ${receipt.items.map(i => `<tr><td>${i.expenseName}</td><td>${i.quantity}</td><td>$${Number(i.total).toFixed(2)}</td></tr>`).join('')}
+        ${receipt.items.map(i => `<tr><td>${esc(i.expenseName)}</td><td>${esc(i.quantity)}</td><td>$${Number(i.total).toFixed(2)}</td></tr>`).join('')}
       </table>
       <div class="row"><span>Invoice Total</span><span>$${Number(receipt.total).toFixed(2)}</span></div>
       <div class="row"><span>Amount Paid Now</span><span>$${Number(receipt.amount).toFixed(2)}</span></div>
@@ -1314,22 +1653,22 @@ async function downloadStatement(sessionId) {
       th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e2e7f0; font-size: 12px; }
       th { background: #f4f6fa; }
     </style></head><body>
-      <h1>${state.systemName}</h1>
+      <h1>${esc(state.systemName)}</h1>
       <div class="sub">Client Statement</div>
-      <div class="row"><span>Customer</span><span>${session.customerName}</span></div>
-      <div class="row"><span>Phone</span><span>${customer ? customer.phone : '-'}</span></div>
-      <div class="row"><span>Address</span><span>${customer ? customer.address : '-'}</span></div>
-      <div class="row"><span>Invoice #</span><span>${session.invoiceNumber || '-'}</span></div>
-      <div class="row"><span>Assets</span><span>${session.assetIds}</span></div>
+      <div class="row"><span>Customer</span><span>${esc(session.customerName)}</span></div>
+      <div class="row"><span>Phone</span><span>${esc(customer ? customer.phone : '-')}</span></div>
+      <div class="row"><span>Address</span><span>${esc(customer ? customer.address : '-')}</span></div>
+      <div class="row"><span>Invoice #</span><span>${esc(session.invoiceNumber || '-')}</span></div>
+      <div class="row"><span>Assets</span><span>${esc(session.assetIds)}</span></div>
       <table>
         <tr><th>Expense</th><th>Qty</th><th>Unit</th><th>Total</th></tr>
-        ${items.map(i => `<tr><td>${i.expenseName}</td><td>${i.quantity}</td><td>$${Number(i.amountPerAsset).toFixed(2)}</td><td>$${Number(i.total).toFixed(2)}</td></tr>`).join('')}
+        ${items.map(i => `<tr><td>${esc(i.expenseName)}</td><td>${esc(i.quantity)}</td><td>$${Number(i.amountPerAsset).toFixed(2)}</td><td>$${Number(i.total).toFixed(2)}</td></tr>`).join('')}
       </table>
       <div class="row"><span>Total</span><span>$${Number(invoice.totalAmount).toFixed(2)}</span></div>
       <div class="row"><span>Paid</span><span>$${Number(invoice.paidAmount).toFixed(2)}</span></div>
       <div class="row total"><span>Balance Due</span><span>$${Number(invoice.balance).toFixed(2)}</span></div>
       <div class="sub" style="margin-top:16px">Payments</div>
-      ${payments.map(p => `<div class="row"><span>${new Date(p.createdAt).toLocaleDateString()}</span><span>$${Number(p.amount).toFixed(2)}</span></div>`).join('')}
+      ${payments.map(p => `<div class="row"><span>${esc(new Date(p.createdAt).toLocaleDateString())}</span><span>$${Number(p.amount).toFixed(2)}</span></div>`).join('')}
     </body></html>
   `;
   const w = window.open('', '_blank');
@@ -1351,15 +1690,15 @@ async function renderPending(el) {
     <div class="section-title">Pending Approvals (${total})</div>
     ${total === 0 ? '<div class="empty">No pending approvals</div>' : ''}
     ${pending.map(p => `
-      <div class="list-item" onclick="viewPending('${p.id}')">
-        <div class="avatar">${p.customerName ? p.customerName[0].toUpperCase() : '?'}</div>
-        <div class="info"><div class="name">${p.customerName}</div><div class="sub">${p.expenseName}: $${Number(p.oldAmount).toFixed(2)} → $${Number(p.newAmount).toFixed(2)} · by ${p.requestedBy}</div></div>
+      <div class="list-item" onclick="viewPending('${esc(p.id)}')">
+        <div class="avatar">${esc(p.customerName ? p.customerName[0].toUpperCase() : '?')}</div>
+        <div class="info"><div class="name">${esc(p.customerName)}</div><div class="sub">${esc(p.expenseName)}: $${Number(p.oldAmount).toFixed(2)} → $${Number(p.newAmount).toFixed(2)} · by ${esc(p.requestedBy)}</div></div>
         <span class="badge small amber">Price</span>
       </div>`).join('')}
     ${requisitions.map(r => `
-      <div class="list-item" onclick="viewCashRequisition('${r.id}')">
+      <div class="list-item" onclick="viewCashRequisition('${esc(r.id)}')">
         <div class="avatar">$</div>
-        <div class="info"><div class="name">Cash Requisition · ${r.account}</div><div class="sub">${r.description} · $${Number(r.amount).toFixed(2)} · by ${r.requestedByName||r.requestedBy}</div></div>
+        <div class="info"><div class="name">Cash Requisition · ${esc(r.account)}</div><div class="sub">${esc(r.description)} · $${Number(r.amount).toFixed(2)} · by ${esc(r.requestedByName||r.requestedBy)}</div></div>
         <span class="badge small amber">Cash</span>
       </div>`).join('')}
   `;
@@ -1369,16 +1708,16 @@ async function viewCashRequisition(id) {
   const r = (res.requisitions || []).find(x => String(x.id) === String(id));
   if (!r) return toast('Requisition not found or already reviewed.', 'error');
   const body = `
-    <div class="data-row"><span class="lbl">Requested by</span><span class="val">${r.requestedByName||r.requestedBy}</span></div>
-    <div class="data-row"><span class="lbl">Role</span><span class="val">${r.requestedRole}</span></div>
-    <div class="data-row"><span class="lbl">Account</span><span class="val">${r.account}</span></div>
-    <div class="data-row"><span class="lbl">Description</span><span class="val">${r.description}</span></div>
+    <div class="data-row"><span class="lbl">Requested by</span><span class="val">${esc(r.requestedByName||r.requestedBy)}</span></div>
+    <div class="data-row"><span class="lbl">Role</span><span class="val">${esc(r.requestedRole)}</span></div>
+    <div class="data-row"><span class="lbl">Account</span><span class="val">${esc(r.account)}</span></div>
+    <div class="data-row"><span class="lbl">Description</span><span class="val">${esc(r.description)}</span></div>
     <div class="data-row"><span class="lbl">Requested amount</span><span class="val">$${Number(r.amount).toFixed(2)}</span></div>
     <div class="field"><label>Approved amount (you can edit)</label><input id="reqApproveAmount" type="number" step="0.01" min="0.01" value="${Number(r.amount).toFixed(2)}"></div>
     <div class="field"><label>Note (optional on approve, required on decline)</label><textarea id="reqNote" rows="3" placeholder="Add a note for the applicant"></textarea></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px">
-      <button class="btn btn-danger" onclick="declineCashRequisition('${r.id}',this)">Decline</button>
-      <button class="btn btn-success" onclick="approveCashRequisition('${r.id}',this)">Approve</button>
+      <button class="btn btn-danger" onclick="declineCashRequisition('${esc(r.id)}',this)">Decline</button>
+      <button class="btn btn-success" onclick="approveCashRequisition('${esc(r.id)}',this)">Approve</button>
     </div>`;
   openModal('Cash Requisition', body);
 }
@@ -1411,17 +1750,17 @@ async function viewPending(id) {
   if (!res.success) return toast(res.error, 'error');
   const { pending, invoice, items, customer } = res;
   let body = `
-    <div class="data-row"><span class="lbl">Customer</span><span class="val">${pending.customerName}</span></div>
-    <div class="data-row"><span class="lbl">Requested by</span><span class="val">${pending.requestedBy}</span></div>
-    <div class="data-row"><span class="lbl">Expense</span><span class="val">${pending.expenseName}</span></div>
+    <div class="data-row"><span class="lbl">Customer</span><span class="val">${esc(pending.customerName)}</span></div>
+    <div class="data-row"><span class="lbl">Requested by</span><span class="val">${esc(pending.requestedBy)}</span></div>
+    <div class="data-row"><span class="lbl">Expense</span><span class="val">${esc(pending.expenseName)}</span></div>
     <div class="data-row"><span class="lbl">Old Price</span><span class="val">$${Number(pending.oldAmount).toFixed(2)}</span></div>
     <div class="data-row total"><span class="lbl">New Price</span><span class="val" style="color:#dc2626">$${Number(pending.newAmount).toFixed(2)}</span></div>
     <div class="section-title" style="margin:14px 0 6px">Invoice Preview</div>
-    ${items.map(i => `<div class="data-row"><span class="lbl">${i.expenseName} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
+    ${items.map(i => `<div class="data-row"><span class="lbl">${esc(i.expenseName)} × ${esc(i.quantity)}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
     <div class="data-row total"><span class="lbl">Invoice Total</span><span class="val">$${Number(invoice.totalAmount).toFixed(2)}</span></div>
     <div style="display:flex;gap:8px;margin-top:16px">
-      <button class="btn btn-danger" onclick="declinePending('${pending.id}', this)">Decline</button>
-      <button class="btn btn-success" onclick="approvePending('${pending.id}', this)">Approve</button>
+      <button class="btn btn-danger" onclick="declinePending('${esc(pending.id)}', this)">Decline</button>
+      <button class="btn btn-success" onclick="approvePending('${esc(pending.id)}', this)">Approve</button>
     </div>
   `;
   openModal('Price Change Request', body);
@@ -1449,7 +1788,7 @@ async function declinePending(id, btn) {
   });
   setBtnLoading(btn, false);
 }
-
+// ============ REPORTS ============
 async function renderReports(el) {
   document.getElementById('headerSub').textContent = 'Reports & Analytics';
   if (state.user.role === 'driver') return renderDriver(el);
@@ -1475,8 +1814,8 @@ async function renderReports(el) {
     <div class="card">
       <div class="card-title">Filter by Period</div>
       <div class="grid grid-2">
-        <div class="field"><label>From</label><input type="date" id="rFrom" value="${from}" onchange="updateFilter()"></div>
-        <div class="field"><label>To</label><input type="date" id="rTo" value="${to}" onchange="updateFilter()"></div>
+        <div class="field"><label>From</label><input type="date" id="rFrom" value="${esc(from)}" onchange="updateFilter()"></div>
+        <div class="field"><label>To</label><input type="date" id="rTo" value="${esc(to)}" onchange="updateFilter()"></div>
       </div>
     </div>
     <div class="section-title">Accounts</div>
@@ -1505,14 +1844,14 @@ async function renderReports(el) {
       ${myReqs.map(r => {
         const st = (r.status || '').toLowerCase();
         const cls = st === 'approved' ? 'approved' : (st === 'declined' ? 'declined' : '');
-        const note = r.adminNote ? `<div class="requisition-note ${cls}"><b>Admin note:</b> ${r.adminNote}</div>` : '';
+        const note = r.adminNote ? `<div class="requisition-note ${cls}"><b>Admin note:</b> ${esc(r.adminNote)}</div>` : '';
         const edited = (r.originalAmount !== undefined && r.originalAmount !== '' && Number(r.originalAmount) !== Number(r.amount))
           ? `<div style="font-size:11px;color:#8a94a6;margin-top:2px">Approved amount adjusted from $${Number(r.originalAmount).toFixed(2)}</div>`
           : '';
         return `<div class="list-item" style="align-items:flex-start;flex-direction:column">
           <div style="display:flex;width:100%;gap:12px;align-items:center">
             <div class="avatar">$</div>
-            <div class="info"><div class="name">${r.description}</div><div class="sub">${r.account} · ${new Date(r.requestDate||r.createdAt).toLocaleDateString()} · <b style="text-transform:capitalize">${r.status}</b></div>${edited}</div>
+            <div class="info"><div class="name">${esc(r.description)}</div><div class="sub">${esc(r.account)} · ${esc(new Date(r.requestDate||r.createdAt).toLocaleDateString())} · <b style="text-transform:capitalize">${esc(r.status)}</b></div>${edited}</div>
             <div class="amount ${st==='declined'?'red':'green'}">$${Number(r.amount).toFixed(2)}</div>
           </div>
           ${note}
@@ -1538,7 +1877,7 @@ async function renderReports(el) {
 }
 function renderInvoiceRows(invoices) {
   if (!invoices.length) return '<div class="empty">No completed invoices for this period</div>';
-  return invoices.map(inv => `<div class="list-item" onclick="viewInvoice('${inv.id}')"><div class="avatar">${inv.customerName?inv.customerName[0].toUpperCase():'?'}</div><div class="info"><div class="name">${inv.customerName||'-'}</div><div class="sub">Inv: ${inv.invoiceNumber||inv.id} · ${inv.assetIds||''} · ${inv.completedAt?new Date(inv.completedAt).toLocaleDateString():''} · ${inv.completedBy||'-'}</div></div><div class="amount">$${Number(inv.totalAmount).toFixed(2)}</div></div>`).join('');
+  return invoices.map(inv => `<div class="list-item" onclick="viewInvoice('${esc(inv.id)}')"><div class="avatar">${esc(inv.customerName?inv.customerName[0].toUpperCase():'?')}</div><div class="info"><div class="name">${esc(inv.customerName||'-')}</div><div class="sub">Inv: ${esc(inv.invoiceNumber||inv.id)} · ${esc(inv.assetIds||'')} · ${esc(inv.completedAt?new Date(inv.completedAt).toLocaleDateString():'')} · ${esc(inv.completedBy||'-')}</div></div><div class="amount">$${Number(inv.totalAmount).toFixed(2)}</div></div>`).join('');
 }
 async function loadMoreInvoices(btn) {
   if (!state.reportInvoiceHasNext) return;
@@ -1561,9 +1900,9 @@ async function loadMoreInvoices(btn) {
 function showCashRequisitionModal() {
   const role = String(state.user.role || '').toLowerCase();
   const account = role === 'loader' ? 'tank' : role === 'boiler' ? 'boiler' : role === 'driver' ? 'grabber' : 'general';
-  const accountField = role === 'admin'
+  const accountField = isAdminLike()
     ? `<div class="field"><label>Account</label><select id="reqAccount"><option value="tank">Tank Account</option><option value="boiler">Boiler Account</option><option value="grabber">Grabber Account</option></select></div>`
-    : `<div class="data-row" style="margin-bottom:14px"><span class="lbl">Account</span><span class="val">${account}</span></div>`;
+    : `<div class="data-row" style="margin-bottom:14px"><span class="lbl">Account</span><span class="val">${esc(account)}</span></div>`;
   openModal('Cash Requisition', `${accountField}<div class="field"><label>Description</label><textarea id="reqDesc" rows="3" placeholder="What is the cash needed for?"></textarea></div><div class="field"><label>Amount</label><input id="reqAmount" type="number" min="0.01" step="0.01" placeholder="0.00"></div><button class="btn" onclick="submitCashRequisition(this)">Request Cash</button>`);
 }
 async function submitCashRequisition(btn) {
@@ -1585,7 +1924,7 @@ function showStatementFilterModal(downloadAfter) {
   const from = state.filter.from || '';
   const to = state.filter.to || '';
   const account = state.filter.account || 'all';
-  openModal('View Statement', `<div class="field"><label>From</label><input type="date" id="stFrom" value="${from}"></div><div class="field"><label>To</label><input type="date" id="stTo" value="${to}"></div><div class="field"><label>Account</label><select id="stAccount"><option value="all" ${account==='all'?'selected':''}>All Accounts</option><option value="tank" ${account==='tank'?'selected':''}>Tank Account</option><option value="boiler" ${account==='boiler'?'selected':''}>Boiler Account</option><option value="grabber" ${account==='grabber'?'selected':''}>Grabber Account</option></select></div><button class="btn" onclick="loadFinancialStatement(this,${downloadAfter?'true':'false'})">${downloadAfter?'Build & Download':'View Statement'}</button>`);
+  openModal('View Statement', `<div class="field"><label>From</label><input type="date" id="stFrom" value="${esc(from)}"></div><div class="field"><label>To</label><input type="date" id="stTo" value="${esc(to)}"></div><div class="field"><label>Account</label><select id="stAccount"><option value="all" ${account==='all'?'selected':''}>All Accounts</option><option value="tank" ${account==='tank'?'selected':''}>Tank Account</option><option value="boiler" ${account==='boiler'?'selected':''}>Boiler Account</option><option value="grabber" ${account==='grabber'?'selected':''}>Grabber Account</option></select></div><button class="btn" onclick="loadFinancialStatement(this,${downloadAfter?'true':'false'})">${downloadAfter?'Build & Download':'View Statement'}</button>`);
 }
 async function loadFinancialStatement(btn, download) {
   const from = (document.getElementById('stFrom') || {}).value || '';
@@ -1601,7 +1940,7 @@ async function loadFinancialStatement(btn, download) {
 function openFinancialStatement(st, download) {
   const rows = st.rows || [];
   window._enicanLastStatement = st;
-  const html = `<div class="data-row"><span class="lbl">Period</span><span class="val">${st.from||'All time'} → ${st.to||'Today'}</span></div><div class="data-row"><span class="lbl">Account</span><span class="val">${st.account}</span></div><div class="data-row"><span class="lbl">Revenue</span><span class="val" style="color:#16a34a">$${Number(st.revenue).toFixed(2)}</span></div>${Number(st.grabberRevenue||0)>0&&st.account!=='grabber'?`<div class="data-row"><span class="lbl">Grabber Revenue (informational)</span><span class="val">$${Number(st.grabberRevenue).toFixed(2)}</span></div>`:''}<div class="data-row"><span class="lbl">Expenses</span><span class="val" style="color:#dc2626">$${Number(st.expenses).toFixed(2)}</span></div><div class="data-row total"><span class="lbl">Gross Profit</span><span class="val">$${Number(st.profit).toFixed(2)}</span></div><div class="section-title" style="margin:16px 0 8px">Income & Expenses</div>${rows.length?`<div style="overflow-x:auto"><table class="statement-table"><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Account</th><th>Amount</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.date}</td><td>${r.type==='income'?'Income':'Expense'}</td><td>${r.description}</td><td>${r.account}</td><td>$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty" style="padding:24px">No transactions for this period.</div>'}<div style="margin-top:14px"><button class="btn" onclick="printFinancialStatement(window._enicanLastStatement)">Download Statement as PDF</button></div>`;
+  const html = `<div class="data-row"><span class="lbl">Period</span><span class="val">${esc(st.from||'All time')} → ${esc(st.to||'Today')}</span></div><div class="data-row"><span class="lbl">Account</span><span class="val">${esc(st.account)}</span></div><div class="data-row"><span class="lbl">Revenue</span><span class="val" style="color:#16a34a">$${Number(st.revenue).toFixed(2)}</span></div>${Number(st.grabberRevenue||0)>0&&st.account!=='grabber'?`<div class="data-row"><span class="lbl">Grabber Revenue (informational)</span><span class="val">$${Number(st.grabberRevenue).toFixed(2)}</span></div>`:''}<div class="data-row"><span class="lbl">Expenses</span><span class="val" style="color:#dc2626">$${Number(st.expenses).toFixed(2)}</span></div><div class="data-row total"><span class="lbl">Gross Profit</span><span class="val">$${Number(st.profit).toFixed(2)}</span></div><div class="section-title" style="margin:16px 0 8px">Income & Expenses</div>${rows.length?`<div style="overflow-x:auto"><table class="statement-table"><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Account</th><th>Amount</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td>${r.type==='income'?'Income':'Expense'}</td><td>${esc(r.description)}</td><td>${esc(r.account)}</td><td>$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty" style="padding:24px">No transactions for this period.</div>'}<div style="margin-top:14px"><button class="btn" onclick="printFinancialStatement(window._enicanLastStatement)">Download Statement as PDF</button></div>`;
   openModal('Enican Mines System — Statement', html);
   if (download) setTimeout(() => printFinancialStatement(st), 250);
 }
@@ -1609,7 +1948,7 @@ function printFinancialStatement(st) {
   const rows = st.rows || [];
   const w = window.open('', '_blank');
   if (!w) return toast('Please allow pop-ups to download the statement.', 'error');
-  w.document.write(`<html><head><title>${state.systemName} Statement</title><style>body{font-family:Arial,sans-serif;padding:28px;color:#0f172a}h1{color:#0641ab;margin-bottom:2px}.sub{color:#64748b;font-size:12px;margin-bottom:18px}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.box{border:1px solid #dbe3ee;border-radius:8px;padding:10px}.box b{display:block;margin-top:4px;font-size:18px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#f4f6fa}.right{text-align:right}.expense{color:#dc2626}.income{color:#15803d}</style></head><body><h1>${state.systemName}</h1><div class="sub">Enican Mines System · Financial Statement · ${st.from||'All time'} to ${st.to||'Today'} · ${st.account}</div><div class="summary"><div class="box">Revenue<b>$${Number(st.revenue).toFixed(2)}</b></div><div class="box">Expenses<b>$${Number(st.expenses).toFixed(2)}</b></div><div class="box">Gross Profit<b>$${Number(st.profit).toFixed(2)}</b></div></div><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Account</th><th class="right">Amount</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.date}</td><td class="${r.type}">${r.type}</td><td>${r.category}</td><td>${r.description}</td><td>${r.account}</td><td class="right">$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table><script>setTimeout(()=>window.print(),250)<\/script></body></html>`);
+  w.document.write(`<html><head><title>${esc(state.systemName)} Statement</title><style>body{font-family:Arial,sans-serif;padding:28px;color:#0f172a}h1{color:#0641ab;margin-bottom:2px}.sub{color:#64748b;font-size:12px;margin-bottom:18px}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.box{border:1px solid #dbe3ee;border-radius:8px;padding:10px}.box b{display:block;margin-top:4px;font-size:18px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#f4f6fa}.right{text-align:right}.expense{color:#dc2626}.income{color:#15803d}</style></head><body><h1>${esc(state.systemName)}</h1><div class="sub">Enican Mines System · Financial Statement · ${esc(st.from||'All time')} to ${esc(st.to||'Today')} · ${esc(st.account)}</div><div class="summary"><div class="box">Revenue<b>$${Number(st.revenue).toFixed(2)}</b></div><div class="box">Expenses<b>$${Number(st.expenses).toFixed(2)}</b></div><div class="box">Gross Profit<b>$${Number(st.profit).toFixed(2)}</b></div></div><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Account</th><th class="right">Amount</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td class="${r.type}">${r.type}</td><td>${esc(r.category)}</td><td>${esc(r.description)}</td><td>${esc(r.account)}</td><td class="right">$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table><script>setTimeout(()=>window.print(),250)<\/script></body></html>`);
   w.document.close();
 }
 function renderGrabberReport(monthly) {
@@ -1636,24 +1975,25 @@ async function viewInvoice(id) {
   if (!res.success) return toast(res.error, 'error');
   const { invoice, items, payments, session, customer } = res;
   let body = `
-    <div class="data-row"><span class="lbl">Customer</span><span class="val">${invoice.customerName}</span></div>
-    <div class="data-row"><span class="lbl">Phone</span><span class="val">${customer ? customer.phone : '-'}</span></div>
-    <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${invoice.invoiceNumber || invoice.id}</span></div>
-    <div class="data-row"><span class="lbl">Assets</span><span class="val">${invoice.assetIds}</span></div>
-    <div class="data-row"><span class="lbl">Created</span><span class="val">${new Date(invoice.createdAt).toLocaleDateString()}</span></div>
-    <div class="data-row"><span class="lbl">Completed</span><span class="val">${invoice.completedAt ? new Date(invoice.completedAt).toLocaleDateString() : '-'}</span></div>
-    <div class="data-row"><span class="lbl">Created by</span><span class="val">${session && session.createdBy ? session.createdBy : '-'}</span></div>
-    <div class="data-row"><span class="lbl">Completed by</span><span class="val">${session && session.completedBy ? session.completedBy : '-'}</span></div>
+    <div class="data-row"><span class="lbl">Customer</span><span class="val">${esc(invoice.customerName)}</span></div>
+    <div class="data-row"><span class="lbl">Phone</span><span class="val">${esc(customer ? customer.phone : '-')}</span></div>
+    <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${esc(invoice.invoiceNumber || invoice.id)}</span></div>
+    <div class="data-row"><span class="lbl">Assets</span><span class="val">${esc(invoice.assetIds)}</span></div>
+    <div class="data-row"><span class="lbl">Created</span><span class="val">${esc(new Date(invoice.createdAt).toLocaleDateString())}</span></div>
+    <div class="data-row"><span class="lbl">Completed</span><span class="val">${esc(invoice.completedAt ? new Date(invoice.completedAt).toLocaleDateString() : '-')}</span></div>
+    <div class="data-row"><span class="lbl">Created by</span><span class="val">${esc(session && session.createdBy ? session.createdBy : '-')}</span></div>
+    <div class="data-row"><span class="lbl">Completed by</span><span class="val">${esc(session && session.completedBy ? session.completedBy : '-')}</span></div>
     <div class="section-title" style="margin:14px 0 6px">Items</div>
-    ${items.map(i => `<div class="data-row"><span class="lbl">${i.expenseName} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
+    ${items.map(i => `<div class="data-row"><span class="lbl">${esc(i.expenseName)} × ${esc(i.quantity)}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
     <div class="data-row total"><span class="lbl">Total</span><span class="val">$${Number(invoice.totalAmount).toFixed(2)}</span></div>
     <div class="data-row"><span class="lbl">Paid</span><span class="val">$${Number(invoice.paidAmount).toFixed(2)}</span></div>
     <div class="section-title" style="margin:14px 0 6px">Payments</div>
-    ${payments.map(p => `<div class="data-row"><span class="lbl">${new Date(p.createdAt).toLocaleDateString()} · ${p.receivedBy}</span><span class="val">$${Number(p.amount).toFixed(2)}</span></div>`).join('') || '<div style="color:#8a94a6;font-size:12px">No payments</div>'}
+    ${payments.map(p => `<div class="data-row"><span class="lbl">${esc(new Date(p.createdAt).toLocaleDateString())} · ${esc(p.receivedBy)}</span><span class="val">$${Number(p.amount).toFixed(2)}</span></div>`).join('') || '<div style="color:#8a94a6;font-size:12px">No payments</div>'}
   `;
   openModal('Invoice Details', body);
 }
 
+// ============ DRIVER ============
 async function renderDriver(el) {
   document.getElementById('headerSub').textContent = 'Driver · Trips & Expenses';
   const from = state.filter.from || '';
@@ -1708,21 +2048,21 @@ async function renderDriver(el) {
         <div class="field"><label>Customer</label>
           <select id="tripCustomer" onchange="saveDriverDraft()">
             <option value="">-- Select customer --</option>
-            ${customers.map(c => `<option value="${c.id}" ${String(trip.customerId)===String(c.id)?'selected':''}>${c.name}</option>`).join('')}
+            ${customers.map(c => `<option value="${esc(c.id)}" ${String(trip.customerId)===String(c.id)?'selected':''}>${esc(c.name)}</option>`).join('')}
           </select>
         </div>
-        <div class="field"><label>Number of Trips</label><input id="tripCount" type="number" min="1" value="${trip.trips}" oninput="saveDriverDraft()"></div>
-        <div class="field"><label>Amount per Trip</label><input id="tripRate" type="number" min="0" step="0.01" value="${trip.rate}" oninput="saveDriverDraft()"></div>
-        <div class="field"><label>Date</label><input id="tripDate" type="date" value="${trip.date}" oninput="saveDriverDraft()"></div>
-        <div class="field"><label>Notes</label><input id="tripNotes" type="text" value="${trip.notes}" oninput="saveDriverDraft()"></div>
+        <div class="field"><label>Number of Trips</label><input id="tripCount" type="number" min="1" value="${esc(trip.trips)}" oninput="saveDriverDraft()"></div>
+        <div class="field"><label>Amount per Trip</label><input id="tripRate" type="number" min="0" step="0.01" value="${esc(trip.rate)}" oninput="saveDriverDraft()"></div>
+        <div class="field"><label>Date</label><input id="tripDate" type="date" value="${esc(trip.date)}" oninput="saveDriverDraft()"></div>
+        <div class="field"><label>Notes</label><input id="tripNotes" type="text" value="${esc(trip.notes)}" oninput="saveDriverDraft()"></div>
         <button class="btn" onclick="submitTrip(this)">Log Trip</button>
       </div>
     </div>
     <div class="card">
       <div class="card-title">Period Filter</div>
       <div class="grid grid-2">
-        <div class="field"><label>From</label><input type="date" id="dFrom" value="${from}" onchange="driverFilter()"></div>
-        <div class="field"><label>To</label><input type="date" id="dTo" value="${to}" onchange="driverFilter()"></div>
+        <div class="field"><label>From</label><input type="date" id="dFrom" value="${esc(from)}" onchange="driverFilter()"></div>
+        <div class="field"><label>To</label><input type="date" id="dTo" value="${esc(to)}" onchange="driverFilter()"></div>
       </div>
     </div>
     <div class="card">
@@ -1735,8 +2075,8 @@ async function renderDriver(el) {
     ${rep.trips.slice().reverse().map(t => `
       <div class="list-item">
         <div class="info">
-          <div class="name">${t.customerName}</div>
-          <div class="sub">${t.trips} trips × $${t.amountPerTrip} · ${t.tripDate}</div>
+          <div class="name">${esc(t.customerName)}</div>
+          <div class="sub">${esc(t.trips)} trips × $${esc(t.amountPerTrip)} · ${esc(t.tripDate)}</div>
         </div>
         <div class="amount green">$${Number(t.totalAmount).toFixed(2)}</div>
       </div>
@@ -1745,8 +2085,8 @@ async function renderDriver(el) {
     ${rep.expenses.slice().reverse().map(e => `
       <div class="list-item">
         <div class="info">
-          <div class="name">${e.description}</div>
-          <div class="sub">${e.expenseDate}</div>
+          <div class="name">${esc(e.description)}</div>
+          <div class="sub">${esc(e.expenseDate)}</div>
         </div>
         <div class="amount red">-$${Number(e.amount).toFixed(2)}</div>
       </div>
@@ -1756,11 +2096,11 @@ async function renderDriver(el) {
       ${myReqs.map(r => {
         const st = (r.status || '').toLowerCase();
         const cls = st === 'approved' ? 'approved' : (st === 'declined' ? 'declined' : '');
-        const note = r.adminNote ? `<div class="requisition-note ${cls}"><b>Admin note:</b> ${r.adminNote}</div>` : '';
+        const note = r.adminNote ? `<div class="requisition-note ${cls}"><b>Admin note:</b> ${esc(r.adminNote)}</div>` : '';
         return `<div class="list-item" style="align-items:flex-start;flex-direction:column">
           <div style="display:flex;width:100%;gap:12px;align-items:center">
             <div class="avatar">$</div>
-            <div class="info"><div class="name">${r.description}</div><div class="sub">${r.account} · ${new Date(r.requestDate||r.createdAt).toLocaleDateString()} · <b style="text-transform:capitalize">${r.status}</b></div></div>
+            <div class="info"><div class="name">${esc(r.description)}</div><div class="sub">${esc(r.account)} · ${esc(new Date(r.requestDate||r.createdAt).toLocaleDateString())} · <b style="text-transform:capitalize">${esc(r.status)}</b></div></div>
             <div class="amount ${st==='declined'?'red':'green'}">$${Number(r.amount).toFixed(2)}</div>
           </div>
           ${note}
@@ -1817,9 +2157,9 @@ function driverTab(tab, btn) {
     el.innerHTML = `
       <div class="card">
         <div class="card-title">Log an Expense</div>
-        <div class="field"><label>Description</label><input id="expDesc" type="text" value="${de.desc || ''}" oninput="saveDriverDraft()"></div>
-        <div class="field"><label>Amount</label><input id="expAmt" type="number" step="0.01" min="0" value="${de.amt || ''}" oninput="saveDriverDraft()"></div>
-        <div class="field"><label>Date</label><input id="expDate" type="date" value="${de.date || new Date().toISOString().slice(0,10)}" oninput="saveDriverDraft()"></div>
+        <div class="field"><label>Description</label><input id="expDesc" type="text" value="${esc(de.desc || '')}" oninput="saveDriverDraft()"></div>
+        <div class="field"><label>Amount</label><input id="expAmt" type="number" step="0.01" min="0" value="${esc(de.amt || '')}" oninput="saveDriverDraft()"></div>
+        <div class="field"><label>Date</label><input id="expDate" type="date" value="${esc(de.date || new Date().toISOString().slice(0,10))}" oninput="saveDriverDraft()"></div>
         <button class="btn" onclick="submitDriverExpense(this)">Log Expense</button>
       </div>
     `;
@@ -1875,26 +2215,29 @@ function driverFilter() {
   loadPage();
 }
 
+// ============ PROFILE ============
 async function renderProfile(el) {
   const u = state.user;
   const myReqRes = await apiGet({ action: 'myRequisitions', user: u.username }, { silent: true });
   const myReqs = (myReqRes && myReqRes.requisitions) || [];
+  const myAssignments = await loadMyAssignmentsForProfile();
+  const openAssignments = (myAssignments || []).filter(a => String(a.status).toLowerCase() === 'open');
   el.innerHTML = `
     <div class="card" style="text-align:center">
-      <div class="avatar" style="width:70px;height:70px;font-size:28px;margin:0 auto 10px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:700">${u.fullName ? u.fullName[0].toUpperCase() : u.username[0].toUpperCase()}</div>
-      <h2 style="margin:0;color:#0641ab">${u.fullName || u.username}</h2>
-      <p style="color:#8a94a6;margin:4px 0 0;text-transform:capitalize">${u.role}</p>
+      <div class="avatar" style="width:70px;height:70px;font-size:28px;margin:0 auto 10px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:700">${esc(u.fullName ? u.fullName[0].toUpperCase() : u.username[0].toUpperCase())}</div>
+      <h2 style="margin:0;color:#0641ab">${esc(u.fullName || u.username)}</h2>
+      <p style="color:#8a94a6;margin:4px 0 0;text-transform:capitalize">${esc(u.role)}</p>
     </div>
     ${myReqs.length ? `
       <div class="section-title">My Cash Requisitions (${myReqs.length})</div>
       ${myReqs.map(r => {
         const st = (r.status || '').toLowerCase();
         const cls = st === 'approved' ? 'approved' : (st === 'declined' ? 'declined' : '');
-        const note = r.adminNote ? `<div class="requisition-note ${cls}"><b>Admin note:</b> ${r.adminNote}</div>` : '';
+        const note = r.adminNote ? `<div class="requisition-note ${cls}"><b>Admin note:</b> ${esc(r.adminNote)}</div>` : '';
         return `<div class="list-item" style="align-items:flex-start;flex-direction:column">
           <div style="display:flex;width:100%;gap:12px;align-items:center">
             <div class="avatar">$</div>
-            <div class="info"><div class="name">${r.description}</div><div class="sub">${r.account} · ${new Date(r.requestDate||r.createdAt).toLocaleDateString()} · <b style="text-transform:capitalize">${r.status}</b></div></div>
+            <div class="info"><div class="name">${esc(r.description)}</div><div class="sub">${esc(r.account)} · ${esc(new Date(r.requestDate||r.createdAt).toLocaleDateString())} · <b style="text-transform:capitalize">${esc(r.status)}</b></div></div>
             <div class="amount ${st==='declined'?'red':'green'}">$${Number(r.amount).toFixed(2)}</div>
           </div>
           ${note}
@@ -1904,15 +2247,28 @@ async function renderProfile(el) {
     <div class="card">
       <button class="btn btn-danger" onclick="logout()">Sign Out</button>
     </div>
+    <div class="section-title">My Assignments (${openAssignments.length} open)</div>
+    ${openAssignments.length === 0 ? '<div class="empty">No open assignments. Great job!</div>' :
+      openAssignments.map(a => `
+        <div class="list-item" onclick="openMyAssignmentModal('${esc(a.id)}')">
+          <div class="avatar">${esc((a.assignedByName || 'A')[0].toUpperCase())}</div>
+          <div class="info">
+            <div class="name">${esc(a.title)}</div>
+            <div class="sub">From ${esc(a.assignedByName || a.assignedBy || '')} · Due ${esc(a.dueDate ? new Date(a.dueDate).toLocaleDateString() : '-')}</div>
+          </div>
+          <span class="badge small amber">OPEN</span>
+        </div>
+      `).join('')}
   `;
 }
 
+// ============ SETTINGS ============
 async function renderSettings(el) {
-  if (!state.user || state.user.role !== 'admin') {
+  if (!state.user || !isAdminLike()) {
     el.innerHTML = '<div class="card"><p style="color:#dc2626">Access denied. Admin only.</p></div>';
     return;
   }
-  document.getElementById('headerSub').textContent = 'Administrator settings';
+  document.getElementById('headerSub').textContent = isSuperAdmin() ? 'Super Administrator settings' : 'Administrator settings';
   const [usersRes, expRes, ourExpRes, dashRes] = await Promise.all([
     apiGet({ action: 'listUsers' }),
     apiGet({ action: 'expenseTypes' }),
@@ -1924,11 +2280,12 @@ async function renderSettings(el) {
   const ourExpenses = ourExpRes.expenses || [];
   const tanks = (dashRes.tanks && dashRes.tanks.items) || [];
   const boilers = (dashRes.boilers && dashRes.boilers.items) || [];
+  const canGrantSuper = isSuperAdmin();
 
   el.innerHTML = `
     <div class="section-title">Account</div>
     <div class="card">
-      <div class="data-row"><span class="lbl">Signed in as</span><span class="val">${state.user.fullName || state.user.username} (${state.user.role})</span></div>
+      <div class="data-row"><span class="lbl">Signed in as</span><span class="val">${esc(state.user.fullName || state.user.username)} (${esc(state.user.role)})</span></div>
       <button class="btn btn-danger" style="margin-top:12px" onclick="logout()">Sign Out</button>
     </div>
 
@@ -1944,6 +2301,7 @@ async function renderSettings(el) {
           <option value="boiler">Boiler</option>
           <option value="driver">Driver</option>
           <option value="admin">Admin</option>
+          ${canGrantSuper ? '<option value="superadmin">Super Admin</option>' : ''}
         </select>
       </div>
       <button class="btn" onclick="createUser(this)">Create User</button>
@@ -1953,16 +2311,17 @@ async function renderSettings(el) {
       <div class="card-title">Existing Users (${users.length})</div>
       ${users.map(u => `
         <div class="list-item">
-          <div class="avatar">${(u.fullName || u.username)[0].toUpperCase()}</div>
+          <div class="avatar">${esc((u.fullName || u.username)[0].toUpperCase())}</div>
           <div class="info">
-            <div class="name">${u.fullName || u.username}</div>
-            <div class="sub">@${u.username} · ${String(u.active).toUpperCase() === 'TRUE' || u.active === true ? 'Active' : 'Inactive'}</div>
+            <div class="name">${esc(u.fullName || u.username)}</div>
+            <div class="sub">@${esc(u.username)} · ${(String(u.active).toUpperCase() === 'TRUE' || u.active === true) ? 'Active' : 'Inactive'}</div>
           </div>
-          <select onchange="changeUserRole('${u.username}', this.value)" style="padding:6px;border-radius:8px;border:1px solid var(--border-color);font-size:12px;">
+          <select onchange="changeUserRole('${esc(u.username)}', this.value)" style="padding:6px;border-radius:8px;border:1px solid var(--border-color);font-size:12px;">
             <option value="loader" ${u.role==='loader'?'selected':''}>Loader</option>
             <option value="boiler" ${u.role==='boiler'?'selected':''}>Boiler</option>
             <option value="driver" ${u.role==='driver'?'selected':''}>Driver</option>
             <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+            ${canGrantSuper ? `<option value="superadmin" ${u.role==='superadmin'?'selected':''}>Super Admin</option>` : ''}
           </select>
         </div>
       `).join('')}
@@ -1989,10 +2348,10 @@ async function renderSettings(el) {
       ${expenses.map(e => `
         <div class="list-item">
           <div class="info">
-            <div class="name">${e.name}</div>
-            <div class="sub">Client $${Number(e.amount).toFixed(2)} · Cost $${Number(e.costAmount !== '' ? e.costAmount : e.amount).toFixed(2)} · ${(e.assetType || 'tank').toUpperCase()}</div>
+            <div class="name">${esc(e.name)}</div>
+            <div class="sub">Client $${Number(e.amount).toFixed(2)} · Cost $${Number(e.costAmount !== '' ? e.costAmount : e.amount).toFixed(2)} · ${esc((e.assetType || 'tank').toUpperCase())}</div>
           </div>
-          <span class="badge small blue">${(e.assetType || 'tank').toUpperCase()}</span>
+          <span class="badge small blue">${esc((e.assetType || 'tank').toUpperCase())}</span>
         </div>
       `).join('') || '<div class="empty">No expenses defined yet</div>'}
     </div>
@@ -2007,7 +2366,7 @@ async function renderSettings(el) {
     </div>
     <div class="card">
       <div class="card-title">Existing Internal Expenses (${ourExpenses.length})</div>
-      ${ourExpenses.map(e => `<div class="list-item"><div class="info"><div class="name">${e.name}</div><div class="sub">$${Number(e.amountPerUnit).toFixed(2)} per ${(e.assetType||'tank').toUpperCase()}</div></div><span class="badge small blue">INTERNAL</span></div>`).join('') || '<div class="empty">No internal expenses defined yet</div>'}
+      ${ourExpenses.map(e => `<div class="list-item"><div class="info"><div class="name">${esc(e.name)}</div><div class="sub">$${Number(e.amountPerUnit).toFixed(2)} per ${esc((e.assetType||'tank').toUpperCase())}</div></div><span class="badge small blue">INTERNAL</span></div>`).join('') || '<div class="empty">No internal expenses defined yet</div>'}
     </div>
 
     <div class="section-title">Fleet Overview</div>
@@ -2077,16 +2436,17 @@ async function createUser(btn) {
   setBtnLoading(btn, false);
 }
 
-function openModal(title, bodyHtml) {
+// ============ MODAL ============
+function openModal(title, bodyHtml, opts) {
   closeModal();
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.onclick = (e) => { if (e.target === overlay) closeModal(); };
   overlay.innerHTML = `
     <div class="modal">
+      <button class="modal-close" onclick="closeModal()">×</button>
       <div class="modal-header">
-        <h2>${title}</h2>
-        <button class="modal-close" onclick="closeModal()">×</button>
+        <h2>${esc(title)}</h2>
       </div>
       <div class="modal-body">${bodyHtml}</div>
     </div>
@@ -2095,6 +2455,7 @@ function openModal(title, bodyHtml) {
 }
 function closeModal() { document.querySelectorAll('.modal-overlay').forEach(m => m.remove()); }
 
+// ============ PWA ============
 let deferredPrompt = null;
 function isStandaloneApp(){
   return window.matchMedia('(display-mode: standalone)').matches ||
@@ -2155,6 +2516,7 @@ async function installPWA(){
   setInstallButtonVisible(false);
 }
 
+// ============ INIT ============
 (async function init() {
   await loadSystemConfig();
   const session = loadSession();

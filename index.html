@@ -69,6 +69,7 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .field label { display: block; font-size: 12px; color: var(--gray-3); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
 .field input, .field select, .field textarea { width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-2); border-radius: 10px; background: var(--white); transition: border .15s; }
 .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--navy); outline: none; }
+.field textarea { resize: vertical; line-height: 1.5; }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 12px 16px; border-radius: 10px; font-weight: 700; font-size: 14px; background: var(--navy); color: var(--white); transition: background .15s; gap: 8px; border: none; }
 .btn:hover { background: var(--navy-light); }
@@ -89,15 +90,62 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .refresh-btn.spinning svg { animation: spin .8s linear; }
 
 .header-actions { display:flex; align-items:center; gap:7px; flex-shrink:0; }
-.super-menu-btn { display:none; width:38px; height:38px; border-radius:10px; background:rgba(255,255,255,.14); color:#fff; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,.2); }
-.super-menu-panel { position:fixed; top:64px; right:12px; z-index:190; background:#fff; border:1px solid var(--gray-2); border-radius:14px; box-shadow:0 16px 40px rgba(5,18,42,.18); padding:8px; min-width:190px; display:none; }
+
+/* ===== SUPER ADMIN HAMBURGER MENU ===== */
+.super-menu-btn { display:none; width:38px; height:38px; border-radius:10px; background:rgba(255,255,255,.14); color:#fff; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,.2); position:relative; }
+.super-menu-btn:active { transform:scale(.94); }
+.super-menu-btn .assign-badge { position:absolute; top:-4px; right:-4px; background:var(--red); color:#fff; border-radius:999px; font-size:9px; font-weight:800; padding:1px 5px; min-width:16px; text-align:center; box-shadow:0 0 0 2px var(--navy); }
+.super-menu-panel { position:fixed; top:64px; right:12px; z-index:190; background:#fff; border:1px solid var(--gray-2); border-radius:14px; box-shadow:0 16px 40px rgba(5,18,42,.18); padding:8px; min-width:210px; display:none; animation:popIn .16s ease; }
 .super-menu-panel.open { display:block; }
-.super-menu-panel button { width:100%; text-align:left; padding:11px 12px; border-radius:9px; color:var(--text-main); font-weight:700; background:#fff; }
+.super-menu-panel button { width:100%; text-align:left; padding:11px 12px; border-radius:9px; color:var(--text-main); font-weight:700; background:#fff; display:flex; align-items:center; gap:10px; font-size:14px; }
 .super-menu-panel button:hover { background:var(--gray); }
+.super-menu-panel button .menu-ico { width:18px; height:18px; flex-shrink:0; }
+.super-menu-panel .menu-count { margin-left:auto; background:var(--red); color:#fff; border-radius:999px; font-size:10px; font-weight:800; padding:2px 7px; }
+.super-menu-panel .menu-divider { height:1px; background:var(--gray-2); margin:6px 4px; }
+@media (max-width: 780px) { .super-menu-btn { display:inline-flex; } .super-nav-wide { display:none !important; } }
+
+/* ===== ASSIGNMENT STYLES ===== */
+.assignment-card { background:#fff; border:1px solid var(--gray-2); border-left:4px solid var(--navy); border-radius:12px; padding:14px; margin-bottom:10px; box-shadow:var(--shadow-sm); }
+.assignment-card.due-soon { border-left-color:var(--amber); }
+.assignment-card.overdue { border-left-color:var(--red); }
+.assignment-card.on-time-done { border-left-color:var(--green); background:#f8fdf9; }
+.assignment-card.late-done { border-left-color:var(--red); background:#fff8f8; }
+.assignment-title { font-weight:800; color:var(--navy); font-size:15px; margin-bottom:4px; }
+.assignment-meta { font-size:12px; color:var(--gray-3); display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; }
+.assignment-meta span { display:inline-flex; align-items:center; gap:4px; }
+.assignment-desc { font-size:13px; color:#334155; line-height:1.5; white-space:pre-wrap; margin-top:8px; max-height:120px; overflow:hidden; }
+.assignment-timing-badge { display:inline-block; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; }
+.timing-on-time { background:#dcfce7; color:#15803d; }
+.timing-late { background:#fee2e2; color:#b91c1c; }
+.timing-open { background:#dbeafe; color:#1e40af; }
+.timing-overdue { background:#fee2e2; color:#b91c1c; }
 .assignment-overdue { color:var(--danger); font-weight:700; }
 .assignment-on-time { color:var(--success); font-weight:700; }
-@media (max-width: 700px) { .super-menu-btn { display:inline-flex; } .super-nav-wide { display:none !important; } }
+.assignment-completed-box { text-align:center; padding:14px; background:#f8fafc; border-radius:12px; margin-top:12px; }
 
+/* ===== ASSIGNMENT POPUP (dashboard on load) ===== */
+.assignment-popup-overlay { position:fixed; inset:0; background:rgba(5,18,42,.72); display:flex; align-items:center; justify-content:center; z-index:9000; padding:16px; animation:fadeIn .2s; }
+.assignment-popup { background:#fff; border-radius:20px; max-width:440px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:0 25px 70px rgba(0,0,0,.45); animation:popIn .28s cubic-bezier(.2,.8,.2,1); }
+.assignment-popup-header { background:linear-gradient(135deg, var(--navy), var(--navy-light)); color:#fff; padding:20px 20px 16px; border-radius:20px 20px 0 0; position:relative; }
+.assignment-popup-header .popup-title { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.8px; opacity:.85; margin-bottom:6px; }
+.assignment-popup-header h2 { font-size:20px; margin:0; line-height:1.25; color:#fff; }
+.assignment-popup-close { position:absolute; top:14px; right:14px; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.2); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; line-height:1; }
+.assignment-popup-close:active { transform:scale(.92); }
+.assignment-popup-body { padding:18px 20px 20px; }
+.assignment-popup-body .info-block { background:#f8fafc; border-radius:12px; padding:12px 14px; margin-bottom:10px; }
+.assignment-popup-body .info-block .lbl { font-size:11px; text-transform:uppercase; color:var(--gray-3); font-weight:700; letter-spacing:.4px; }
+.assignment-popup-body .info-block .val { font-size:14px; color:var(--navy); font-weight:700; margin-top:3px; }
+.assignment-popup-body .desc-block { background:#fffbeb; border-left:4px solid var(--amber); border-radius:8px; padding:12px 14px; margin:12px 0 16px; }
+.assignment-popup-body .desc-block .desc-lbl { font-size:11px; text-transform:uppercase; color:#92400e; font-weight:800; letter-spacing:.4px; margin-bottom:6px; }
+.assignment-popup-body .desc-block .desc-body { font-size:13.5px; color:#422006; line-height:1.6; white-space:pre-wrap; }
+.assignment-popup-body .btn { margin-top:6px; }
+
+/* ===== FLOATING ASSIGNMENT ALERT BADGE ===== */
+.floating-assign-btn { position:fixed; bottom:96px; right:14px; z-index:80; width:54px; height:54px; border-radius:50%; background:var(--navy); color:#fff; display:none; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(6,65,171,.45); border:2px solid #fff; }
+.floating-assign-btn.show { display:flex; }
+.floating-assign-btn .assign-badge2 { position:absolute; top:-4px; right:-4px; background:var(--red); color:#fff; border-radius:999px; font-size:10px; font-weight:800; padding:2px 7px; min-width:20px; text-align:center; box-shadow:0 0 0 2px #fff; }
+
+/* ===== INSTALL ===== */
 .install-app-btn { min-height:38px; padding:0 11px; border-radius:999px; background:rgba(255,255,255,.14); color:#fff; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:12px; font-weight:800; border:1px solid rgba(255,255,255,.22); }
 .install-app-btn:active { transform:scale(.96); }
 .install-app-btn svg { flex-shrink:0; }
@@ -269,6 +317,7 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
   .data-row { gap:10px; }
   .data-row .lbl { min-width:0; }
   .data-row .val { max-width:62%; overflow-wrap:anywhere; }
+  .floating-assign-btn { bottom:84px; right:12px; }
 }
 @media (max-width: 380px) {
   body { padding-bottom:70px; }
@@ -327,8 +376,9 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
       <button class="install-app-btn hidden" id="headerInstallBtn" onclick="installPWA()" title="Install Enican Mines System">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg><span>Install</span>
       </button>
-      <button class="super-menu-btn" id="superMenuBtn" onclick="toggleSuperMenu()" title="Super Admin menu">
+      <button class="super-menu-btn" id="superMenuBtn" onclick="toggleSuperMenu()" title="Menu">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>
+        <span class="assign-badge hidden" id="superMenuAssignBadge">0</span>
       </button>
       <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" title="Refresh">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
@@ -342,6 +392,10 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
   <div class="super-menu-panel" id="superMenuPanel"></div>
 </div>
 
+<button class="floating-assign-btn" id="floatingAssignBtn" onclick="openMyAssignmentsFromBadge()" title="My Assignments">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L20 6"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7"/></svg>
+  <span class="assign-badge2" id="floatingAssignBadge">0</span>
+</button>
 <script>
 const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyRU-izhftUIblHcqncJa5ooQ3M7I0Ts7UXwt85PKJTQbTBo88QiKrdVJGKrEHLnQ/exec';
 
@@ -363,11 +417,19 @@ const state = {
   systemName: 'Loading...',
   reportInvoicePage: 1,
   reportInvoiceHasNext: false,
-  reportInvoices: []
+  reportInvoices: [],
+  // NEW: assignments tracking
+  myAssignments: [],
+  superAdminAssignments: [],
+  superAdminCompletions: [],
+  myAssignmentsBadgeShown: false,
+  superCompletionSeenAt: ''
 };
 
 const DRAFT_KEY = 'enican_drafts_v1';
 const SESSION_KEY = 'enican_session_v3';
+const ASSIGN_POPUP_SEEN_KEY = 'enican_assign_popup_seen_v1';
+const SUPER_COMPLETION_SEEN_KEY = 'enican_super_completion_seen_v1';
 
 function saveDraft() {
   try {
@@ -419,7 +481,6 @@ function loadSession() {
   try {
     const raw = localStorage.getItem(SESSION_KEY);
     if (!raw) {
-      // migrate from old key if present
       const old = localStorage.getItem('enican_user');
       if (old) {
         const u = JSON.parse(old);
@@ -493,7 +554,6 @@ async function apiPost(body) {
   return result;
 }
 function handleAuthFailure() {
-  // Clear client session and bounce back to login. Never cache the failure.
   clearSession();
   state.user = null;
   state.token = null;
@@ -502,6 +562,7 @@ function handleAuthFailure() {
   const loginEl = document.getElementById('loginScreen');
   if (appEl) appEl.classList.add('hidden');
   if (loginEl) loginEl.classList.remove('hidden');
+  hideFloatingAssignBadge();
   toast('Your session ended. Please sign in again.', 'error');
 }
 function uid(prefix, scope) {
@@ -570,7 +631,14 @@ function showApp() {
   buildNav();
   navigate('dashboard');
   startAutoRefresh();
-  setTimeout(() => { checkMyAssignmentPopup(); checkSuperAdminCompletionPopup(); }, 900);
+  // NEW: assignments checks
+  setTimeout(() => {
+    refreshMyAssignmentsBadge();
+    checkMyAssignmentPopup();
+  }, 700);
+  setTimeout(() => {
+    checkSuperAdminCompletionPopup();
+  }, 1400);
   if (!isStandaloneApp()) { setInstallButtonVisible(!!deferredPrompt); setTimeout(showInstallModal, 1200); }
 }
 function logout() {
@@ -578,7 +646,9 @@ function logout() {
   clearSession();
   state.user = null;
   state.token = null;
+  state.myAssignments = [];
   stopAutoRefresh();
+  hideFloatingAssignBadge();
   document.getElementById('app').classList.add('hidden');
   document.getElementById('loginScreen').classList.remove('hidden');
   if (token) {
@@ -596,7 +666,7 @@ function buildNav() {
       { id: 'empty', label: 'Empty', icon: '<path d="M12 19V5"/><path d="M5 12l7 7 7-7"/>' },
       { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
       { id: 'pending', label: 'Pending', icon: '<path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/>' },
-      { id: 'assignments', label: 'Assignments', icon: '<path d="M9 11l3 3L20 6"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7"/>' },
+      { id: 'assignments', label: 'Tasks', icon: '<path d="M9 11l3 3L20 6"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7"/>', wide: true },
       { id: 'settings', label: 'Settings', icon: '<path d="M12 3v18"/><path d="M3 12h18"/>' },
       { id: 'profile', label: 'Account', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>' }
     ];
@@ -634,23 +704,76 @@ function buildNav() {
   }
   const nav = document.getElementById('bottomNav');
   nav.innerHTML = items.map(it => `
-    <button class="nav-item ${role === 'super admin' && it.id === 'assignments' ? 'super-nav-wide' : ''} ${state.page === it.id ? 'active' : ''}" data-nav="${it.id}">
+    <button class="nav-item ${it.wide ? 'super-nav-wide' : ''} ${state.page === it.id ? 'active' : ''}" data-nav="${it.id}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${it.icon}</svg>
       <span>${it.label}</span>
     </button>
   `).join('');
   nav.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => navigate(b.dataset.nav));
+  buildSuperMenu();
+}
+
+function buildSuperMenu() {
+  const role = String(state.user.role || '').toLowerCase().trim();
   const panel = document.getElementById('superMenuPanel');
-  if (panel) {
-    if (role === 'super admin') {
-      panel.innerHTML = '<button onclick="navigate(\'assignments\');closeSuperMenu()">Assignments</button><button onclick="navigate(\'pending\');closeSuperMenu()">Pending Approvals</button><button onclick="navigate(\'settings\');closeSuperMenu()">Settings</button>';
-    } else panel.innerHTML = '';
-  }
   const menuBtn = document.getElementById('superMenuBtn');
-  if (menuBtn) menuBtn.style.display = role === 'super admin' ? '' : 'none';
+  if (!panel || !menuBtn) return;
+  if (role === 'super admin') {
+    menuBtn.style.display = '';
+    panel.innerHTML = `
+      <button onclick="navigate('dashboard');closeSuperMenu()">
+        <svg class="menu-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+        Dashboard
+      </button>
+      <button onclick="navigate('pending');closeSuperMenu()">
+        <svg class="menu-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+        Pending Approvals
+        <span class="menu-count hidden" id="superMenuPendingCount">0</span>
+      </button>
+      <button onclick="navigate('assignments');closeSuperMenu()">
+        <svg class="menu-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L20 6"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7"/></svg>
+        Assignments
+      </button>
+      <div class="menu-divider"></div>
+      <button onclick="navigate('loadTank');closeSuperMenu()">
+        <svg class="menu-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+        Load Tank
+      </button>
+      <button onclick="navigate('loadBoiler');closeSuperMenu()">
+        <svg class="menu-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+        Load Boiler
+      </button>
+      <button onclick="navigate('empty');closeSuperMenu()">
+        <svg class="menu-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7 7 7-7"/></svg>
+        Empty Tank
+      </button>
+      <button onclick="navigate('reports');closeSuperMenu()">
+        <svg class="menu-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/></svg>
+        Reports
+      </button>
+      <button onclick="navigate('settings');closeSuperMenu()">
+        <svg class="menu-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M3 12h18"/></svg>
+        Settings
+      </button>
+      <button onclick="navigate('profile');closeSuperMenu()">
+        <svg class="menu-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+        My Account
+      </button>
+    `;
+  } else {
+    menuBtn.style.display = 'none';
+    panel.innerHTML = '';
+  }
 }
 function toggleSuperMenu(){ const p=document.getElementById('superMenuPanel'); if(p) p.classList.toggle('open'); }
 function closeSuperMenu(){ const p=document.getElementById('superMenuPanel'); if(p) p.classList.remove('open'); }
+document.addEventListener('click', function(e){
+  const panel = document.getElementById('superMenuPanel');
+  const btn = document.getElementById('superMenuBtn');
+  if (!panel || !panel.classList.contains('open')) return;
+  if (panel.contains(e.target) || (btn && btn.contains(e.target))) return;
+  panel.classList.remove('open');
+});
 
 function navigate(page) {
   const wasLoad = (state.page === 'loadTank' || state.page === 'loadBoiler');
@@ -706,7 +829,7 @@ function pageHasEditableWork() {
   if (!root) return false;
   const active = document.activeElement;
   if (active && root.contains(active) && ['INPUT','SELECT','TEXTAREA'].includes(active.tagName)) return true;
-  return ['loadTank','loadBoiler','driver','settings'].includes(state.page) &&
+  return ['loadTank','loadBoiler','driver','settings','assignments'].includes(state.page) &&
     root.querySelectorAll('input, select, textarea').length > 0;
 }
 
@@ -717,6 +840,7 @@ function startAutoRefresh() {
     if (state.loading) return;
     if (pageHasEditableWork()) return;
     loadPage(true);
+    refreshMyAssignmentsBadge();
   }, 10000);
 }
 function stopAutoRefresh() { if (state.refreshTimer) clearInterval(state.refreshTimer); state.refreshTimer = null; }
@@ -725,6 +849,7 @@ function manualRefresh() {
   btn.classList.add('spinning');
   setTimeout(() => btn.classList.remove('spinning'), 800);
   loadPage(false);
+  refreshMyAssignmentsBadge();
 }
 
 async function loadPage(silent) {
@@ -758,6 +883,7 @@ async function loadPage(silent) {
   }
 }
 
+// ==================== DASHBOARD ====================
 async function renderDashboard(el) {
   const res = await apiGet({ action: 'dashboard' });
   if (!res.success) throw new Error(res.error);
@@ -787,6 +913,8 @@ async function renderDashboard(el) {
   `;
   renderTankCardsTo('tankGrid', tanks.items || []);
   renderTankCardsTo('boilerGrid', boilers.items || []);
+  // super admin popup check
+  setTimeout(checkSuperAdminCompletionPopup, 900);
 }
 
 function renderTankCardsTo(gridId, items) {
@@ -857,9 +985,9 @@ async function viewAsset(type, id) {
     `;
   } else {
     body += `<p style="text-align:center;color:#8a94a6;margin:20px 0">This ${type} is vacant</p>`;
-    if (type === 'tank' && (state.user.role === 'loader' || state.user.role === 'admin')) {
+    if (type === 'tank' && (state.user.role === 'loader' || state.user.role === 'admin' || state.user.role === 'super admin')) {
       body += `<button class="btn" onclick="closeModal();navigate('loadTank')">Load This Tank</button>`;
-    } else if (type === 'boiler' && (state.user.role === 'boiler' || state.user.role === 'admin')) {
+    } else if (type === 'boiler' && (state.user.role === 'boiler' || state.user.role === 'admin' || state.user.role === 'super admin')) {
       body += `<button class="btn" onclick="closeModal();navigate('loadBoiler')">Load This Boiler</button>`;
     }
   }
@@ -909,6 +1037,7 @@ async function viewSession(id) {
   openModal('Session Details', body);
 }
 
+// ==================== LOAD TANK / BOILER ====================
 async function renderLoad(el, type) {
   document.getElementById('headerSub').textContent = (type === 'boiler' ? 'Boiler' : 'Tank') + ' loading';
   const [custRes, expRes, ourExpRes, dashRes] = await Promise.all([
@@ -1106,6 +1235,8 @@ function toggleAsset(id) {
   }
   saveDraft();
   renderExpenses();
+  renderOurExpenses();
+  updateLoadTotal();
 }
 
 function renderExpenses() {
@@ -1139,7 +1270,7 @@ function changeExpensePrice(i, val) {
   const newAmt = Number(val);
   const oldAmt = state.selectedExpenses[i].amountPerAsset;
   state.selectedExpenses[i].amountPerAsset = newAmt;
-  if (newAmt !== oldAmt && state.user.role !== 'admin') {
+  if (newAmt !== oldAmt && state.user.role !== 'admin' && state.user.role !== 'super admin') {
     state.selectedExpenses[i]._pendingPriceChange = { oldAmount: oldAmt, newAmount: newAmt };
   }
   saveDraft();
@@ -1150,7 +1281,7 @@ function removeExpense(i) { state.selectedExpenses.splice(i, 1); saveDraft(); re
 function updateLoadTotal() {
   const qty = state.selectedAssets.length || 0;
   const total = state.selectedExpenses.reduce((s, e) => {
-    const approvedAmount = e._pendingPriceChange && state.user.role !== 'admin' ? Number(e._pendingPriceChange.oldAmount) : Number(e.amountPerAsset);
+    const approvedAmount = e._pendingPriceChange && state.user.role !== 'admin' && state.user.role !== 'super admin' ? Number(e._pendingPriceChange.oldAmount) : Number(e.amountPerAsset);
     return s + approvedAmount * qty;
   }, 0);
   const ourTotal = (state.selectedOurExpenses || []).reduce((s,e) => s + Number(e.amountPerUnit) * qty, 0);
@@ -1187,7 +1318,7 @@ async function submitLoad(type, btn) {
     if (!res.success) { toast(res.error, 'error'); setBtnLoading(btn, false); return; }
 
     const priceChanges = state.selectedExpenses.filter(e => e._pendingPriceChange);
-    if (state.user.role !== 'admin' && priceChanges.length > 0) {
+    if (state.user.role !== 'admin' && state.user.role !== 'super admin' && priceChanges.length > 0) {
       for (const e of priceChanges) {
         await apiPost({
           action: 'updateExpensePrice',
@@ -1201,7 +1332,7 @@ async function submitLoad(type, btn) {
           user: state.user.username
         });
       }
-      toast('Submitted with price changes pending admin approval', 'success');
+      toast('Submitted with price changes pending super admin approval', 'success');
     } else {
       toast('Session created successfully', 'success');
     }
@@ -1243,6 +1374,7 @@ async function createCustomer(btn) {
   setBtnLoading(btn, false);
 }
 
+// ==================== EMPTY ====================
 async function renderEmpty(el) {
   document.getElementById('headerSub').textContent = 'Open sessions';
   const assetType = state.user.role === 'boiler' ? 'boiler' : 'tank';
@@ -1375,15 +1507,26 @@ async function downloadStatement(sessionId) {
   setTimeout(() => w.print(), 300);
 }
 
+// ==================== PENDING (SUPER ADMIN ONLY) ====================
 async function renderPending(el) {
-  document.getElementById('headerSub').textContent = 'Pending approvals';
+  document.getElementById('headerSub').textContent = 'Pending approvals (Super Admin only)';
   const [priceRes, reqRes] = await Promise.all([
     apiGet({ action: 'pendingPrices' }),
     apiGet({ action: 'pendingRequisitions', user: state.user.username })
   ]);
+  if (!priceRes.success && /not authorised/i.test(priceRes.error || '')) {
+    el.innerHTML = '<div class="card"><p style="color:#dc2626">Access denied. Only Super Admin can view Pending approvals.</p></div>';
+    return;
+  }
   const pending = priceRes.pending || [];
   const requisitions = reqRes.requisitions || [];
   const total = pending.length + requisitions.length;
+  // update super menu badge
+  const menuCount = document.getElementById('superMenuPendingCount');
+  if (menuCount) {
+    if (total > 0) { menuCount.textContent = total; menuCount.classList.remove('hidden'); }
+    else menuCount.classList.add('hidden');
+  }
   el.innerHTML = `
     <div class="section-title">Pending Approvals (${total})</div>
     ${total === 0 ? '<div class="empty">No pending approvals</div>' : ''}
@@ -1487,6 +1630,7 @@ async function declinePending(id, btn) {
   setBtnLoading(btn, false);
 }
 
+// ==================== REPORTS ====================
 async function renderReports(el) {
   document.getElementById('headerSub').textContent = 'Reports & Analytics';
   if (state.user.role === 'driver') return renderDriver(el);
@@ -1495,16 +1639,18 @@ async function renderReports(el) {
   const account = state.filter.account || 'all';
   state.reportInvoicePage = 1;
   state.reportInvoices = [];
-  const [repRes, invRes, myReqRes] = await Promise.all([
+  const [repRes, invRes, myReqRes, myAssignRes] = await Promise.all([
     apiGet({ action: 'reports', from, to, account }),
     apiGet({ action: 'completedInvoices', from, to, account, page: 1, pageSize: 10 }),
-    apiGet({ action: 'myRequisitions', user: state.user.username }, { silent: true })
+    apiGet({ action: 'myRequisitions', user: state.user.username }, { silent: true }),
+    apiGet({ action: 'myAssignments' }, { silent: true })
   ]);
   if (!repRes.success) return toast(repRes.error || 'Could not load reports', 'error');
   const monthly = repRes.monthly;
   const overall = repRes.overall;
   const invoices = invRes.invoices || [];
   const myReqs = (myReqRes && myReqRes.requisitions) || [];
+  const myAssignments = (myAssignRes && myAssignRes.assignments) || [];
   state.reportInvoices = invoices;
   state.reportInvoiceHasNext = !!invRes.hasNext;
   const showAccount = account;
@@ -1537,11 +1683,12 @@ async function renderReports(el) {
         <button class="btn" onclick="showCashRequisitionModal()">Cash Requisition</button>
       </div>
     </div>
-    ${myReqs.length ? `
+    ${myAssignments.length ? `
       <div class="section-title">My Assignments (${myAssignments.length})</div>
-    ${myAssignments.length ? myAssignments.map(a => `<div class="list-item" onclick="showMyAssignment('${a.id}')"><div class="avatar">✓</div><div class="info"><div class="name">${a.title}</div><div class="sub">Due ${formatAssignmentDate(a.dueDate)} · ${assignmentDueLabel(a.dueDate)}</div></div><span class="badge small ${assignmentDueClass(a.dueDate)}">Open</span></div>`).join('') : '<div class="empty">No incomplete assignments.</div>'}
-
-    <div class="section-title">My Cash Requisitions (${myReqs.length})</div>
+      ${myAssignments.map(a => `<div class="list-item" onclick="showMyAssignment('${a.id}')"><div class="avatar">✓</div><div class="info"><div class="name">${a.title}</div><div class="sub">Due ${formatAssignmentDate(a.dueDate)} · ${assignmentDueLabel(a.dueDate)}</div></div><span class="badge small ${assignmentDueClass(a.dueDate)}">Open</span></div>`).join('')}
+    ` : ''}
+    ${myReqs.length ? `
+      <div class="section-title">My Cash Requisitions (${myReqs.length})</div>
       ${myReqs.map(r => {
         const st = (r.status || '').toLowerCase();
         const cls = st === 'approved' ? 'approved' : (st === 'declined' ? 'declined' : '');
@@ -1601,7 +1748,7 @@ async function loadMoreInvoices(btn) {
 function showCashRequisitionModal() {
   const role = String(state.user.role || '').toLowerCase();
   const account = role === 'loader' ? 'tank' : role === 'boiler' ? 'boiler' : role === 'driver' ? 'grabber' : 'general';
-  const accountField = role === 'admin'
+  const accountField = (role === 'admin' || role === 'super admin')
     ? `<div class="field"><label>Account</label><select id="reqAccount"><option value="tank">Tank Account</option><option value="boiler">Boiler Account</option><option value="grabber">Grabber Account</option></select></div>`
     : `<div class="data-row" style="margin-bottom:14px"><span class="lbl">Account</span><span class="val">${account}</span></div>`;
   openModal('Cash Requisition', `${accountField}<div class="field"><label>Description</label><textarea id="reqDesc" rows="3" placeholder="What is the cash needed for?"></textarea></div><div class="field"><label>Amount</label><input id="reqAmount" type="number" min="0.01" step="0.01" placeholder="0.00"></div><button class="btn" onclick="submitCashRequisition(this)">Request Cash</button>`);
@@ -1616,7 +1763,7 @@ async function submitCashRequisition(btn) {
   await withLoader('Submitting cash requisition...', async () => {
     const res = await apiPost({ action: 'requestCashRequisition', idempotencyKey: uid('REQ', state.user.username + ':' + description + ':' + amount), description: description.trim(), amount, account, user: state.user.username });
     if (!res.success) return toast(res.error, 'error');
-    toast('Cash requisition sent to Admin for approval.', 'success');
+    toast('Cash requisition sent to Super Admin for approval.', 'success');
     closeModal();
   });
   setBtnLoading(btn, false);
@@ -1694,18 +1841,21 @@ async function viewInvoice(id) {
   openModal('Invoice Details', body);
 }
 
+// ==================== DRIVER ====================
 async function renderDriver(el) {
   document.getElementById('headerSub').textContent = 'Driver · Trips & Expenses';
   const from = state.filter.from || '';
   const to = state.filter.to || '';
-  const [repRes, custRes, myReqRes] = await Promise.all([
+  const [repRes, custRes, myReqRes, myAssignRes] = await Promise.all([
     apiGet({ action: 'driverReport', driver: state.user.username, from, to }),
     apiGet({ action: 'listCustomers' }),
-    apiGet({ action: 'myRequisitions', user: state.user.username }, { silent: true })
+    apiGet({ action: 'myRequisitions', user: state.user.username }, { silent: true }),
+    apiGet({ action: 'myAssignments' }, { silent: true })
   ]);
   const rep = repRes;
   const customers = custRes.customers || [];
   const myReqs = (myReqRes && myReqRes.requisitions) || [];
+  const myAssignments = (myAssignRes && myAssignRes.assignments) || [];
   state.allCustomers = customers;
 
   const draft = loadDraft() || {};
@@ -1771,6 +1921,10 @@ async function renderDriver(el) {
       <div class="data-row"><span class="lbl">Expenses</span><span class="val" style="color:#dc2626">$${rep.totalExpenses.toFixed(2)}</span></div>
       <div class="data-row total"><span class="lbl">Profit</span><span class="val">$${rep.profit.toFixed(2)}</span></div>
     </div>
+    ${myAssignments.length ? `
+      <div class="section-title">My Assignments (${myAssignments.length})</div>
+      ${myAssignments.map(a => `<div class="list-item" onclick="showMyAssignment('${a.id}')"><div class="avatar">✓</div><div class="info"><div class="name">${a.title}</div><div class="sub">Due ${formatAssignmentDate(a.dueDate)} · ${assignmentDueLabel(a.dueDate)}</div></div><span class="badge small ${assignmentDueClass(a.dueDate)}">Open</span></div>`).join('')}
+    ` : ''}
     <div class="section-title">Trips (${rep.trips.length})</div>
     ${rep.trips.slice().reverse().map(t => `
       <div class="list-item">
@@ -1915,12 +2069,15 @@ function driverFilter() {
   loadPage();
 }
 
+// ==================== PROFILE ====================
 async function renderProfile(el) {
   const u = state.user;
   const myReqRes = await apiGet({ action: 'myRequisitions', user: u.username }, { silent: true });
   const myReqs = (myReqRes && myReqRes.requisitions) || [];
   const assignmentRes = await apiGet({ action: 'myAssignments' }, { silent: true });
   const myAssignments = (assignmentRes && assignmentRes.assignments) || [];
+  state.myAssignments = myAssignments;
+  updateFloatingBadge(myAssignments.length);
   el.innerHTML = `
     <div class="card" style="text-align:center">
       <div class="avatar" style="width:70px;height:70px;font-size:28px;margin:0 auto 10px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:700">${u.fullName ? u.fullName[0].toUpperCase() : u.username[0].toUpperCase()}</div>
@@ -1946,9 +2103,21 @@ async function renderProfile(el) {
     <div class="card">
       <button class="btn btn-danger" onclick="logout()">Sign Out</button>
     </div>
+    <div class="section-title">My Assignments (${myAssignments.length})</div>
+    ${myAssignments.length ? myAssignments.map(a => `
+      <div class="list-item" onclick="showMyAssignment('${a.id}')">
+        <div class="avatar">✓</div>
+        <div class="info">
+          <div class="name">${a.title}</div>
+          <div class="sub">Due ${formatAssignmentDate(a.dueDate)} · ${assignmentDueLabel(a.dueDate)}</div>
+        </div>
+        <span class="badge small ${assignmentDueClass(a.dueDate)}">Open</span>
+      </div>
+    `).join('') : '<div class="empty">No incomplete assignments. You are all caught up! 🎉</div>'}
   `;
 }
 
+// ==================== SETTINGS ====================
 async function renderSettings(el) {
   if (!state.user || !['admin','super admin'].includes(String(state.user.role).toLowerCase())) {
     el.innerHTML = '<div class="card"><p style="color:#dc2626">Access denied. Admin only.</p></div>';
@@ -2120,62 +2289,310 @@ async function createUser(btn) {
   });
   setBtnLoading(btn, false);
 }
+  // ==================== ASSIGNMENTS — ALL ROLES ====================
 
-
-function formatAssignmentDate(v){ if(!v) return 'No due date'; const d=new Date(String(v).length<=10 ? v+'T00:00:00' : v); return Number.isFinite(d.getTime()) ? d.toLocaleDateString() : String(v); }
-function assignmentDueLabel(v){ const due=new Date(String(v).length<=10 ? v+'T23:59:59.999' : v).getTime(); const now=Date.now(); if(!Number.isFinite(due)) return ''; if(now>due){ const days=Math.floor((now-due)/86400000); return days>0 ? days+' day'+(days===1?'':'s')+' overdue' : 'Overdue'; } return 'Due '+formatAssignmentDate(v); }
-function assignmentDueClass(v){ const due=new Date(String(v).length<=10 ? v+'T23:59:59.999' : v).getTime(); return Number.isFinite(due)&&Date.now()>due ? 'red' : 'blue'; }
-async function showMyAssignment(id){
-  const res=await apiGet({action:'myAssignments'},{silent:true});
-  if(!res.success)return toast(res.error||'Could not load assignment','error');
-  const a=(res.assignments||[]).find(x=>String(x.id)===String(id));
-  if(!a)return toast('Assignment is already completed or no longer available.','error');
-  const body=`<div class="data-row"><span class="lbl">Task</span><span class="val">${a.title}</span></div><div class="data-row"><span class="lbl">Assigned by</span><span class="val">${a.assignedByName||a.assignedBy}</span></div><div class="data-row"><span class="lbl">Due date</span><span class="val">${formatAssignmentDate(a.dueDate)}</span></div><div class="card" style="margin:12px 0 0;padding:12px;background:#f8fafc"><b>Description</b><div style="margin-top:8px;white-space:pre-wrap;line-height:1.5">${a.description}</div></div><button class="btn btn-success" style="margin-top:16px" onclick="completeMyAssignment('${a.id}',this)">Completed</button>`;
-  openModal('My Assignment',body);
+function formatAssignmentDate(v){
+  if(!v) return 'No due date';
+  const d = new Date(String(v).length <= 10 ? v + 'T00:00:00' : v);
+  return Number.isFinite(d.getTime()) ? d.toLocaleDateString() : String(v);
 }
-async function completeMyAssignment(id,btn){
-  setBtnLoading(btn,true);
-  await withLoader('Completing assignment...',async()=>{
-    const res=await apiPost({action:'completeAssignment',assignmentId:id,idempotencyKey:uid('TASKDONE',id),user:state.user.username});
-    if(!res.success)return toast(res.error||'Could not complete assignment','error');
-    toast(res.timingText||'Assignment completed','success'); closeModal(); loadPage(true);
+function assignmentDueLabel(v){
+  const due = new Date(String(v).length <= 10 ? v + 'T23:59:59.999' : v).getTime();
+  const now = Date.now();
+  if (!Number.isFinite(due)) return '';
+  if (now > due) {
+    const days = Math.floor((now - due) / 86400000);
+    if (days > 0) return days + ' day' + (days === 1 ? '' : 's') + ' overdue';
+    const hours = Math.floor((now - due) / 3600000);
+    if (hours > 0) return hours + ' hour' + (hours === 1 ? '' : 's') + ' overdue';
+    const mins = Math.floor((now - due) / 60000);
+    return (mins <= 1 ? 'Overdue' : mins + ' min overdue');
+  }
+  const diff = due - now;
+  const days = Math.ceil(diff / 86400000);
+  if (days <= 1) {
+    const hours = Math.ceil(diff / 3600000);
+    if (hours <= 1) return 'Due soon';
+    return 'Due in ' + hours + ' hour' + (hours === 1 ? '' : 's');
+  }
+  return 'Due ' + formatAssignmentDate(v);
+}
+function assignmentDueClass(v){
+  const due = new Date(String(v).length <= 10 ? v + 'T23:59:59.999' : v).getTime();
+  return Number.isFinite(due) && Date.now() > due ? 'red' : 'blue';
+}
+
+async function refreshMyAssignmentsBadge() {
+  if (!state.user) return;
+  if (String(state.user.role).toLowerCase() === 'super admin') {
+    // super admin sees pending count on menu instead
+    return;
+  }
+  const res = await apiGet({ action: 'myAssignments' }, { silent: true });
+  if (!res || !res.success) return;
+  const list = res.assignments || [];
+  state.myAssignments = list;
+  updateFloatingBadge(list.length);
+}
+
+function updateFloatingBadge(count) {
+  const btn = document.getElementById('floatingAssignBtn');
+  const badge = document.getElementById('floatingAssignBadge');
+  if (!btn || !badge) return;
+  if (count > 0) {
+    badge.textContent = count;
+    btn.classList.add('show');
+  } else {
+    btn.classList.remove('show');
+  }
+}
+
+function hideFloatingAssignBadge() {
+  const btn = document.getElementById('floatingAssignBtn');
+  if (btn) btn.classList.remove('show');
+}
+
+async function openMyAssignmentsFromBadge() {
+  const res = await apiGet({ action: 'myAssignments' }, { silent: true });
+  if (!res.success) return toast(res.error || 'Could not load assignments', 'error');
+  const list = res.assignments || [];
+  state.myAssignments = list;
+  updateFloatingBadge(list.length);
+  if (list.length === 0) {
+    openModal('My Assignments', '<div class="empty">You have no open assignments. 🎉</div>');
+    return;
+  }
+  const body = `
+    <div class="section-title" style="margin-top:0">Open (${list.length})</div>
+    ${list.map(a => `
+      <div class="assignment-card ${assignmentDueClass(a.dueDate) === 'red' ? 'overdue' : ''}" onclick="showMyAssignment('${a.id}')">
+        <div class="assignment-title">${a.title}</div>
+        <div class="assignment-meta">
+          <span>📅 Due ${formatAssignmentDate(a.dueDate)}</span>
+          <span>👤 ${a.assignedByName || a.assignedBy || 'Super Admin'}</span>
+        </div>
+        <div class="assignment-meta" style="margin-top:6px">
+          <span class="assignment-timing-badge ${assignmentDueClass(a.dueDate) === 'red' ? 'timing-overdue' : 'timing-open'}">${assignmentDueLabel(a.dueDate)}</span>
+        </div>
+      </div>
+    `).join('')}
+  `;
+  openModal('My Assignments', body);
+}
+
+async function showMyAssignment(id) {
+  const res = await apiGet({ action: 'myAssignments' }, { silent: true });
+  if (!res.success) return toast(res.error || 'Could not load assignment', 'error');
+  const a = (res.assignments || []).find(x => String(x.id) === String(id));
+  if (!a) return toast('Assignment is already completed or no longer available.', 'error');
+  const overdue = assignmentDueClass(a.dueDate) === 'red';
+  const body = `
+    <div class="data-row"><span class="lbl">Task</span><span class="val">${a.title}</span></div>
+    <div class="data-row"><span class="lbl">Assigned by</span><span class="val">${a.assignedByName || a.assignedBy}</span></div>
+    <div class="data-row"><span class="lbl">Due date</span><span class="val">${formatAssignmentDate(a.dueDate)}</span></div>
+    <div class="data-row"><span class="lbl">Status</span><span class="val">${assignmentDueLabel(a.dueDate)}</span></div>
+    <div class="assignment-popup-body" style="padding:12px 0 0">
+      <div class="desc-block">
+        <div class="desc-lbl">Instructions</div>
+        <div class="desc-body">${a.description || 'No further description provided.'}</div>
+      </div>
+    </div>
+    <button class="btn btn-success" style="margin-top:8px" onclick="completeMyAssignment('${a.id}', this)">Mark as Completed</button>
+  `;
+  openModal('My Assignment', body);
+}
+
+async function completeMyAssignment(id, btn) {
+  setBtnLoading(btn, true);
+  await withLoader('Completing assignment...', async () => {
+    const res = await apiPost({
+      action: 'completeAssignment',
+      assignmentId: id,
+      idempotencyKey: uid('TASKDONE', id),
+      user: state.user.username
+    });
+    if (!res.success) { toast(res.error || 'Could not complete assignment', 'error'); setBtnLoading(btn, false); return; }
+    toast(res.timingText || 'Assignment completed', 'success');
+    closeModal();
+    await refreshMyAssignmentsBadge();
+    // refresh current page so any list updates
+    loadPage(true);
   });
-  setBtnLoading(btn,false);
+  setBtnLoading(btn, false);
 }
-async function checkMyAssignmentPopup(){
-  if(!state.user || String(state.user.role).toLowerCase()==='super admin') return;
-  const res=await apiGet({action:'myAssignments'},{silent:true});
-  if(!res.success || !(res.assignments||[]).length) return;
-  const key='enican_assignment_popup_'+state.user.username;
-  const shown=sessionStorage.getItem(key);
-  if(shown===String(res.assignments[0].id)) return;
-  const a=res.assignments[0];
-  sessionStorage.setItem(key,String(a.id));
-  const body=`<div class="data-row"><span class="lbl">Task</span><span class="val">${a.title}</span></div><div class="data-row"><span class="lbl">Assigned by</span><span class="val">${a.assignedByName||a.assignedBy}</span></div><div class="data-row"><span class="lbl">Due date</span><span class="val">${formatAssignmentDate(a.dueDate)}</span></div><div class="card" style="margin:12px 0 0;padding:12px;background:#f8fafc"><b>Instructions</b><div style="margin-top:8px;white-space:pre-wrap;line-height:1.5">${a.description}</div></div><button class="btn btn-success" style="margin-top:16px" onclick="completeMyAssignment('${a.id}',this)">Completed</button>`;
-  openModal('You have a new assignment',body);
+
+// ==================== DASHBOARD POPUPS ====================
+
+async function checkMyAssignmentPopup() {
+  if (!state.user) return;
+  const role = String(state.user.role).toLowerCase();
+  if (role === 'super admin') return; // super admin has a different popup
+  const res = await apiGet({ action: 'myAssignments' }, { silent: true });
+  if (!res || !res.success) return;
+  const list = res.assignments || [];
+  state.myAssignments = list;
+  updateFloatingBadge(list.length);
+  if (list.length === 0) return;
+
+  const newest = list[0];
+  // avoid spamming: mark per-assignment seen in localStorage (but still show popup if unseen)
+  const seenKey = ASSIGN_POPUP_SEEN_KEY + '_' + state.user.username;
+  let seen = [];
+  try { seen = JSON.parse(localStorage.getItem(seenKey) || '[]'); } catch (e) { seen = []; }
+  if (seen.indexOf(newest.id) !== -1) return;
+  seen.push(newest.id);
+  try { localStorage.setItem(seenKey, JSON.stringify(seen.slice(-30))); } catch (e) {}
+
+  showAssignmentPopupModal(newest);
 }
-async function checkSuperAdminCompletionPopup(){
-  if(!state.user || String(state.user.role).toLowerCase()!=='super admin') return;
-  const res=await apiGet({action:'assignmentCompletions'},{silent:true});
-  if(!res.success || !(res.assignments||[]).length) return;
-  const latest=res.assignments[0];
-  const key='enican_assignment_completion_popup';
-  if(sessionStorage.getItem(key)===String(latest.id)+'|'+String(latest.completedAt)) return;
-  sessionStorage.setItem(key,String(latest.id)+'|'+String(latest.completedAt));
-  const timingClass=String(latest.completionStatus).toLowerCase()==='late'?'assignment-overdue':'assignment-on-time';
-  openModal('Assignment Completed',`<div class="data-row"><span class="lbl">Task</span><span class="val">${latest.title}</span></div><div class="data-row"><span class="lbl">Completed by</span><span class="val">${latest.assignedToName||latest.completedBy}</span></div><div class="data-row"><span class="lbl">Due date</span><span class="val">${formatAssignmentDate(latest.dueDate)}</span></div><div class="data-row"><span class="lbl">Completed</span><span class="val">${latest.completedAt?new Date(latest.completedAt).toLocaleString():'—'}</span></div><div class="card" style="margin:12px 0 0;text-align:center;background:#f8fafc"><div class="${timingClass}">${latest.timingText||'Completed'}</div></div>`);
+
+function showAssignmentPopupModal(a) {
+  // Remove any existing assignment popup
+  document.querySelectorAll('.assignment-popup-overlay').forEach(el => el.remove());
+  const overlay = document.createElement('div');
+  overlay.className = 'assignment-popup-overlay';
+  const overdue = assignmentDueClass(a.dueDate) === 'red';
+  const timingClass = overdue ? 'timing-overdue' : 'timing-open';
+  overlay.innerHTML = `
+    <div class="assignment-popup" role="dialog" aria-modal="true">
+      <div class="assignment-popup-header">
+        <div class="popup-title">You have a new assignment</div>
+        <h2>${a.title}</h2>
+        <button class="assignment-popup-close" onclick="closeAssignmentPopup()" aria-label="Close">×</button>
+      </div>
+      <div class="assignment-popup-body">
+        <div class="info-block">
+          <div class="lbl">Assigned by</div>
+          <div class="val">${a.assignedByName || a.assignedBy || 'Super Admin'}</div>
+        </div>
+        <div class="info-block">
+          <div class="lbl">Due date</div>
+          <div class="val">${formatAssignmentDate(a.dueDate)}</div>
+        </div>
+        <div class="info-block">
+          <div class="lbl">Status</div>
+          <div class="val">
+            <span class="assignment-timing-badge ${timingClass}">${assignmentDueLabel(a.dueDate)}</span>
+          </div>
+        </div>
+        <div class="desc-block">
+          <div class="desc-lbl">Instructions</div>
+          <div class="desc-body">${a.description || 'No further description provided.'}</div>
+        </div>
+        <button class="btn btn-success" onclick="completeFromPopup('${a.id}', this)">Completed</button>
+      </div>
+    </div>
+  `;
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closeAssignmentPopup();
+  });
+  document.body.appendChild(overlay);
 }
-async function renderAssignments(el){
-  if(!state.user || String(state.user.role).toLowerCase()!=='super admin'){ el.innerHTML='<div class="card"><p style="color:#dc2626">Access denied. Super Admin only.</p></div>'; return; }
-  document.getElementById('headerSub').textContent='Assign and monitor tasks';
-  const [usersRes, assignmentsRes]=await Promise.all([apiGet({action:'listUsers'},{silent:true}),apiGet({action:'assignments'},{silent:true})]);
-  if(!usersRes.success) throw new Error(usersRes.error||'Could not load users');
-  if(!assignmentsRes.success) throw new Error(assignmentsRes.error||'Could not load assignments');
-  const users=(usersRes.users||[]).filter(u=>(String(u.active).toUpperCase()==='TRUE'||u.active===true)&&String(u.username).toLowerCase()!==String(state.user.username).toLowerCase());
-  const all=assignmentsRes.assignments||[];
-  const open=all.filter(a=>String(a.status).toLowerCase()!=='completed');
-  const completed=all.filter(a=>String(a.status).toLowerCase()==='completed');
-  el.innerHTML=`
+
+function closeAssignmentPopup() {
+  document.querySelectorAll('.assignment-popup-overlay').forEach(el => el.remove());
+}
+
+async function completeFromPopup(id, btn) {
+  setBtnLoading(btn, true);
+  await withLoader('Completing assignment...', async () => {
+    const res = await apiPost({
+      action: 'completeAssignment',
+      assignmentId: id,
+      idempotencyKey: uid('TASKDONE', id),
+      user: state.user.username
+    });
+    if (!res.success) { toast(res.error || 'Could not complete assignment', 'error'); setBtnLoading(btn, false); return; }
+    toast(res.timingText || 'Assignment completed', 'success');
+    closeAssignmentPopup();
+    await refreshMyAssignmentsBadge();
+    if (state.page === 'dashboard' || state.page === 'profile' || state.page === 'reports' || state.page === 'driver') {
+      loadPage(true);
+    }
+  });
+  setBtnLoading(btn, false);
+}
+
+async function checkSuperAdminCompletionPopup() {
+  if (!state.user) return;
+  if (String(state.user.role).toLowerCase() !== 'super admin') return;
+  const res = await apiGet({ action: 'assignmentCompletions' }, { silent: true });
+  if (!res || !res.success) return;
+  const list = res.assignments || [];
+  state.superAdminCompletions = list;
+  if (list.length === 0) return;
+  const latest = list[0];
+  const signature = String(latest.id) + '|' + String(latest.completedAt);
+  // session-level seen so it doesn't nag every 10s in the same session
+  let seen = '';
+  try { seen = sessionStorage.getItem(SUPER_COMPLETION_SEEN_KEY) || ''; } catch (e) {}
+  if (seen === signature) return;
+  try { sessionStorage.setItem(SUPER_COMPLETION_SEEN_KEY, signature); } catch (e) {}
+  showSuperCompletionModal(latest);
+}
+
+function showSuperCompletionModal(a) {
+  document.querySelectorAll('.assignment-popup-overlay').forEach(el => el.remove());
+  const late = String(a.completionStatus).toLowerCase() === 'late';
+  const timingClass = late ? 'timing-late' : 'timing-on-time';
+  const overlay = document.createElement('div');
+  overlay.className = 'assignment-popup-overlay';
+  overlay.innerHTML = `
+    <div class="assignment-popup" role="dialog" aria-modal="true">
+      <div class="assignment-popup-header" style="background:linear-gradient(135deg,#16a34a,#15803d)">
+        <div class="popup-title">Assignment Completed</div>
+        <h2>${a.title}</h2>
+        <button class="assignment-popup-close" onclick="closeAssignmentPopup()" aria-label="Close">×</button>
+      </div>
+      <div class="assignment-popup-body">
+        <div class="info-block">
+          <div class="lbl">Completed by</div>
+          <div class="val">${a.assignedToName || a.completedBy || a.assignedTo || '—'}</div>
+        </div>
+        <div class="info-block">
+          <div class="lbl">Due date</div>
+          <div class="val">${formatAssignmentDate(a.dueDate)}</div>
+        </div>
+        <div class="info-block">
+          <div class="lbl">Completed at</div>
+          <div class="val">${a.completedAt ? new Date(a.completedAt).toLocaleString() : '—'}</div>
+        </div>
+        <div class="assignment-completed-box">
+          <div class="assignment-timing-badge ${timingClass}" style="font-size:13px;padding:8px 16px">${a.timingText || (late ? 'Late' : 'On time')}</div>
+        </div>
+        <button class="btn" style="margin-top:16px" onclick="closeAssignmentPopup()">Close</button>
+      </div>
+    </div>
+  `;
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closeAssignmentPopup();
+  });
+  document.body.appendChild(overlay);
+}
+
+// ==================== SUPER ADMIN: ASSIGNMENTS PAGE ====================
+
+async function renderAssignments(el) {
+  if (!state.user || String(state.user.role).toLowerCase() !== 'super admin') {
+    el.innerHTML = '<div class="card"><p style="color:#dc2626">Access denied. Super Admin only.</p></div>';
+    return;
+  }
+  document.getElementById('headerSub').textContent = 'Assign and monitor tasks';
+  const [usersRes, assignmentsRes] = await Promise.all([
+    apiGet({ action: 'listUsers' }, { silent: true }),
+    apiGet({ action: 'assignments' }, { silent: true })
+  ]);
+  if (!usersRes.success) throw new Error(usersRes.error || 'Could not load users');
+  if (!assignmentsRes.success) throw new Error(assignmentsRes.error || 'Could not load assignments');
+  const users = (usersRes.users || []).filter(u =>
+    (String(u.active).toUpperCase() === 'TRUE' || u.active === true) &&
+    String(u.username).toLowerCase() !== String(state.user.username).toLowerCase()
+  );
+  const all = assignmentsRes.assignments || [];
+  const open = all.filter(a => String(a.status).toLowerCase() !== 'completed');
+  const completed = all.filter(a => String(a.status).toLowerCase() === 'completed');
+
+  el.innerHTML = `
     <div class="section-title">New Assignment</div>
     <div class="card">
       <div class="field"><label>Task title</label><input id="taskTitle" type="text" placeholder="e.g. Inspect Tank Area"></div>
@@ -2185,25 +2602,64 @@ async function renderAssignments(el){
       <button class="btn" onclick="createAssignmentFromUI(this)">Assign Task</button>
     </div>
     <div class="section-title">Open Assignments (${open.length})</div>
-    ${open.length?open.map(a=>`<div class="list-item"><div class="avatar">✓</div><div class="info"><div class="name">${a.title}</div><div class="sub">${a.assignedToName||a.assignedTo} · Due ${formatAssignmentDate(a.dueDate)} · ${assignmentDueLabel(a.dueDate)}</div></div><span class="badge small ${assignmentDueClass(a.dueDate)}">Open</span></div><div class="card" style="margin-top:-4px"><div style="white-space:pre-wrap;color:#475569;font-size:13px">${a.description}</div></div>`).join(''):'<div class="empty">No open assignments.</div>'}
+    ${open.length ? open.map(a => `
+      <div class="assignment-card">
+        <div class="assignment-title">${a.title}</div>
+        <div class="assignment-meta">
+          <span>👤 ${a.assignedToName || a.assignedTo}</span>
+          <span>📅 Due ${formatAssignmentDate(a.dueDate)}</span>
+        </div>
+        <div class="assignment-meta" style="margin-top:6px">
+          <span class="assignment-timing-badge ${assignmentDueClass(a.dueDate) === 'red' ? 'timing-overdue' : 'timing-open'}">${assignmentDueLabel(a.dueDate)}</span>
+        </div>
+        <div class="assignment-desc">${a.description || ''}</div>
+      </div>
+    `).join('') : '<div class="empty">No open assignments.</div>'}
     <div class="section-title">Completed Assignments (${completed.length})</div>
-    ${completed.length?completed.map(a=>{const late=String(a.completionStatus).toLowerCase()==='late';return `<div class="list-item"><div class="avatar">✓</div><div class="info"><div class="name">${a.title}</div><div class="sub">${a.assignedToName||a.completedBy} · Due ${formatAssignmentDate(a.dueDate)} · Completed ${a.completedAt?new Date(a.completedAt).toLocaleString():'—'}</div></div><span class="badge small ${late?'red':'green'}">${late?'Late':'On time'}</span></div><div class="card" style="margin-top:-4px"><div class="${late?'assignment-overdue':'assignment-on-time'}">${a.timingText||'Completed on time'}</div></div>`}).join(''):'<div class="empty">No completed assignments yet.</div>'}
+    ${completed.length ? completed.map(a => {
+      const late = String(a.completionStatus).toLowerCase() === 'late';
+      return `
+        <div class="assignment-card ${late ? 'late-done' : 'on-time-done'}">
+          <div class="assignment-title">${a.title}</div>
+          <div class="assignment-meta">
+            <span>👤 ${a.assignedToName || a.completedBy || a.assignedTo}</span>
+            <span>📅 Due ${formatAssignmentDate(a.dueDate)}</span>
+          </div>
+          <div class="assignment-meta" style="margin-top:6px">
+            <span>✅ Completed ${a.completedAt ? new Date(a.completedAt).toLocaleString() : '—'}</span>
+          </div>
+          <div class="assignment-meta" style="margin-top:6px">
+            <span class="assignment-timing-badge ${late ? 'timing-late' : 'timing-on-time'}">${a.timingText || (late ? 'Late' : 'On time')}</span>
+          </div>
+          <div class="assignment-desc">${a.description || ''}</div>
+        </div>
+      `;
+    }).join('') : '<div class="empty">No completed assignments yet.</div>'}
   `;
 }
-async function createAssignmentFromUI(btn){
-  const title=document.getElementById('taskTitle').value.trim();
-  const description=document.getElementById('taskDescription').value.trim();
-  const assignedTo=document.getElementById('taskAssignee').value;
-  const dueDate=document.getElementById('taskDueDate').value;
-  if(!title||!description||!assignedTo||!dueDate)return toast('Complete all assignment fields.','error');
-  setBtnLoading(btn,true);
-  await withLoader('Assigning task...',async()=>{
-    const res=await apiPost({action:'createAssignment',idempotencyKey:uid('TASK',assignedTo+':'+title+':'+dueDate),title,description,assignedTo,dueDate,user:state.user.username});
-    if(!res.success)return toast(res.error||'Could not assign task','error');
-    toast('Assignment created','success'); loadPage();
+
+async function createAssignmentFromUI(btn) {
+  const title = document.getElementById('taskTitle').value.trim();
+  const description = document.getElementById('taskDescription').value.trim();
+  const assignedTo = document.getElementById('taskAssignee').value;
+  const dueDate = document.getElementById('taskDueDate').value;
+  if (!title || !description || !assignedTo || !dueDate) return toast('Complete all assignment fields.', 'error');
+  setBtnLoading(btn, true);
+  await withLoader('Assigning task...', async () => {
+    const res = await apiPost({
+      action: 'createAssignment',
+      idempotencyKey: uid('TASK', assignedTo + ':' + title + ':' + dueDate),
+      title, description, assignedTo, dueDate,
+      user: state.user.username
+    });
+    if (!res.success) return toast(res.error || 'Could not assign task', 'error');
+    toast('Assignment created', 'success');
+    loadPage();
   });
-  setBtnLoading(btn,false);
+  setBtnLoading(btn, false);
 }
+
+// ==================== MODALS / PWA / INIT ====================
 
 function openModal(title, bodyHtml) {
   closeModal();
@@ -2282,6 +2738,8 @@ async function installPWA(){
   deferredPrompt = null;
   setInstallButtonVisible(false);
 }
+
+// ==================== INIT ====================
 
 (async function init() {
   await loadSystemConfig();

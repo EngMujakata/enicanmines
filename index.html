@@ -41,6 +41,7 @@
   --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
   --radius: 12px;
   --header-bg: #ffffff;
+  --skel-base: #e4e6eb;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; padding: 0; background-color: var(--bg-main); color: var(--text-main); overscroll-behavior-y: none; -webkit-font-smoothing: antialiased; }
@@ -48,11 +49,164 @@ body { padding-bottom: 80px; }
 button { font-family: inherit; cursor: pointer; border: none; outline: none; background: none; }
 input, select, textarea { font-family: inherit; font-size: 16px; }
 
-#pageLoader { position: fixed; inset: 0; background: rgba(10,31,68,0.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); z-index: 9999; display: none; align-items: center; justify-content: center; animation: fadeIn 0.15s ease; }
-#pageLoader.active { display: flex; }
-#pageLoader .loader-box { background: #ffffff; border-radius: 16px; padding: 28px 36px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.35); min-width: 200px; animation: popIn 0.2s cubic-bezier(.2,.8,.2,1); }
-#pageLoader .spinner-lg { width: 52px; height: 52px; border: 5px solid #dbe4f5; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 14px; }
-#pageLoader .loader-text { color: var(--primary); font-weight: 700; font-size: 0.95rem; letter-spacing: 0.3px; }
+/* ============================================================
+   META-STYLE SKELETON LOADING OVERLAY
+   Replaces the old loading modal. Visible instantly, dissolved
+   quietly when real content is ready.
+   ============================================================ */
+#skeletonOverlay {
+  position: fixed;
+  inset: 0;
+  background: #f0f2f5;
+  z-index: 9990;
+  display: none;
+  overflow-y: auto;
+  padding: 14px;
+  opacity: 1;
+  transition: opacity .22s ease;
+}
+#skeletonOverlay.active { display: block; }
+#skeletonOverlay.fading { opacity: 0; pointer-events: none; }
+#skeletonOverlay .skel-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 90px;
+}
+#skeletonOverlay .skel-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 4px;
+}
+#skeletonOverlay .skel-toolbar-text {
+  font-size: 12.5px;
+  color: #65676b;
+  font-weight: 700;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#skeletonOverlay .skel-toolbar-text::before {
+  content: "";
+  width: 14px; height: 14px;
+  border: 2px solid #cfd6e4;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+#skeletonOverlay .skel-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+#skeletonOverlay .skel-stat {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+#skeletonOverlay .skel-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+#skeletonOverlay .skel-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  gap: 12px;
+}
+#skeletonOverlay .skel-body {
+  padding: 0 16px 16px;
+}
+#skeletonOverlay .skel-avatar,
+#skeletonOverlay .skel-line,
+#skeletonOverlay .skel-block,
+#skeletonOverlay .skel-chip {
+  position: relative;
+  overflow: hidden;
+  background: var(--skel-base);
+  border-radius: 6px;
+}
+#skeletonOverlay .skel-avatar { width: 42px; height: 42px; border-radius: 50%; flex: none; }
+#skeletonOverlay .skel-line { height: 10px; border-radius: 6px; margin: 6px 0; }
+#skeletonOverlay .skel-line.w1 { width: 40%; }
+#skeletonOverlay .skel-line.w2 { width: 25%; height: 8px; }
+#skeletonOverlay .skel-line.w3 { width: 88%; }
+#skeletonOverlay .skel-line.w4 { width: 62%; }
+#skeletonOverlay .skel-line.center { margin-left: auto; margin-right: auto; }
+#skeletonOverlay .skel-line.w40 { width: 40px; height: 22px; margin: 0; border-radius: 8px; }
+#skeletonOverlay .skel-block { height: 130px; border-radius: 10px; margin-top: 8px; }
+#skeletonOverlay .skel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+#skeletonOverlay .skel-tile {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e6e8eb;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#skeletonOverlay .skel-tile .skel-line { margin: 0; }
+
+/* Shimmer sweep */
+#skeletonOverlay .shimmer::after,
+.shimmer-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.55) 45%, rgba(255,255,255,.95) 50%, rgba(255,255,255,.55) 55%, transparent 100%);
+  animation: shimmer 1.25s ease-in-out infinite;
+}
+@keyframes shimmer { 100% { transform: translateX(120%); } }
+
+/* Section header skeleton */
+#skeletonOverlay .skel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 4px 0;
+}
+#skeletonOverlay .skel-heading .skel-line { margin: 0; width: 120px; height: 12px; }
+
+@media (max-width: 700px) {
+  #skeletonOverlay { padding: 10px; }
+  #skeletonOverlay .skel-stats { gap: 8px; }
+  #skeletonOverlay .skel-stat { padding: 10px; }
+  #skeletonOverlay .skel-block { height: 100px; }
+}
+
+/* Small inline skeleton used inside cards when only that section reloads */
+.inline-skel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+}
+.inline-skel .skel-avatar,
+.inline-skel .skel-line,
+.inline-skel .skel-block { position: relative; overflow: hidden; background: var(--skel-base); }
+.inline-skel .skel-avatar { width: 38px; height: 38px; border-radius: 50%; flex: none; }
+.inline-skel .skel-line { height: 10px; border-radius: 6px; margin: 5px 0; }
+.inline-skel .skel-line.w1 { width: 40%; }
+.inline-skel .skel-line.w2 { width: 25%; height: 8px; }
+.inline-skel .skel-block { height: 110px; border-radius: 10px; flex: 1; }
+
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
@@ -144,6 +298,28 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .floating-assign-btn { position:fixed; bottom:96px; right:14px; z-index:80; width:54px; height:54px; border-radius:50%; background:var(--navy); color:#fff; display:none; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(6,65,171,.45); border:2px solid #fff; }
 .floating-assign-btn.show { display:flex; }
 .floating-assign-btn .assign-badge2 { position:absolute; top:-4px; right:-4px; background:var(--red); color:#fff; border-radius:999px; font-size:10px; font-weight:800; padding:2px 7px; min-width:20px; text-align:center; box-shadow:0 0 0 2px #fff; }
+
+/* ===== PENDING INLINE ACTIONS ===== */
+.pending-card { background:#fff; border:1px solid var(--gray-2); border-left:4px solid var(--amber); border-radius:12px; padding:14px; margin-bottom:10px; box-shadow:var(--shadow-sm); }
+.pending-card.cash { border-left-color:var(--green); }
+.pending-card-head { display:flex; align-items:flex-start; gap:12px; }
+.pending-card-head .pending-avatar { width:42px; height:42px; border-radius:50%; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:15px; flex-shrink:0; }
+.pending-card-head .pending-info { flex:1; min-width:0; }
+.pending-card-head .pending-customer { font-weight:800; color:var(--navy); font-size:15px; line-height:1.2; }
+.pending-card-head .pending-type { font-size:11px; font-weight:800; letter-spacing:.4px; text-transform:uppercase; color:var(--amber); margin-top:2px; }
+.pending-card.cash .pending-card-head .pending-type { color:var(--green); }
+.pending-card-head .pending-amount { font-weight:800; font-size:13px; text-align:right; white-space:nowrap; }
+.pending-line { font-size:13px; color:#334155; margin-top:8px; line-height:1.5; }
+.pending-line b { color:var(--navy); font-weight:700; }
+.pending-line .arrow { color:var(--red); font-weight:800; margin:0 4px; }
+.pending-line .who { color:var(--gray-3); font-size:12px; }
+.pending-desc { font-size:12.5px; color:#475569; margin-top:6px; line-height:1.5; background:#f8fafc; padding:8px 10px; border-radius:8px; }
+.pending-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.pending-tag { background:#eff6ff; color:#1e40af; border-radius:6px; padding:3px 8px; font-size:11px; font-weight:700; }
+.pending-tag.inv { background:#f0fdf4; color:#166534; }
+.pending-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+.pending-actions .btn { padding:9px 12px; font-size:13px; border-radius:9px; }
+.pending-actions .btn-note { grid-column:1 / -1; margin-top:0; }
 
 /* ===== INSTALL ===== */
 .install-app-btn { min-height:38px; padding:0 11px; border-radius:999px; background:rgba(255,255,255,.14); color:#fff; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:12px; font-weight:800; border:1px solid rgba(255,255,255,.22); }
@@ -318,6 +494,7 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
   .data-row .lbl { min-width:0; }
   .data-row .val { max-width:62%; overflow-wrap:anywhere; }
   .floating-assign-btn { bottom:84px; right:12px; }
+  .pending-actions { grid-template-columns:1fr 1fr; }
 }
 @media (max-width: 380px) {
   body { padding-bottom:70px; }
@@ -339,10 +516,62 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 </head>
 <body>
 
-<div id="pageLoader">
-  <div class="loader-box">
-    <div class="spinner-lg"></div>
-    <div class="loader-text" id="pageLoaderText">Loading...</div>
+<!-- ============================================================
+     META-STYLE SKELETON OVERLAY — replaces the old loading modal
+     Shown instantly on page loads; shimmer sweeps while waiting.
+     ============================================================ -->
+<div id="skeletonOverlay" aria-hidden="true">
+  <div class="skel-inner">
+    <div class="skel-toolbar">
+      <div class="skel-toolbar-text" id="skeletonLabel">Loading…</div>
+    </div>
+
+    <div class="skel-heading">
+      <div class="skel-line shimmer"></div>
+    </div>
+    <div class="skel-stats">
+      <div class="skel-stat"><div class="skel-line w40 shimmer"></div><div class="skel-line w2 center shimmer" style="width:60%"></div></div>
+      <div class="skel-stat"><div class="skel-line w40 shimmer"></div><div class="skel-line w2 center shimmer" style="width:60%"></div></div>
+      <div class="skel-stat"><div class="skel-line w40 shimmer"></div><div class="skel-line w2 center shimmer" style="width:60%"></div></div>
+    </div>
+
+    <div class="skel-heading"><div class="skel-line shimmer"></div></div>
+    <div class="skel-card">
+      <div class="skel-row">
+        <div class="skel-avatar shimmer"></div>
+        <div style="flex:1">
+          <div class="skel-line w1 shimmer"></div>
+          <div class="skel-line w2 shimmer"></div>
+        </div>
+      </div>
+      <div class="skel-body">
+        <div class="skel-line w3 shimmer"></div>
+        <div class="skel-line w4 shimmer"></div>
+      </div>
+    </div>
+    <div class="skel-card">
+      <div class="skel-row">
+        <div class="skel-avatar shimmer"></div>
+        <div style="flex:1">
+          <div class="skel-line w1 shimmer"></div>
+          <div class="skel-line w2 shimmer"></div>
+        </div>
+      </div>
+      <div class="skel-body">
+        <div class="skel-line w3 shimmer"></div>
+        <div class="skel-line w4 shimmer"></div>
+      </div>
+    </div>
+
+    <div class="skel-heading"><div class="skel-line shimmer"></div></div>
+    <div class="skel-grid">
+      <div class="skel-tile"><div class="skel-line w1 shimmer"></div><div class="skel-line w2 shimmer"></div></div>
+      <div class="skel-tile"><div class="skel-line w1 shimmer"></div><div class="skel-line w2 shimmer"></div></div>
+      <div class="skel-tile"><div class="skel-line w1 shimmer"></div><div class="skel-line w2 shimmer"></div></div>
+      <div class="skel-tile"><div class="skel-line w1 shimmer"></div><div class="skel-line w2 shimmer"></div></div>
+      <div class="skel-tile"><div class="skel-line w1 shimmer"></div><div class="skel-line w2 shimmer"></div></div>
+      <div class="skel-tile"><div class="skel-line w1 shimmer"></div><div class="skel-line w2 shimmer"></div></div>
+    </div>
   </div>
 </div>
 
@@ -418,7 +647,6 @@ const state = {
   reportInvoicePage: 1,
   reportInvoiceHasNext: false,
   reportInvoices: [],
-  // NEW: assignments tracking
   myAssignments: [],
   superAdminAssignments: [],
   superAdminCompletions: [],
@@ -514,12 +742,63 @@ function applySystemName() {
   document.title = name + ' — Management System';
 }
 
+// ============================================================
+// META-STYLE SKELETON LOADER — replaces the old modal spinner.
+// Shows the shimmer overlay immediately; fades out when ready.
+// ============================================================
+let _skeletonHideTimer = null;
+
+function showSkeleton(label) {
+  const el = document.getElementById('skeletonOverlay');
+  if (!el) return;
+  if (_skeletonHideTimer) { clearTimeout(_skeletonHideTimer); _skeletonHideTimer = null; }
+  const lbl = document.getElementById('skeletonLabel');
+  if (lbl) lbl.textContent = label || 'Loading…';
+  el.classList.remove('fading');
+  el.classList.add('active');
+  el.setAttribute('aria-hidden', 'false');
+}
+function hideSkeleton() {
+  const el = document.getElementById('skeletonOverlay');
+  if (!el || !el.classList.contains('active')) return;
+  el.classList.add('fading');
+  if (_skeletonHideTimer) clearTimeout(_skeletonHideTimer);
+  _skeletonHideTimer = setTimeout(() => {
+    el.classList.remove('active');
+    el.classList.remove('fading');
+    el.setAttribute('aria-hidden', 'true');
+    _skeletonHideTimer = null;
+  }, 220);
+}
+
+// Kept the same function names so nothing else in the app breaks.
+function showLoader(text) { showSkeleton(text); }
+function hideLoader() { hideSkeleton(); }
+async function withLoader(text, fn) {
+  showSkeleton(text);
+  try { return await fn(); }
+  finally { hideSkeleton(); }
+}
+
+function setBtnLoading(btn, loading) {
+  if (!btn) return;
+  if (loading) { btn.classList.add('is-loading'); btn.disabled = true; }
+  else { btn.classList.remove('is-loading'); btn.disabled = false; }
+}
+function toast(msg, type) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type || '');
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2600);
+}
+
 async function apiGet(params, options) {
   const p = Object.assign({}, params);
   if (state.token && !p.token) p.token = state.token;
   const qs = new URLSearchParams(p).toString();
   const showApiLoader = !state.loading && !(options && options.silent);
-  if (showApiLoader) showLoader('Loading...');
+  if (showApiLoader) showSkeleton('Loading…');
   try {
     const res = await fetch(WEBAPP_URL + '?' + qs);
     const data = await res.json();
@@ -528,7 +807,7 @@ async function apiGet(params, options) {
     }
     return data;
   } finally {
-    if (showApiLoader) hideLoader();
+    if (showApiLoader) hideSkeleton();
   }
 }
 async function apiPost(body) {
@@ -563,6 +842,7 @@ function handleAuthFailure() {
   if (appEl) appEl.classList.add('hidden');
   if (loginEl) loginEl.classList.remove('hidden');
   hideFloatingAssignBadge();
+  hideSkeleton();
   toast('Your session ended. Please sign in again.', 'error');
 }
 function uid(prefix, scope) {
@@ -585,25 +865,6 @@ function clearUid(key) {
     const p = String(key).split('-')[0];
     Object.keys(localStorage).filter(k => k.indexOf('enican_idem_' + p + ':') === 0).forEach(k => localStorage.removeItem(k));
   } catch (e) {}
-}
-
-function showLoader(text) {
-  document.getElementById('pageLoaderText').textContent = text || 'Loading...';
-  document.getElementById('pageLoader').classList.add('active');
-}
-function hideLoader() { document.getElementById('pageLoader').classList.remove('active'); }
-async function withLoader(text, fn) { showLoader(text); try { return await fn(); } finally { hideLoader(); } }
-function setBtnLoading(btn, loading) {
-  if (!btn) return;
-  if (loading) { btn.classList.add('is-loading'); btn.disabled = true; }
-  else { btn.classList.remove('is-loading'); btn.disabled = false; }
-}
-function toast(msg, type) {
-  const el = document.createElement('div');
-  el.className = 'toast ' + (type || '');
-  el.textContent = msg;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 2600);
 }
 
 async function doLogin() {
@@ -631,7 +892,6 @@ function showApp() {
   buildNav();
   navigate('dashboard');
   startAutoRefresh();
-  // NEW: assignments checks
   setTimeout(() => {
     refreshMyAssignmentsBadge();
     checkMyAssignmentPopup();
@@ -649,6 +909,7 @@ function logout() {
   state.myAssignments = [];
   stopAutoRefresh();
   hideFloatingAssignBadge();
+  hideSkeleton();
   document.getElementById('app').classList.add('hidden');
   document.getElementById('loginScreen').classList.remove('hidden');
   if (token) {
@@ -860,8 +1121,11 @@ async function loadPage(silent) {
   if (state.page === 'loadTank' || state.page === 'loadBoiler') saveDraft();
   if (state.page === 'driver') saveDriverDraft();
   if (!silent) {
-    el.innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
-    showLoader('Loading ' + (PAGE_TITLES[state.page] || '...'));
+    // Show skeleton immediately (not the old modal). Page content stays in
+    // DOM underneath so it never flashes white between loads.
+    showSkeleton('Loading ' + (PAGE_TITLES[state.page] || '…'));
+    // Clear only after skeleton is visible to avoid flicker.
+    el.innerHTML = '';
   }
   try {
     if (state.page === 'dashboard') await renderDashboard(el);
@@ -879,7 +1143,7 @@ async function loadPage(silent) {
     el.innerHTML = '<div class="card"><p style="color:red">Error: ' + e.message + '</p></div>';
   } finally {
     state.loading = false;
-    if (!silent) hideLoader();
+    if (!silent) hideSkeleton();
   }
 }
 
@@ -913,7 +1177,6 @@ async function renderDashboard(el) {
   `;
   renderTankCardsTo('tankGrid', tanks.items || []);
   renderTankCardsTo('boilerGrid', boilers.items || []);
-  // super admin popup check
   setTimeout(checkSuperAdminCompletionPopup, 900);
 }
 
@@ -1180,7 +1443,7 @@ async function selectCustomer(id) {
   toast('Selected: ' + c.name, 'success');
   saveDraft();
   const el = document.getElementById('pageContent');
-  await withLoader('Loading customer and assets...', async () => {
+  await withLoader('Loading customer and assets…', async () => {
     await renderLoad(el, state.assetType);
   });
   setTimeout(() => {
@@ -1297,7 +1560,7 @@ async function submitLoad(type, btn) {
   if (state.selectedExpenses.length === 0) return toast('No expenses to assign', 'error');
 
   setBtnLoading(btn, true);
-  await withLoader('Creating invoice...', async () => {
+  await withLoader('Creating invoice…', async () => {
     const expenses = state.selectedExpenses.map(e => ({
       expenseId: e.expenseId, expenseName: e.expenseName,
       amountPerAsset: e.amountPerAsset, description: e.description || ''
@@ -1363,7 +1626,7 @@ async function createCustomer(btn) {
   const address = document.getElementById('newCustAddr').value.trim();
   if (!name) return toast('Name required', 'error');
   setBtnLoading(btn, true);
-  await withLoader('Creating customer...', async () => {
+  await withLoader('Creating customer…', async () => {
     const res = await apiPost({ action: 'createCustomer', idempotencyKey: uid('CUST', phone || name), name, phone, address, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
     toast('Customer created', 'success');
@@ -1421,7 +1684,7 @@ async function submitPayment(invoiceId, sessionId, btn) {
   const amount = Number(document.getElementById('payAmount').value);
   if (!amount || amount <= 0) return toast('Enter valid amount', 'error');
   setBtnLoading(btn, true);
-  await withLoader('Recording payment...', async () => {
+  await withLoader('Recording payment…', async () => {
     const res = await apiPost({ action: 'recordPayment', idempotencyKey: uid('PAY', invoiceId + ':' + amount), invoiceId, sessionId, amount, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
     toast(res.fullyPaid ? 'Fully paid. Tank emptied.' : 'Payment recorded', 'success');
@@ -1507,7 +1770,7 @@ async function downloadStatement(sessionId) {
   setTimeout(() => w.print(), 300);
 }
 
-// ==================== PENDING (SUPER ADMIN ONLY) ====================
+// ==================== PENDING (SUPER ADMIN ONLY) — INLINE ACTIONS ====================
 async function renderPending(el) {
   document.getElementById('headerSub').textContent = 'Pending approvals (Super Admin only)';
   const [priceRes, reqRes] = await Promise.all([
@@ -1527,65 +1790,218 @@ async function renderPending(el) {
     if (total > 0) { menuCount.textContent = total; menuCount.classList.remove('hidden'); }
     else menuCount.classList.add('hidden');
   }
+  // Render each pending price change as an inline actionable card.
+  // Shows customer name, invoice #, tank/boiler #, price change, requester.
+  // Decline / Approve buttons are visible immediately — no click to open.
   el.innerHTML = `
     <div class="section-title">Pending Approvals (${total})</div>
     ${total === 0 ? '<div class="empty">No pending approvals</div>' : ''}
-    ${pending.map(p => `
-      <div class="list-item" onclick="viewPending('${p.id}')">
-        <div class="avatar">${p.customerName ? p.customerName[0].toUpperCase() : '?'}</div>
-        <div class="info"><div class="name">${p.customerName}</div><div class="sub">${p.expenseName}: $${Number(p.oldAmount).toFixed(2)} → $${Number(p.newAmount).toFixed(2)} · by ${p.requestedBy}</div></div>
-        <span class="badge small amber">Price</span>
-      </div>`).join('')}
-    ${requisitions.map(r => `
-      <div class="list-item" onclick="viewCashRequisition('${r.id}')">
-        <div class="avatar">$</div>
-        <div class="info"><div class="name">Cash Requisition · ${r.account}</div><div class="sub">${r.description} · $${Number(r.amount).toFixed(2)} · by ${r.requestedByName||r.requestedBy}</div></div>
-        <span class="badge small amber">Cash</span>
-      </div>`).join('')}
+    ${pending.map(p => renderPendingPriceCard(p)).join('')}
+    ${requisitions.map(r => renderPendingRequisitionCard(r)).join('')}
   `;
 }
-async function viewCashRequisition(id) {
-  const res = await apiGet({ action: 'pendingRequisitions', user: state.user.username });
-  const r = (res.requisitions || []).find(x => String(x.id) === String(id));
-  if (!r) return toast('Requisition not found or already reviewed.', 'error');
-  const body = `
-    <div class="data-row"><span class="lbl">Requested by</span><span class="val">${r.requestedByName||r.requestedBy}</span></div>
-    <div class="data-row"><span class="lbl">Role</span><span class="val">${r.requestedRole}</span></div>
-    <div class="data-row"><span class="lbl">Account</span><span class="val">${r.account}</span></div>
-    <div class="data-row"><span class="lbl">Description</span><span class="val">${r.description}</span></div>
-    <div class="data-row"><span class="lbl">Requested amount</span><span class="val">$${Number(r.amount).toFixed(2)}</span></div>
-    <div class="field"><label>Approved amount (you can edit)</label><input id="reqApproveAmount" type="number" step="0.01" min="0.01" value="${Number(r.amount).toFixed(2)}"></div>
-    <div class="field"><label>Note (optional on approve, required on decline)</label><textarea id="reqNote" rows="3" placeholder="Add a note for the applicant"></textarea></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px">
-      <button class="btn btn-danger" onclick="declineCashRequisition('${r.id}',this)">Decline</button>
-      <button class="btn btn-success" onclick="approveCashRequisition('${r.id}',this)">Approve</button>
-    </div>`;
-  openModal('Cash Requisition', body);
-}
-async function approveCashRequisition(id, btn) {
-  const approvedAmount = Number((document.getElementById('reqApproveAmount')||{}).value);
-  const adminNote = ((document.getElementById('reqNote')||{}).value||'').trim();
-  if (!Number.isFinite(approvedAmount) || approvedAmount <= 0) return toast('Enter a valid approved amount.', 'error');
-  setBtnLoading(btn,true);
-  await withLoader('Approving cash requisition...',async()=>{
-    const res=await apiPost({action:'approveCashRequisition',requisitionId:id,approvedAmount:approvedAmount,adminNote:adminNote,idempotencyKey:uid('REQAPR',id+':'+approvedAmount),user:state.user.username});
-    if(!res.success)return toast(res.error,'error');
-    toast('Cash requisition approved.','success'); closeModal(); loadPage();
-  });
-  setBtnLoading(btn,false);
-}
-async function declineCashRequisition(id, btn) {
-  const adminNote = ((document.getElementById('reqNote')||{}).value||'').trim();
-  if (!adminNote) return toast('A note is required when declining.', 'error');
-  setBtnLoading(btn,true);
-  await withLoader('Declining cash requisition...',async()=>{
-    const res=await apiPost({action:'declineCashRequisition',requisitionId:id,adminNote:adminNote,idempotencyKey:uid('REQDEC',id+':'+adminNote),user:state.user.username});
-    if(!res.success)return toast(res.error,'error');
-    toast('Cash requisition declined.','success'); closeModal(); loadPage();
-  });
-  setBtnLoading(btn,false);
+
+function renderPendingPriceCard(p) {
+  const customer = p.customerName || 'Unknown customer';
+  const initial = customer && customer[0] ? customer[0].toUpperCase() : '?';
+  const assetType = String(p.assetType || '').toLowerCase();
+  const assetLabel = assetType === 'boiler' ? 'Boiler' : (assetType === 'tank' ? 'Tank' : 'Asset');
+  const assetIds = p.assetIds ? String(p.assetIds) : '';
+  const invoiceNumber = p.invoiceNumber || '—';
+  const oldAmt = Number(p.oldAmount || 0).toFixed(2);
+  const newAmt = Number(p.newAmount || 0).toFixed(2);
+  const requester = p.requestedBy || '—';
+  const safety = escapeHtml(JSON.stringify({ id: p.id }));
+  return `
+    <div class="pending-card" data-pending-id="${escapeHtml(p.id)}">
+      <div class="pending-card-head">
+        <div class="pending-avatar">${initial}</div>
+        <div class="pending-info">
+          <div class="pending-customer">${escapeHtml(customer)}</div>
+          <div class="pending-type">Price Change · ${escapeHtml(assetLabel)}</div>
+        </div>
+        <div class="pending-amount">
+          <div style="color:var(--gray-3);font-size:11px">Change</div>
+          <div style="color:var(--red);font-weight:800">${oldAmt} → ${newAmt}</div>
+        </div>
+      </div>
+      <div class="pending-line">
+        <b>${escapeHtml(p.expenseName || 'Expense')}</b>: $${oldAmt}<span class="arrow">→</span>$${newAmt}
+        <div class="who">Requested by <b>${escapeHtml(requester)}</b></div>
+      </div>
+      <div class="pending-tags">
+        <span class="pending-tag inv">Invoice #: ${escapeHtml(invoiceNumber)}</span>
+        ${assetIds ? `<span class="pending-tag">${escapeHtml(assetLabel)} #: ${escapeHtml(assetIds)}</span>` : ''}
+      </div>
+      <div class="pending-actions">
+        <button class="btn btn-danger" onclick='declinePendingInline(${safety}, this)'>Decline</button>
+        <button class="btn btn-success" onclick='approvePendingInline(${safety}, this)'>Approve</button>
+      </div>
+    </div>
+  `;
 }
 
+function renderPendingRequisitionCard(r) {
+  const initial = '$';
+  const name = r.requestedByName || r.requestedBy || '—';
+  const account = String(r.account || 'general').toUpperCase();
+  const amount = Number(r.amount || 0).toFixed(2);
+  const description = r.description || '';
+  const dateStr = r.requestDate || r.createdAt ? new Date(r.requestDate || r.createdAt).toLocaleDateString() : '';
+  const safety = escapeHtml(JSON.stringify({ id: r.id }));
+  return `
+    <div class="pending-card cash" data-pending-id="${escapeHtml(r.id)}">
+      <div class="pending-card-head">
+        <div class="pending-avatar" style="background:var(--green)">${initial}</div>
+        <div class="pending-info">
+          <div class="pending-customer">${escapeHtml(name)}</div>
+          <div class="pending-type" style="color:var(--green)">Cash Requisition · ${escapeHtml(account)}</div>
+        </div>
+        <div class="pending-amount">
+          <div style="color:var(--gray-3);font-size:11px">Requested</div>
+          <div style="color:var(--green);font-weight:800">$${amount}</div>
+        </div>
+      </div>
+      <div class="pending-desc">${escapeHtml(description)}</div>
+      <div class="pending-tags">
+        <span class="pending-tag">Account: ${escapeHtml(account)}</span>
+        ${dateStr ? `<span class="pending-tag inv">Requested: ${escapeHtml(dateStr)}</span>` : ''}
+      </div>
+      <div class="pending-actions">
+        <button class="btn btn-danger" onclick='declineRequisitionInline(${safety}, this)'>Decline</button>
+        <button class="btn btn-success" onclick='approveRequisitionInline(${safety}, this)'>Approve</button>
+        <button class="btn btn-outline btn-note" onclick='editRequisitionInline(${safety})'>Approve with different amount / note…</button>
+      </div>
+    </div>
+  `;
+}
+
+async function approvePendingInline(ref, btn) {
+  const id = ref.id;
+  setBtnLoading(btn, true);
+  await withLoader('Approving price change…', async () => {
+    const res = await apiPost({ action: 'approvePending', idempotencyKey: uid('APR', id), pendingId: id, user: state.user.username });
+    if (!res.success) { toast(res.error || 'Could not approve', 'error'); setBtnLoading(btn, false); return; }
+    toast('Approved', 'success');
+    loadPage(true);
+  });
+  setBtnLoading(btn, false);
+}
+
+async function declinePendingInline(ref, btn) {
+  const id = ref.id;
+  if (!confirm('Decline this price change? The invoice will keep the previously approved price and the session will NOT be cancelled.')) return;
+  setBtnLoading(btn, true);
+  await withLoader('Declining…', async () => {
+    const res = await apiPost({ action: 'declinePending', idempotencyKey: uid('DEC', id), pendingId: id, user: state.user.username });
+    if (!res.success) { toast(res.error || 'Could not decline', 'error'); setBtnLoading(btn, false); return; }
+    toast(res.message || 'Price change declined.', 'success');
+    loadPage(true);
+  });
+  setBtnLoading(btn, false);
+}
+
+async function approveRequisitionInline(ref, btn) {
+  const id = ref.id;
+  setBtnLoading(btn, true);
+  await withLoader('Approving cash requisition…', async () => {
+    const res = await apiPost({
+      action: 'approveCashRequisition',
+      requisitionId: id,
+      idempotencyKey: uid('REQAPR', id),
+      user: state.user.username
+    });
+    if (!res.success) { toast(res.error || 'Could not approve', 'error'); setBtnLoading(btn, false); return; }
+    toast('Cash requisition approved.', 'success');
+    loadPage(true);
+  });
+  setBtnLoading(btn, false);
+}
+
+async function declineRequisitionInline(ref, btn) {
+  const id = ref.id;
+  const note = prompt('Reason for declining (required):');
+  if (note === null) return;
+  const adminNote = String(note || '').trim();
+  if (!adminNote) return toast('A note is required when declining.', 'error');
+  setBtnLoading(btn, true);
+  await withLoader('Declining cash requisition…', async () => {
+    const res = await apiPost({
+      action: 'declineCashRequisition',
+      requisitionId: id,
+      adminNote: adminNote,
+      idempotencyKey: uid('REQDEC', id + ':' + adminNote),
+      user: state.user.username
+    });
+    if (!res.success) { toast(res.error || 'Could not decline', 'error'); setBtnLoading(btn, false); return; }
+    toast('Cash requisition declined.', 'success');
+    loadPage(true);
+  });
+  setBtnLoading(btn, false);
+}
+
+async function editRequisitionInline(ref) {
+  const id = ref.id;
+  // Fetch the current amount from the rendered card
+  const card = document.querySelector(`.pending-card[data-pending-id="${cssEscape(id)}"]`);
+  const initialAmount = card ? (card.querySelector('.pending-amount div:last-child') || {}).textContent : '';
+  const cleanAmt = String(initialAmount || '').replace(/[^0-9.\-]/g, '');
+  const body = `
+    <div class="field"><label>Approved amount (edit if different)</label><input id="reqApproveAmount" type="number" step="0.01" min="0.01" value="${cleanAmt || ''}"></div>
+    <div class="field"><label>Note (optional on approve)</label><textarea id="reqNote" rows="3" placeholder="Add a note for the applicant"></textarea></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+      <button class="btn btn-danger" onclick='declineRequisitionFromModal(${escapeHtml(JSON.stringify({ id: id }))}, this)'>Decline</button>
+      <button class="btn btn-success" onclick='approveRequisitionFromModal(${escapeHtml(JSON.stringify({ id: id }))}, this)'>Approve</button>
+    </div>
+  `;
+  openModal('Cash Requisition', body);
+}
+
+async function approveRequisitionFromModal(ref, btn) {
+  const id = ref.id;
+  const approvedAmount = Number((document.getElementById('reqApproveAmount') || {}).value);
+  const adminNote = ((document.getElementById('reqNote') || {}).value || '').trim();
+  if (!Number.isFinite(approvedAmount) || approvedAmount <= 0) return toast('Enter a valid approved amount.', 'error');
+  setBtnLoading(btn, true);
+  await withLoader('Approving cash requisition…', async () => {
+    const res = await apiPost({
+      action: 'approveCashRequisition',
+      requisitionId: id,
+      approvedAmount: approvedAmount,
+      adminNote: adminNote,
+      idempotencyKey: uid('REQAPR', id + ':' + approvedAmount),
+      user: state.user.username
+    });
+    if (!res.success) { toast(res.error || 'Could not approve', 'error'); setBtnLoading(btn, false); return; }
+    toast('Cash requisition approved.', 'success');
+    closeModal();
+    loadPage(true);
+  });
+  setBtnLoading(btn, false);
+}
+
+async function declineRequisitionFromModal(ref, btn) {
+  const id = ref.id;
+  const adminNote = ((document.getElementById('reqNote') || {}).value || '').trim();
+  if (!adminNote) return toast('A note is required when declining.', 'error');
+  setBtnLoading(btn, true);
+  await withLoader('Declining cash requisition…', async () => {
+    const res = await apiPost({
+      action: 'declineCashRequisition',
+      requisitionId: id,
+      adminNote: adminNote,
+      idempotencyKey: uid('REQDEC', id + ':' + adminNote),
+      user: state.user.username
+    });
+    if (!res.success) { toast(res.error || 'Could not decline', 'error'); setBtnLoading(btn, false); return; }
+    toast('Cash requisition declined.', 'success');
+    closeModal();
+    loadPage(true);
+  });
+  setBtnLoading(btn, false);
+}
+
+// Legacy views kept for backwards compatibility (still used by nothing after refactor)
 async function viewPending(id) {
   const res = await apiGet({ action: 'pendingDetails', id });
   if (!res.success) return toast(res.error, 'error');
@@ -1608,7 +2024,7 @@ async function viewPending(id) {
 }
 async function approvePending(id, btn) {
   setBtnLoading(btn, true);
-  await withLoader('Approving...', async () => {
+  await withLoader('Approving…', async () => {
     const res = await apiPost({ action: 'approvePending', idempotencyKey: uid('APR', id), pendingId: id, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
     toast('Approved', 'success');
@@ -1620,7 +2036,7 @@ async function approvePending(id, btn) {
 async function declinePending(id, btn) {
   if (!confirm('Decline this price change? The invoice will keep the previously approved price and the session will NOT be cancelled.')) return;
   setBtnLoading(btn, true);
-  await withLoader('Declining...', async () => {
+  await withLoader('Declining…', async () => {
     const res = await apiPost({ action: 'declinePending', idempotencyKey: uid('DEC', id), pendingId: id, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
     toast(res.message || 'Price change declined.', 'success');
@@ -1760,7 +2176,7 @@ async function submitCashRequisition(btn) {
   if (!description.trim()) return toast('Enter a description.', 'error');
   if (!Number.isFinite(amount) || amount <= 0) return toast('Enter a valid amount.', 'error');
   setBtnLoading(btn, true);
-  await withLoader('Submitting cash requisition...', async () => {
+  await withLoader('Submitting cash requisition…', async () => {
     const res = await apiPost({ action: 'requestCashRequisition', idempotencyKey: uid('REQ', state.user.username + ':' + description + ':' + amount), description: description.trim(), amount, account, user: state.user.username });
     if (!res.success) return toast(res.error, 'error');
     toast('Cash requisition sent to Super Admin for approval.', 'success');
@@ -2029,7 +2445,7 @@ async function submitTrip(btn) {
   if (!customerId) return toast('Select a customer', 'error');
   if (!trips || trips <= 0) return toast('Enter number of trips', 'error');
   setBtnLoading(btn, true);
-  await withLoader('Logging trip...', async () => {
+  await withLoader('Logging trip…', async () => {
     const res = await apiPost({
       action: 'logTrip',
       idempotencyKey: uid('TRIP', customerId + ':' + trips + ':' + rate + ':' + tripDate),
@@ -2049,7 +2465,7 @@ async function submitDriverExpense(btn) {
   const expenseDate = document.getElementById('expDate').value;
   if (!description || !amount) return toast('Fill all fields', 'error');
   setBtnLoading(btn, true);
-  await withLoader('Logging expense...', async () => {
+  await withLoader('Logging expense…', async () => {
     const res = await apiPost({
       action: 'logDriverExpense',
       idempotencyKey: uid('DEXP', description + ':' + amount + ':' + expenseDate),
@@ -2234,7 +2650,7 @@ async function renderSettings(el) {
 }
 async function changeUserRole(username, newRole) {
   if (!confirm(`Change @${username} to role "${newRole}"?`)) return loadPage();
-  await withLoader('Updating role...', async () => {
+  await withLoader('Updating role…', async () => {
     const res = await apiPost({ action: 'updateUserRole', idempotencyKey: uid('ROLE', username + ':' + newRole), username, newRole, user: state.user.username });
     if (!res.success) return toast(res.error, 'error');
     toast('Role updated', 'success');
@@ -2251,7 +2667,7 @@ async function addNewExpense(btn) {
   if (!Number.isFinite(costAmount) || costAmount < 0) return toast('Cost price required', 'error');
   if (costAmount > amount) return toast('Cost price cannot be greater than client price', 'error');
   setBtnLoading(btn, true);
-  await withLoader('Adding expense...', async () => {
+  await withLoader('Adding expense…', async () => {
     const res = await apiPost({ action: 'createExpenseType', idempotencyKey: uid('EXP', name + ':' + amount + ':' + assetType), name, amount, costAmount, assetType, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
     toast('Expense added', 'success');
@@ -2266,7 +2682,7 @@ async function addOurExpense(btn) {
   if (!name) return toast('Name required', 'error');
   if (!Number.isFinite(amountPerUnit) || amountPerUnit < 0) return toast('Valid unit cost required', 'error');
   setBtnLoading(btn, true);
-  await withLoader('Adding internal expense...', async () => {
+  await withLoader('Adding internal expense…', async () => {
     const res = await apiPost({ action: 'createOurExpenseType', idempotencyKey: uid('OEXP', name + ':' + amountPerUnit + ':' + assetType), name, amountPerUnit, assetType, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
     toast('Internal expense added', 'success');
@@ -2281,13 +2697,26 @@ async function createUser(btn) {
   const role = document.getElementById('nuRole').value;
   if (!fullName || !username || !password) return toast('Fill all fields', 'error');
   setBtnLoading(btn, true);
-  await withLoader('Creating user...', async () => {
+  await withLoader('Creating user…', async () => {
     const res = await apiPost({ action: 'createUser', idempotencyKey: uid('USER', username), username, password, role, fullName, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
     toast('User created', 'success');
     loadPage();
   });
   setBtnLoading(btn, false);
+}
+
+// ==================== SMALL UTILITIES ====================
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+function cssEscape(s) {
+  return String(s == null ? '' : s).replace(/(["\\])/g, '\\$1');
 }
   // ==================== ASSIGNMENTS — ALL ROLES ====================
 
@@ -2325,7 +2754,6 @@ function assignmentDueClass(v){
 async function refreshMyAssignmentsBadge() {
   if (!state.user) return;
   if (String(state.user.role).toLowerCase() === 'super admin') {
-    // super admin sees pending count on menu instead
     return;
   }
   const res = await apiGet({ action: 'myAssignments' }, { silent: true });
@@ -2366,10 +2794,10 @@ async function openMyAssignmentsFromBadge() {
     <div class="section-title" style="margin-top:0">Open (${list.length})</div>
     ${list.map(a => `
       <div class="assignment-card ${assignmentDueClass(a.dueDate) === 'red' ? 'overdue' : ''}" onclick="showMyAssignment('${a.id}')">
-        <div class="assignment-title">${a.title}</div>
+        <div class="assignment-title">${escapeHtml(a.title)}</div>
         <div class="assignment-meta">
           <span>📅 Due ${formatAssignmentDate(a.dueDate)}</span>
-          <span>👤 ${a.assignedByName || a.assignedBy || 'Super Admin'}</span>
+          <span>👤 ${escapeHtml(a.assignedByName || a.assignedBy || 'Super Admin')}</span>
         </div>
         <div class="assignment-meta" style="margin-top:6px">
           <span class="assignment-timing-badge ${assignmentDueClass(a.dueDate) === 'red' ? 'timing-overdue' : 'timing-open'}">${assignmentDueLabel(a.dueDate)}</span>
@@ -2387,14 +2815,14 @@ async function showMyAssignment(id) {
   if (!a) return toast('Assignment is already completed or no longer available.', 'error');
   const overdue = assignmentDueClass(a.dueDate) === 'red';
   const body = `
-    <div class="data-row"><span class="lbl">Task</span><span class="val">${a.title}</span></div>
-    <div class="data-row"><span class="lbl">Assigned by</span><span class="val">${a.assignedByName || a.assignedBy}</span></div>
+    <div class="data-row"><span class="lbl">Task</span><span class="val">${escapeHtml(a.title)}</span></div>
+    <div class="data-row"><span class="lbl">Assigned by</span><span class="val">${escapeHtml(a.assignedByName || a.assignedBy)}</span></div>
     <div class="data-row"><span class="lbl">Due date</span><span class="val">${formatAssignmentDate(a.dueDate)}</span></div>
     <div class="data-row"><span class="lbl">Status</span><span class="val">${assignmentDueLabel(a.dueDate)}</span></div>
     <div class="assignment-popup-body" style="padding:12px 0 0">
       <div class="desc-block">
         <div class="desc-lbl">Instructions</div>
-        <div class="desc-body">${a.description || 'No further description provided.'}</div>
+        <div class="desc-body">${escapeHtml(a.description || 'No further description provided.')}</div>
       </div>
     </div>
     <button class="btn btn-success" style="margin-top:8px" onclick="completeMyAssignment('${a.id}', this)">Mark as Completed</button>
@@ -2404,7 +2832,7 @@ async function showMyAssignment(id) {
 
 async function completeMyAssignment(id, btn) {
   setBtnLoading(btn, true);
-  await withLoader('Completing assignment...', async () => {
+  await withLoader('Completing assignment…', async () => {
     const res = await apiPost({
       action: 'completeAssignment',
       assignmentId: id,
@@ -2415,7 +2843,6 @@ async function completeMyAssignment(id, btn) {
     toast(res.timingText || 'Assignment completed', 'success');
     closeModal();
     await refreshMyAssignmentsBadge();
-    // refresh current page so any list updates
     loadPage(true);
   });
   setBtnLoading(btn, false);
@@ -2426,7 +2853,7 @@ async function completeMyAssignment(id, btn) {
 async function checkMyAssignmentPopup() {
   if (!state.user) return;
   const role = String(state.user.role).toLowerCase();
-  if (role === 'super admin') return; // super admin has a different popup
+  if (role === 'super admin') return;
   const res = await apiGet({ action: 'myAssignments' }, { silent: true });
   if (!res || !res.success) return;
   const list = res.assignments || [];
@@ -2435,7 +2862,6 @@ async function checkMyAssignmentPopup() {
   if (list.length === 0) return;
 
   const newest = list[0];
-  // avoid spamming: mark per-assignment seen in localStorage (but still show popup if unseen)
   const seenKey = ASSIGN_POPUP_SEEN_KEY + '_' + state.user.username;
   let seen = [];
   try { seen = JSON.parse(localStorage.getItem(seenKey) || '[]'); } catch (e) { seen = []; }
@@ -2447,7 +2873,6 @@ async function checkMyAssignmentPopup() {
 }
 
 function showAssignmentPopupModal(a) {
-  // Remove any existing assignment popup
   document.querySelectorAll('.assignment-popup-overlay').forEach(el => el.remove());
   const overlay = document.createElement('div');
   overlay.className = 'assignment-popup-overlay';
@@ -2457,13 +2882,13 @@ function showAssignmentPopupModal(a) {
     <div class="assignment-popup" role="dialog" aria-modal="true">
       <div class="assignment-popup-header">
         <div class="popup-title">You have a new assignment</div>
-        <h2>${a.title}</h2>
+        <h2>${escapeHtml(a.title)}</h2>
         <button class="assignment-popup-close" onclick="closeAssignmentPopup()" aria-label="Close">×</button>
       </div>
       <div class="assignment-popup-body">
         <div class="info-block">
           <div class="lbl">Assigned by</div>
-          <div class="val">${a.assignedByName || a.assignedBy || 'Super Admin'}</div>
+          <div class="val">${escapeHtml(a.assignedByName || a.assignedBy || 'Super Admin')}</div>
         </div>
         <div class="info-block">
           <div class="lbl">Due date</div>
@@ -2477,7 +2902,7 @@ function showAssignmentPopupModal(a) {
         </div>
         <div class="desc-block">
           <div class="desc-lbl">Instructions</div>
-          <div class="desc-body">${a.description || 'No further description provided.'}</div>
+          <div class="desc-body">${escapeHtml(a.description || 'No further description provided.')}</div>
         </div>
         <button class="btn btn-success" onclick="completeFromPopup('${a.id}', this)">Completed</button>
       </div>
@@ -2495,7 +2920,7 @@ function closeAssignmentPopup() {
 
 async function completeFromPopup(id, btn) {
   setBtnLoading(btn, true);
-  await withLoader('Completing assignment...', async () => {
+  await withLoader('Completing assignment…', async () => {
     const res = await apiPost({
       action: 'completeAssignment',
       assignmentId: id,
@@ -2523,7 +2948,6 @@ async function checkSuperAdminCompletionPopup() {
   if (list.length === 0) return;
   const latest = list[0];
   const signature = String(latest.id) + '|' + String(latest.completedAt);
-  // session-level seen so it doesn't nag every 10s in the same session
   let seen = '';
   try { seen = sessionStorage.getItem(SUPER_COMPLETION_SEEN_KEY) || ''; } catch (e) {}
   if (seen === signature) return;
@@ -2541,13 +2965,13 @@ function showSuperCompletionModal(a) {
     <div class="assignment-popup" role="dialog" aria-modal="true">
       <div class="assignment-popup-header" style="background:linear-gradient(135deg,#16a34a,#15803d)">
         <div class="popup-title">Assignment Completed</div>
-        <h2>${a.title}</h2>
+        <h2>${escapeHtml(a.title)}</h2>
         <button class="assignment-popup-close" onclick="closeAssignmentPopup()" aria-label="Close">×</button>
       </div>
       <div class="assignment-popup-body">
         <div class="info-block">
           <div class="lbl">Completed by</div>
-          <div class="val">${a.assignedToName || a.completedBy || a.assignedTo || '—'}</div>
+          <div class="val">${escapeHtml(a.assignedToName || a.completedBy || a.assignedTo || '—')}</div>
         </div>
         <div class="info-block">
           <div class="lbl">Due date</div>
@@ -2558,7 +2982,7 @@ function showSuperCompletionModal(a) {
           <div class="val">${a.completedAt ? new Date(a.completedAt).toLocaleString() : '—'}</div>
         </div>
         <div class="assignment-completed-box">
-          <div class="assignment-timing-badge ${timingClass}" style="font-size:13px;padding:8px 16px">${a.timingText || (late ? 'Late' : 'On time')}</div>
+          <div class="assignment-timing-badge ${timingClass}" style="font-size:13px;padding:8px 16px">${escapeHtml(a.timingText || (late ? 'Late' : 'On time'))}</div>
         </div>
         <button class="btn" style="margin-top:16px" onclick="closeAssignmentPopup()">Close</button>
       </div>
@@ -2597,22 +3021,22 @@ async function renderAssignments(el) {
     <div class="card">
       <div class="field"><label>Task title</label><input id="taskTitle" type="text" placeholder="e.g. Inspect Tank Area"></div>
       <div class="field"><label>Task description / instructions</label><textarea id="taskDescription" rows="5" placeholder="Describe everything the user must do..."></textarea></div>
-      <div class="field"><label>Assign user</label><select id="taskAssignee"><option value="">Select user account</option>${users.map(u=>`<option value="${u.username}">${u.fullName||u.username} (@${u.username})</option>`).join('')}</select></div>
+      <div class="field"><label>Assign user</label><select id="taskAssignee"><option value="">Select user account</option>${users.map(u=>`<option value="${u.username}">${escapeHtml(u.fullName||u.username)} (@${escapeHtml(u.username)})</option>`).join('')}</select></div>
       <div class="field"><label>Due date</label><input id="taskDueDate" type="date"></div>
       <button class="btn" onclick="createAssignmentFromUI(this)">Assign Task</button>
     </div>
     <div class="section-title">Open Assignments (${open.length})</div>
     ${open.length ? open.map(a => `
-      <div class="assignment-card">
-        <div class="assignment-title">${a.title}</div>
+      <div class="assignment-card ${assignmentDueClass(a.dueDate) === 'red' ? 'overdue' : ''}">
+        <div class="assignment-title">${escapeHtml(a.title)}</div>
         <div class="assignment-meta">
-          <span>👤 ${a.assignedToName || a.assignedTo}</span>
+          <span>👤 ${escapeHtml(a.assignedToName || a.assignedTo)}</span>
           <span>📅 Due ${formatAssignmentDate(a.dueDate)}</span>
         </div>
         <div class="assignment-meta" style="margin-top:6px">
           <span class="assignment-timing-badge ${assignmentDueClass(a.dueDate) === 'red' ? 'timing-overdue' : 'timing-open'}">${assignmentDueLabel(a.dueDate)}</span>
         </div>
-        <div class="assignment-desc">${a.description || ''}</div>
+        <div class="assignment-desc">${escapeHtml(a.description || '')}</div>
       </div>
     `).join('') : '<div class="empty">No open assignments.</div>'}
     <div class="section-title">Completed Assignments (${completed.length})</div>
@@ -2620,18 +3044,18 @@ async function renderAssignments(el) {
       const late = String(a.completionStatus).toLowerCase() === 'late';
       return `
         <div class="assignment-card ${late ? 'late-done' : 'on-time-done'}">
-          <div class="assignment-title">${a.title}</div>
+          <div class="assignment-title">${escapeHtml(a.title)}</div>
           <div class="assignment-meta">
-            <span>👤 ${a.assignedToName || a.completedBy || a.assignedTo}</span>
+            <span>👤 ${escapeHtml(a.assignedToName || a.completedBy || a.assignedTo)}</span>
             <span>📅 Due ${formatAssignmentDate(a.dueDate)}</span>
           </div>
           <div class="assignment-meta" style="margin-top:6px">
             <span>✅ Completed ${a.completedAt ? new Date(a.completedAt).toLocaleString() : '—'}</span>
           </div>
           <div class="assignment-meta" style="margin-top:6px">
-            <span class="assignment-timing-badge ${late ? 'timing-late' : 'timing-on-time'}">${a.timingText || (late ? 'Late' : 'On time')}</span>
+            <span class="assignment-timing-badge ${late ? 'timing-late' : 'timing-on-time'}">${escapeHtml(a.timingText || (late ? 'Late' : 'On time'))}</span>
           </div>
-          <div class="assignment-desc">${a.description || ''}</div>
+          <div class="assignment-desc">${escapeHtml(a.description || '')}</div>
         </div>
       `;
     }).join('') : '<div class="empty">No completed assignments yet.</div>'}
@@ -2645,7 +3069,7 @@ async function createAssignmentFromUI(btn) {
   const dueDate = document.getElementById('taskDueDate').value;
   if (!title || !description || !assignedTo || !dueDate) return toast('Complete all assignment fields.', 'error');
   setBtnLoading(btn, true);
-  await withLoader('Assigning task...', async () => {
+  await withLoader('Assigning task…', async () => {
     const res = await apiPost({
       action: 'createAssignment',
       idempotencyKey: uid('TASK', assignedTo + ':' + title + ':' + dueDate),

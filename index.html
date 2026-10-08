@@ -89,6 +89,15 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .refresh-btn.spinning svg { animation: spin .8s linear; }
 
 .header-actions { display:flex; align-items:center; gap:7px; flex-shrink:0; }
+.super-menu-btn { display:none; width:38px; height:38px; border-radius:10px; background:rgba(255,255,255,.14); color:#fff; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,.2); }
+.super-menu-panel { position:fixed; top:64px; right:12px; z-index:190; background:#fff; border:1px solid var(--gray-2); border-radius:14px; box-shadow:0 16px 40px rgba(5,18,42,.18); padding:8px; min-width:190px; display:none; }
+.super-menu-panel.open { display:block; }
+.super-menu-panel button { width:100%; text-align:left; padding:11px 12px; border-radius:9px; color:var(--text-main); font-weight:700; background:#fff; }
+.super-menu-panel button:hover { background:var(--gray); }
+.assignment-overdue { color:var(--danger); font-weight:700; }
+.assignment-on-time { color:var(--success); font-weight:700; }
+@media (max-width: 700px) { .super-menu-btn { display:inline-flex; } .super-nav-wide { display:none !important; } }
+
 .install-app-btn { min-height:38px; padding:0 11px; border-radius:999px; background:rgba(255,255,255,.14); color:#fff; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:12px; font-weight:800; border:1px solid rgba(255,255,255,.22); }
 .install-app-btn:active { transform:scale(.96); }
 .install-app-btn svg { flex-shrink:0; }
@@ -318,6 +327,9 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
       <button class="install-app-btn hidden" id="headerInstallBtn" onclick="installPWA()" title="Install Enican Mines System">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg><span>Install</span>
       </button>
+      <button class="super-menu-btn" id="superMenuBtn" onclick="toggleSuperMenu()" title="Super Admin menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>
+      </button>
       <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" title="Refresh">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
       </button>
@@ -327,6 +339,7 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
   <div id="pageContent"></div>
 
   <div class="nav" id="bottomNav"></div>
+  <div class="super-menu-panel" id="superMenuPanel"></div>
 </div>
 
 <script>
@@ -557,6 +570,7 @@ function showApp() {
   buildNav();
   navigate('dashboard');
   startAutoRefresh();
+  setTimeout(() => { checkMyAssignmentPopup(); checkSuperAdminCompletionPopup(); }, 900);
   if (!isStandaloneApp()) { setInstallButtonVisible(!!deferredPrompt); setTimeout(showInstallModal, 1200); }
 }
 function logout() {
@@ -573,9 +587,29 @@ function logout() {
 }
 
 function buildNav() {
-  const role = state.user.role;
+  const role = String(state.user.role || '').toLowerCase().trim();
   let items = [];
-  if (role === 'driver') {
+  if (role === 'super admin') {
+    items = [
+      { id: 'dashboard', label: 'Dashboard', icon: '<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>' },
+      { id: 'loadTank', label: 'Load', icon: '<path d="M12 5v14"/><path d="M5 12h14"/>' },
+      { id: 'empty', label: 'Empty', icon: '<path d="M12 19V5"/><path d="M5 12l7 7 7-7"/>' },
+      { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
+      { id: 'pending', label: 'Pending', icon: '<path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/>' },
+      { id: 'assignments', label: 'Assignments', icon: '<path d="M9 11l3 3L20 6"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7"/>' },
+      { id: 'settings', label: 'Settings', icon: '<path d="M12 3v18"/><path d="M3 12h18"/>' },
+      { id: 'profile', label: 'Account', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>' }
+    ];
+  } else if (role === 'admin') {
+    items = [
+      { id: 'dashboard', label: 'Dashboard', icon: '<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>' },
+      { id: 'loadTank', label: 'Load', icon: '<path d="M12 5v14"/><path d="M5 12h14"/>' },
+      { id: 'empty', label: 'Empty', icon: '<path d="M12 19V5"/><path d="M5 12l7 7 7-7"/>' },
+      { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
+      { id: 'settings', label: 'Settings', icon: '<path d="M12 3v18"/><path d="M3 12h18"/>' },
+      { id: 'profile', label: 'Account', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>' }
+    ];
+  } else if (role === 'driver') {
     items = [
       { id: 'dashboard', label: 'Dashboard', icon: '<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>' },
       { id: 'driver', label: 'Trips', icon: '<path d="M8 6v6"/><path d="M16 6v6"/><circle cx="12" cy="16" r="4"/>' },
@@ -589,7 +623,7 @@ function buildNav() {
       { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
       { id: 'profile', label: 'Account', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>' }
     ];
-  } else if (role === 'loader') {
+  } else {
     items = [
       { id: 'dashboard', label: 'Dashboard', icon: '<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>' },
       { id: 'loadTank', label: 'Load', icon: '<path d="M12 5v14"/><path d="M5 12h14"/>' },
@@ -597,25 +631,26 @@ function buildNav() {
       { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
       { id: 'profile', label: 'Account', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>' }
     ];
-  } else {
-    items = [
-      { id: 'dashboard', label: 'Dashboard', icon: '<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>' },
-      { id: 'loadTank', label: 'Load', icon: '<path d="M12 5v14"/><path d="M5 12h14"/>' },
-      { id: 'empty', label: 'Empty', icon: '<path d="M12 19V5"/><path d="M5 12l7 7 7-7"/>' },
-      { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
-      { id: 'pending', label: 'Pending', icon: '<path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/>' },
-      { id: 'settings', label: 'Settings', icon: '<path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>' }
-    ];
   }
   const nav = document.getElementById('bottomNav');
   nav.innerHTML = items.map(it => `
-    <button class="nav-item ${state.page === it.id ? 'active' : ''}" data-nav="${it.id}">
+    <button class="nav-item ${role === 'super admin' && it.id === 'assignments' ? 'super-nav-wide' : ''} ${state.page === it.id ? 'active' : ''}" data-nav="${it.id}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${it.icon}</svg>
       <span>${it.label}</span>
     </button>
   `).join('');
   nav.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => navigate(b.dataset.nav));
+  const panel = document.getElementById('superMenuPanel');
+  if (panel) {
+    if (role === 'super admin') {
+      panel.innerHTML = '<button onclick="navigate(\'assignments\');closeSuperMenu()">Assignments</button><button onclick="navigate(\'pending\');closeSuperMenu()">Pending Approvals</button><button onclick="navigate(\'settings\');closeSuperMenu()">Settings</button>';
+    } else panel.innerHTML = '';
+  }
+  const menuBtn = document.getElementById('superMenuBtn');
+  if (menuBtn) menuBtn.style.display = role === 'super admin' ? '' : 'none';
 }
+function toggleSuperMenu(){ const p=document.getElementById('superMenuPanel'); if(p) p.classList.toggle('open'); }
+function closeSuperMenu(){ const p=document.getElementById('superMenuPanel'); if(p) p.classList.remove('open'); }
 
 function navigate(page) {
   const wasLoad = (state.page === 'loadTank' || state.page === 'loadBoiler');
@@ -642,7 +677,8 @@ const PAGE_TITLES = {
   pending: 'Pending Approvals',
   driver: 'Driver Trips',
   profile: 'Account',
-  settings: 'Settings'
+  settings: 'Settings',
+  assignments: 'Assignments'
 };
 
 function captureEditableState() {
@@ -712,6 +748,7 @@ async function loadPage(silent) {
     else if (state.page === 'driver') await renderDriver(el);
     else if (state.page === 'profile') await renderProfile(el);
     else if (state.page === 'settings') await renderSettings(el);
+    else if (state.page === 'assignments') await renderAssignments(el);
     restoreEditableState(preservedFields);
   } catch (e) {
     el.innerHTML = '<div class="card"><p style="color:red">Error: ' + e.message + '</p></div>';
@@ -1501,7 +1538,10 @@ async function renderReports(el) {
       </div>
     </div>
     ${myReqs.length ? `
-      <div class="section-title">My Cash Requisitions (${myReqs.length})</div>
+      <div class="section-title">My Assignments (${myAssignments.length})</div>
+    ${myAssignments.length ? myAssignments.map(a => `<div class="list-item" onclick="showMyAssignment('${a.id}')"><div class="avatar">✓</div><div class="info"><div class="name">${a.title}</div><div class="sub">Due ${formatAssignmentDate(a.dueDate)} · ${assignmentDueLabel(a.dueDate)}</div></div><span class="badge small ${assignmentDueClass(a.dueDate)}">Open</span></div>`).join('') : '<div class="empty">No incomplete assignments.</div>'}
+
+    <div class="section-title">My Cash Requisitions (${myReqs.length})</div>
       ${myReqs.map(r => {
         const st = (r.status || '').toLowerCase();
         const cls = st === 'approved' ? 'approved' : (st === 'declined' ? 'declined' : '');
@@ -1879,6 +1919,8 @@ async function renderProfile(el) {
   const u = state.user;
   const myReqRes = await apiGet({ action: 'myRequisitions', user: u.username }, { silent: true });
   const myReqs = (myReqRes && myReqRes.requisitions) || [];
+  const assignmentRes = await apiGet({ action: 'myAssignments' }, { silent: true });
+  const myAssignments = (assignmentRes && assignmentRes.assignments) || [];
   el.innerHTML = `
     <div class="card" style="text-align:center">
       <div class="avatar" style="width:70px;height:70px;font-size:28px;margin:0 auto 10px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:700">${u.fullName ? u.fullName[0].toUpperCase() : u.username[0].toUpperCase()}</div>
@@ -1908,7 +1950,7 @@ async function renderProfile(el) {
 }
 
 async function renderSettings(el) {
-  if (!state.user || state.user.role !== 'admin') {
+  if (!state.user || !['admin','super admin'].includes(String(state.user.role).toLowerCase())) {
     el.innerHTML = '<div class="card"><p style="color:#dc2626">Access denied. Admin only.</p></div>';
     return;
   }
@@ -1944,6 +1986,7 @@ async function renderSettings(el) {
           <option value="boiler">Boiler</option>
           <option value="driver">Driver</option>
           <option value="admin">Admin</option>
+          <option value="super admin">Super Admin</option>
         </select>
       </div>
       <button class="btn" onclick="createUser(this)">Create User</button>
@@ -1963,6 +2006,7 @@ async function renderSettings(el) {
             <option value="boiler" ${u.role==='boiler'?'selected':''}>Boiler</option>
             <option value="driver" ${u.role==='driver'?'selected':''}>Driver</option>
             <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+            <option value="super admin" ${u.role==='super admin'?'selected':''}>Super Admin</option>
           </select>
         </div>
       `).join('')}
@@ -2075,6 +2119,90 @@ async function createUser(btn) {
     loadPage();
   });
   setBtnLoading(btn, false);
+}
+
+
+function formatAssignmentDate(v){ if(!v) return 'No due date'; const d=new Date(String(v).length<=10 ? v+'T00:00:00' : v); return Number.isFinite(d.getTime()) ? d.toLocaleDateString() : String(v); }
+function assignmentDueLabel(v){ const due=new Date(String(v).length<=10 ? v+'T23:59:59.999' : v).getTime(); const now=Date.now(); if(!Number.isFinite(due)) return ''; if(now>due){ const days=Math.floor((now-due)/86400000); return days>0 ? days+' day'+(days===1?'':'s')+' overdue' : 'Overdue'; } return 'Due '+formatAssignmentDate(v); }
+function assignmentDueClass(v){ const due=new Date(String(v).length<=10 ? v+'T23:59:59.999' : v).getTime(); return Number.isFinite(due)&&Date.now()>due ? 'red' : 'blue'; }
+async function showMyAssignment(id){
+  const res=await apiGet({action:'myAssignments'},{silent:true});
+  if(!res.success)return toast(res.error||'Could not load assignment','error');
+  const a=(res.assignments||[]).find(x=>String(x.id)===String(id));
+  if(!a)return toast('Assignment is already completed or no longer available.','error');
+  const body=`<div class="data-row"><span class="lbl">Task</span><span class="val">${a.title}</span></div><div class="data-row"><span class="lbl">Assigned by</span><span class="val">${a.assignedByName||a.assignedBy}</span></div><div class="data-row"><span class="lbl">Due date</span><span class="val">${formatAssignmentDate(a.dueDate)}</span></div><div class="card" style="margin:12px 0 0;padding:12px;background:#f8fafc"><b>Description</b><div style="margin-top:8px;white-space:pre-wrap;line-height:1.5">${a.description}</div></div><button class="btn btn-success" style="margin-top:16px" onclick="completeMyAssignment('${a.id}',this)">Completed</button>`;
+  openModal('My Assignment',body);
+}
+async function completeMyAssignment(id,btn){
+  setBtnLoading(btn,true);
+  await withLoader('Completing assignment...',async()=>{
+    const res=await apiPost({action:'completeAssignment',assignmentId:id,idempotencyKey:uid('TASKDONE',id),user:state.user.username});
+    if(!res.success)return toast(res.error||'Could not complete assignment','error');
+    toast(res.timingText||'Assignment completed','success'); closeModal(); loadPage(true);
+  });
+  setBtnLoading(btn,false);
+}
+async function checkMyAssignmentPopup(){
+  if(!state.user || String(state.user.role).toLowerCase()==='super admin') return;
+  const res=await apiGet({action:'myAssignments'},{silent:true});
+  if(!res.success || !(res.assignments||[]).length) return;
+  const key='enican_assignment_popup_'+state.user.username;
+  const shown=sessionStorage.getItem(key);
+  if(shown===String(res.assignments[0].id)) return;
+  const a=res.assignments[0];
+  sessionStorage.setItem(key,String(a.id));
+  const body=`<div class="data-row"><span class="lbl">Task</span><span class="val">${a.title}</span></div><div class="data-row"><span class="lbl">Assigned by</span><span class="val">${a.assignedByName||a.assignedBy}</span></div><div class="data-row"><span class="lbl">Due date</span><span class="val">${formatAssignmentDate(a.dueDate)}</span></div><div class="card" style="margin:12px 0 0;padding:12px;background:#f8fafc"><b>Instructions</b><div style="margin-top:8px;white-space:pre-wrap;line-height:1.5">${a.description}</div></div><button class="btn btn-success" style="margin-top:16px" onclick="completeMyAssignment('${a.id}',this)">Completed</button>`;
+  openModal('You have a new assignment',body);
+}
+async function checkSuperAdminCompletionPopup(){
+  if(!state.user || String(state.user.role).toLowerCase()!=='super admin') return;
+  const res=await apiGet({action:'assignmentCompletions'},{silent:true});
+  if(!res.success || !(res.assignments||[]).length) return;
+  const latest=res.assignments[0];
+  const key='enican_assignment_completion_popup';
+  if(sessionStorage.getItem(key)===String(latest.id)+'|'+String(latest.completedAt)) return;
+  sessionStorage.setItem(key,String(latest.id)+'|'+String(latest.completedAt));
+  const timingClass=String(latest.completionStatus).toLowerCase()==='late'?'assignment-overdue':'assignment-on-time';
+  openModal('Assignment Completed',`<div class="data-row"><span class="lbl">Task</span><span class="val">${latest.title}</span></div><div class="data-row"><span class="lbl">Completed by</span><span class="val">${latest.assignedToName||latest.completedBy}</span></div><div class="data-row"><span class="lbl">Due date</span><span class="val">${formatAssignmentDate(latest.dueDate)}</span></div><div class="data-row"><span class="lbl">Completed</span><span class="val">${latest.completedAt?new Date(latest.completedAt).toLocaleString():'—'}</span></div><div class="card" style="margin:12px 0 0;text-align:center;background:#f8fafc"><div class="${timingClass}">${latest.timingText||'Completed'}</div></div>`);
+}
+async function renderAssignments(el){
+  if(!state.user || String(state.user.role).toLowerCase()!=='super admin'){ el.innerHTML='<div class="card"><p style="color:#dc2626">Access denied. Super Admin only.</p></div>'; return; }
+  document.getElementById('headerSub').textContent='Assign and monitor tasks';
+  const [usersRes, assignmentsRes]=await Promise.all([apiGet({action:'listUsers'},{silent:true}),apiGet({action:'assignments'},{silent:true})]);
+  if(!usersRes.success) throw new Error(usersRes.error||'Could not load users');
+  if(!assignmentsRes.success) throw new Error(assignmentsRes.error||'Could not load assignments');
+  const users=(usersRes.users||[]).filter(u=>(String(u.active).toUpperCase()==='TRUE'||u.active===true)&&String(u.username).toLowerCase()!==String(state.user.username).toLowerCase());
+  const all=assignmentsRes.assignments||[];
+  const open=all.filter(a=>String(a.status).toLowerCase()!=='completed');
+  const completed=all.filter(a=>String(a.status).toLowerCase()==='completed');
+  el.innerHTML=`
+    <div class="section-title">New Assignment</div>
+    <div class="card">
+      <div class="field"><label>Task title</label><input id="taskTitle" type="text" placeholder="e.g. Inspect Tank Area"></div>
+      <div class="field"><label>Task description / instructions</label><textarea id="taskDescription" rows="5" placeholder="Describe everything the user must do..."></textarea></div>
+      <div class="field"><label>Assign user</label><select id="taskAssignee"><option value="">Select user account</option>${users.map(u=>`<option value="${u.username}">${u.fullName||u.username} (@${u.username})</option>`).join('')}</select></div>
+      <div class="field"><label>Due date</label><input id="taskDueDate" type="date"></div>
+      <button class="btn" onclick="createAssignmentFromUI(this)">Assign Task</button>
+    </div>
+    <div class="section-title">Open Assignments (${open.length})</div>
+    ${open.length?open.map(a=>`<div class="list-item"><div class="avatar">✓</div><div class="info"><div class="name">${a.title}</div><div class="sub">${a.assignedToName||a.assignedTo} · Due ${formatAssignmentDate(a.dueDate)} · ${assignmentDueLabel(a.dueDate)}</div></div><span class="badge small ${assignmentDueClass(a.dueDate)}">Open</span></div><div class="card" style="margin-top:-4px"><div style="white-space:pre-wrap;color:#475569;font-size:13px">${a.description}</div></div>`).join(''):'<div class="empty">No open assignments.</div>'}
+    <div class="section-title">Completed Assignments (${completed.length})</div>
+    ${completed.length?completed.map(a=>{const late=String(a.completionStatus).toLowerCase()==='late';return `<div class="list-item"><div class="avatar">✓</div><div class="info"><div class="name">${a.title}</div><div class="sub">${a.assignedToName||a.completedBy} · Due ${formatAssignmentDate(a.dueDate)} · Completed ${a.completedAt?new Date(a.completedAt).toLocaleString():'—'}</div></div><span class="badge small ${late?'red':'green'}">${late?'Late':'On time'}</span></div><div class="card" style="margin-top:-4px"><div class="${late?'assignment-overdue':'assignment-on-time'}">${a.timingText||'Completed on time'}</div></div>`}).join(''):'<div class="empty">No completed assignments yet.</div>'}
+  `;
+}
+async function createAssignmentFromUI(btn){
+  const title=document.getElementById('taskTitle').value.trim();
+  const description=document.getElementById('taskDescription').value.trim();
+  const assignedTo=document.getElementById('taskAssignee').value;
+  const dueDate=document.getElementById('taskDueDate').value;
+  if(!title||!description||!assignedTo||!dueDate)return toast('Complete all assignment fields.','error');
+  setBtnLoading(btn,true);
+  await withLoader('Assigning task...',async()=>{
+    const res=await apiPost({action:'createAssignment',idempotencyKey:uid('TASK',assignedTo+':'+title+':'+dueDate),title,description,assignedTo,dueDate,user:state.user.username});
+    if(!res.success)return toast(res.error||'Could not assign task','error');
+    toast('Assignment created','success'); loadPage();
+  });
+  setBtnLoading(btn,false);
 }
 
 function openModal(title, bodyHtml) {

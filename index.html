@@ -48,11 +48,11 @@ body { padding-bottom: 80px; }
 button { font-family: inherit; cursor: pointer; border: none; outline: none; background: none; }
 input, select, textarea { font-family: inherit; font-size: 16px; }
 
-#pageLoader { position: fixed; inset: 0; background: rgba(10,31,68,0.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); z-index: 9999; display: none; align-items: center; justify-content: center; animation: fadeIn 0.15s ease; }
-#pageLoader.active { display: flex; }
-#pageLoader .loader-box { background: #ffffff; border-radius: 16px; padding: 28px 36px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.35); min-width: 200px; animation: popIn 0.2s cubic-bezier(.2,.8,.2,1); }
-#pageLoader .spinner-lg { width: 52px; height: 52px; border: 5px solid #dbe4f5; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 14px; }
-#pageLoader .loader-text { color: var(--primary); font-weight: 700; font-size: 0.95rem; letter-spacing: 0.3px; }
+#page { position: fixed; inset: 0; background: rgba(10,31,68,0.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); z-index: 9999; display: none; align-items: center; justify-content: center; animation: fadeIn 0.15s ease; }
+#page.active { display: flex; }
+#page .-box { background: #ffffff; border-radius: 16px; padding: 28px 36px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.35); min-width: 200px; animation: popIn 0.2s cubic-bezier(.2,.8,.2,1); }
+#page .spinner-lg { width: 52px; height: 52px; border: 5px solid #dbe4f5; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 14px; }
+#page .-text { color: var(--primary); font-weight: 700; font-size: 0.95rem; letter-spacing: 0.3px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
@@ -290,10 +290,10 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 </head>
 <body>
 
-<div id="pageLoader">
-  <div class="loader-box">
+<div id="page">
+  <div class="-box">
     <div class="spinner-lg"></div>
-    <div class="loader-text" id="pageLoaderText">Loading...</div>
+    <div class="-text" id="pageText">Loading...</div>
   </div>
 </div>
 
@@ -327,7 +327,7 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
       <button class="install-app-btn hidden" id="headerInstallBtn" onclick="installPWA()" title="Install Enican Mines System">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg><span>Install</span>
       </button>
-      <button class="super-menu-btn" id="superMenuBtn" onclick="toggleSuperMenu()" title="Super Admin menu">
+      <button class="super-menu-btn" id="superMenuBtn" onclick="toggleSuperMenu()" title="superadmin menu">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>
       </button>
       <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" title="Refresh">
@@ -457,8 +457,8 @@ async function apiGet(params, options) {
   const p = Object.assign({}, params);
   if (state.token && !p.token) p.token = state.token;
   const qs = new URLSearchParams(p).toString();
-  const showApiLoader = !state.loading && !(options && options.silent);
-  if (showApiLoader) showLoader('Loading...');
+  const showApi = !state.loading && !(options && options.silent);
+  if (showApi) show('Loading...');
   try {
     const res = await fetch(WEBAPP_URL + '?' + qs);
     const data = await res.json();
@@ -467,7 +467,7 @@ async function apiGet(params, options) {
     }
     return data;
   } finally {
-    if (showApiLoader) hideLoader();
+    if (showApi) hide();
   }
 }
 async function apiPost(body) {
@@ -526,12 +526,12 @@ function clearUid(key) {
   } catch (e) {}
 }
 
-function showLoader(text) {
-  document.getElementById('pageLoaderText').textContent = text || 'Loading...';
-  document.getElementById('pageLoader').classList.add('active');
+function show(text) {
+  document.getElementById('pageText').textContent = text || 'Loading...';
+  document.getElementById('page').classList.add('active');
 }
-function hideLoader() { document.getElementById('pageLoader').classList.remove('active'); }
-async function withLoader(text, fn) { showLoader(text); try { return await fn(); } finally { hideLoader(); } }
+function hide() { document.getElementById('page').classList.remove('active'); }
+async function with(text, fn) { show(text); try { return await fn(); } finally { hideLoader(); } }
 function setBtnLoading(btn, loading) {
   if (!btn) return;
   if (loading) { btn.classList.add('is-loading'); btn.disabled = true; }
@@ -589,7 +589,7 @@ function logout() {
 function buildNav() {
   const role = String(state.user.role || '').toLowerCase().trim();
   let items = [];
-  if (role === 'super admin') {
+  if (role === 'superadmin') {
     items = [
       { id: 'dashboard', label: 'Dashboard', icon: '<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>' },
       { id: 'loadTank', label: 'Load', icon: '<path d="M12 5v14"/><path d="M5 12h14"/>' },
@@ -634,7 +634,7 @@ function buildNav() {
   }
   const nav = document.getElementById('bottomNav');
   nav.innerHTML = items.map(it => `
-    <button class="nav-item ${role === 'super admin' && it.id === 'assignments' ? 'super-nav-wide' : ''} ${state.page === it.id ? 'active' : ''}" data-nav="${it.id}">
+    <button class="nav-item ${role === 'superadmin' && it.id === 'assignments' ? 'super-nav-wide' : ''} ${state.page === it.id ? 'active' : ''}" data-nav="${it.id}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${it.icon}</svg>
       <span>${it.label}</span>
     </button>
@@ -642,12 +642,12 @@ function buildNav() {
   nav.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => navigate(b.dataset.nav));
   const panel = document.getElementById('superMenuPanel');
   if (panel) {
-    if (role === 'super admin') {
+    if (role === 'superadmin') {
       panel.innerHTML = '<button onclick="navigate(\'assignments\');closeSuperMenu()">Assignments</button><button onclick="navigate(\'pending\');closeSuperMenu()">Pending Approvals</button><button onclick="navigate(\'settings\');closeSuperMenu()">Settings</button>';
     } else panel.innerHTML = '';
   }
   const menuBtn = document.getElementById('superMenuBtn');
-  if (menuBtn) menuBtn.style.display = role === 'super admin' ? '' : 'none';
+  if (menuBtn) menuBtn.style.display = role === 'superadmin' ? '' : 'none';
 }
 function toggleSuperMenu(){ const p=document.getElementById('superMenuPanel'); if(p) p.classList.toggle('open'); }
 function closeSuperMenu(){ const p=document.getElementById('superMenuPanel'); if(p) p.classList.remove('open'); }
@@ -1950,7 +1950,7 @@ async function renderProfile(el) {
 }
 
 async function renderSettings(el) {
-  if (!state.user || !['admin','super admin'].includes(String(state.user.role).toLowerCase())) {
+  if (!state.user || !['admin','superadmin'].includes(String(state.user.role).toLowerCase())) {
     el.innerHTML = '<div class="card"><p style="color:#dc2626">Access denied. Admin only.</p></div>';
     return;
   }
@@ -1986,7 +1986,7 @@ async function renderSettings(el) {
           <option value="boiler">Boiler</option>
           <option value="driver">Driver</option>
           <option value="admin">Admin</option>
-          <option value="super admin">Super Admin</option>
+          <option value="superadmin">superadmin</option>
         </select>
       </div>
       <button class="btn" onclick="createUser(this)">Create User</button>
@@ -2006,7 +2006,7 @@ async function renderSettings(el) {
             <option value="boiler" ${u.role==='boiler'?'selected':''}>Boiler</option>
             <option value="driver" ${u.role==='driver'?'selected':''}>Driver</option>
             <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
-            <option value="super admin" ${u.role==='super admin'?'selected':''}>Super Admin</option>
+            <option value="superadmin" ${u.role==='superadmin'?'selected':''}>superadmin</option>
           </select>
         </div>
       `).join('')}
@@ -2143,7 +2143,7 @@ async function completeMyAssignment(id,btn){
   setBtnLoading(btn,false);
 }
 async function checkMyAssignmentPopup(){
-  if(!state.user || String(state.user.role).toLowerCase()==='super admin') return;
+  if(!state.user || String(state.user.role).toLowerCase()==='superadmin') return;
   const res=await apiGet({action:'myAssignments'},{silent:true});
   if(!res.success || !(res.assignments||[]).length) return;
   const key='enican_assignment_popup_'+state.user.username;
@@ -2155,7 +2155,7 @@ async function checkMyAssignmentPopup(){
   openModal('You have a new assignment',body);
 }
 async function checkSuperAdminCompletionPopup(){
-  if(!state.user || String(state.user.role).toLowerCase()!=='super admin') return;
+  if(!state.user || String(state.user.role).toLowerCase()!=='superadmin') return;
   const res=await apiGet({action:'assignmentCompletions'},{silent:true});
   if(!res.success || !(res.assignments||[]).length) return;
   const latest=res.assignments[0];
@@ -2166,7 +2166,7 @@ async function checkSuperAdminCompletionPopup(){
   openModal('Assignment Completed',`<div class="data-row"><span class="lbl">Task</span><span class="val">${latest.title}</span></div><div class="data-row"><span class="lbl">Completed by</span><span class="val">${latest.assignedToName||latest.completedBy}</span></div><div class="data-row"><span class="lbl">Due date</span><span class="val">${formatAssignmentDate(latest.dueDate)}</span></div><div class="data-row"><span class="lbl">Completed</span><span class="val">${latest.completedAt?new Date(latest.completedAt).toLocaleString():'—'}</span></div><div class="card" style="margin:12px 0 0;text-align:center;background:#f8fafc"><div class="${timingClass}">${latest.timingText||'Completed'}</div></div>`);
 }
 async function renderAssignments(el){
-  if(!state.user || String(state.user.role).toLowerCase()!=='super admin'){ el.innerHTML='<div class="card"><p style="color:#dc2626">Access denied. Super Admin only.</p></div>'; return; }
+  if(!state.user || String(state.user.role).toLowerCase()!=='superadmin'){ el.innerHTML='<div class="card"><p style="color:#dc2626">Access denied. superadmin only.</p></div>'; return; }
   document.getElementById('headerSub').textContent='Assign and monitor tasks';
   const [usersRes, assignmentsRes]=await Promise.all([apiGet({action:'listUsers'},{silent:true}),apiGet({action:'assignments'},{silent:true})]);
   if(!usersRes.success) throw new Error(usersRes.error||'Could not load users');

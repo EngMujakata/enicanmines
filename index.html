@@ -927,6 +927,7 @@ function buildNav() {
       { id: 'empty', label: 'Empty', icon: '<path d="M12 19V5"/><path d="M5 12l7 7 7-7"/>' },
       { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
       { id: 'pending', label: 'Pending', icon: '<path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/>' },
+      { id: 'debts', label: 'Owing', icon: '<path d="M3 5h18v14H3z"/><path d="M3 10h18"/><path d="M7 15h4"/>' },
       { id: 'assignments', label: 'Tasks', icon: '<path d="M9 11l3 3L20 6"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7"/>', wide: true },
       { id: 'settings', label: 'Settings', icon: '<path d="M12 3v18"/><path d="M3 12h18"/>' },
       { id: 'profile', label: 'Account', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>' }
@@ -937,6 +938,8 @@ function buildNav() {
       { id: 'loadTank', label: 'Load', icon: '<path d="M12 5v14"/><path d="M5 12h14"/>' },
       { id: 'empty', label: 'Empty', icon: '<path d="M12 19V5"/><path d="M5 12l7 7 7-7"/>' },
       { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
+      { id: 'pending', label: 'Review', icon: '<path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/>' },
+      { id: 'debts', label: 'Owing', icon: '<path d="M3 5h18v14H3z"/><path d="M3 10h18"/><path d="M7 15h4"/>' },
       { id: 'settings', label: 'Settings', icon: '<path d="M12 3v18"/><path d="M3 12h18"/>' },
       { id: 'profile', label: 'Account', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>' }
     ];
@@ -1058,7 +1061,8 @@ const PAGE_TITLES = {
   loadBoiler: 'Load Boiler',
   empty: 'Empty Tank',
   reports: 'Reports',
-  pending: 'Pending Approvals',
+  pending: 'Approvals',
+  debts: 'Client Balances Owing',
   driver: 'Driver Trips',
   profile: 'Account',
   settings: 'Settings',
@@ -1134,6 +1138,7 @@ async function loadPage(silent) {
     else if (state.page === 'empty') await renderEmpty(el);
     else if (state.page === 'reports') await renderReports(el);
     else if (state.page === 'pending') await renderPending(el);
+    else if (state.page === 'debts') await renderDebts(el);
     else if (state.page === 'driver') await renderDriver(el);
     else if (state.page === 'profile') await renderProfile(el);
     else if (state.page === 'settings') await renderSettings(el);
@@ -1674,18 +1679,47 @@ async function emptySession(id) {
     <div class="data-row total"><span class="lbl">Balance Due</span><span class="val" style="color:#dc2626">$${Number(invoice.balance).toFixed(2)}</span></div>
     <div class="field" style="margin-top:14px">
       <label>Amount Received</label>
-      <input id="payAmount" type="number" step="0.01" min="0" value="${Number(invoice.balance).toFixed(2)}">
+      <input id="payAmount" type="number" step="0.01" min="0" value="0" placeholder="0.00 if no payment received">
+      <div class="sub">Enter the amount actually received now. Leave 0 if no money was received; the remaining balance will be recorded as owing.</div>
     </div>
-    <button class="btn btn-success" onclick="submitPayment('${invoice.id}','${session.id}', this)">Pay & Download Receipt</button>
+    <div class="modal-actions" style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-success" onclick="emptySessionNow('${invoice.id}','${session.id}', this)">Empty Asset / Record Owing</button>
+      <button class="btn btn-outline" onclick="submitPayment('${invoice.id}','${session.id}', this)">Record Payment Only</button>
+    </div>
   `;
-  openModal('Empty Tank · ' + session.customerName, body);
+  openModal('Empty Asset · ' + session.customerName, body);
 }
+async function emptySessionNow(invoiceId, sessionId, btn) {
+  const input = document.getElementById('payAmount');
+  const amount = input && input.value !== '' ? Number(input.value) : 0;
+  if (!Number.isFinite(amount) || amount < 0) return toast('Enter a valid payment amount (0 if none received).', 'error');
+  setBtnLoading(btn, true);
+  await withLoader('Emptying asset and updating client balance…', async () => {
+    let paymentResult = null;
+    if (amount > 0) {
+      paymentResult = await apiPost({action:'recordPayment', idempotencyKey:uid('PAY', invoiceId + ':' + amount + ':' + Date.now() + ':' + Math.random()), invoiceId, sessionId, amount, user:state.user.username});
+      if (!paymentResult.success) { toast(paymentResult.error || 'Payment could not be recorded.', 'error'); return; }
+      if (paymentResult.receipt) generateReceiptPDF(paymentResult.receipt);
+    }
+    if (!paymentResult || !paymentResult.fullyPaid) {
+      const emptyRes = await apiPost({action:'emptySession', idempotencyKey:uid('EMPTY', sessionId + ':' + invoiceId + ':' + Date.now()), invoiceId, sessionId, user:state.user.username});
+      if (!emptyRes.success) { toast(emptyRes.error || 'Could not empty asset.', 'error'); return; }
+      toast(emptyRes.status === 'owing' ? `Asset emptied. $${Number(emptyRes.balance).toFixed(2)} recorded as owing.` : 'Asset emptied; invoice fully paid.', 'success');
+    } else {
+      toast('Payment received in full. Asset emptied and no balance is owing.', 'success');
+    }
+    closeModal();
+    if (state.page === 'empty') loadPage(true);
+  });
+  setBtnLoading(btn, false);
+}
+
 async function submitPayment(invoiceId, sessionId, btn) {
   const amount = Number(document.getElementById('payAmount').value);
   if (!amount || amount <= 0) return toast('Enter valid amount', 'error');
   setBtnLoading(btn, true);
   await withLoader('Recording payment…', async () => {
-    const res = await apiPost({ action: 'recordPayment', idempotencyKey: uid('PAY', invoiceId + ':' + amount), invoiceId, sessionId, amount, user: state.user.username });
+    const res = await apiPost({ action: 'recordPayment', idempotencyKey: uid('PAY', invoiceId + ':' + amount + ':' + Date.now() + ':' + Math.random()), invoiceId, sessionId, amount, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
     toast(res.fullyPaid ? 'Fully paid. Tank emptied.' : 'Payment recorded', 'success');
     generateReceiptPDF(res.receipt);
@@ -1770,9 +1804,46 @@ async function downloadStatement(sessionId) {
   setTimeout(() => w.print(), 300);
 }
 
+// ==================== CLIENT BALANCES OWING ====================
+async function renderDebts(el) {
+  document.getElementById('headerSub').textContent = 'Outstanding client balances';
+  const res = await apiGet({action:'clientBalances'});
+  if (!res.success) throw new Error(res.error || 'Could not load client balances');
+  const clients = res.clients || [];
+  el.innerHTML = `<div class="section-title">Clients Owing (${clients.length})</div>
+    <div class="card" style="margin:0 12px 12px"><div class="data-row total"><span class="lbl">Total Outstanding</span><span class="val" style="color:#dc2626">$${Number(res.totalOwing || 0).toFixed(2)}</span></div></div>
+    ${clients.length ? clients.map(c => `<div class="list-item" onclick="showClientDebt('${String(c.id).replace(/'/g, '')}')"><div class="avatar">${escapeHtml((c.name || '?').slice(0,1).toUpperCase())}</div><div class="info"><div class="name">${escapeHtml(c.name || 'Unknown client')}</div><div class="sub">${escapeHtml(c.phone || '')} · ${Number(c.invoiceCount || 0)} outstanding invoice(s)</div></div><div class="amount red">$${Number(c.totalOwing || 0).toFixed(2)}</div></div>`).join('') : '<div class="empty">No clients currently owe money.</div>'}`;
+}
+async function showClientDebt(customerId) {
+  const res = await apiGet({action:'clientBalanceDetails', id:customerId});
+  if (!res.success) return toast(res.error || 'Could not load client ledger.', 'error');
+  const c = res.customer || {};
+  const invoices = res.invoices || [];
+  const body = `<div class="data-row"><span class="lbl">Client</span><span class="val">${escapeHtml(c.name || '')}</span></div>
+    <div class="data-row"><span class="lbl">Phone</span><span class="val">${escapeHtml(c.phone || '—')}</span></div>
+    <div class="data-row"><span class="lbl">Total paid</span><span class="val" style="color:#16a34a">$${Number(res.totalPaid || 0).toFixed(2)}</span></div>
+    <div class="data-row total"><span class="lbl">Still owing</span><span class="val" style="color:#dc2626">$${Number(res.totalOwing || 0).toFixed(2)}</span></div>
+    ${invoices.map(i => `<div class="card" style="margin-top:12px"><div class="card-title">Invoice ${escapeHtml(i.invoiceNumber || i.id || '—')}</div><div class="data-row"><span class="lbl">Assets</span><span class="val">${escapeHtml(i.assetIds || '—')}</span></div><div class="data-row"><span class="lbl">Invoice total</span><span class="val">$${Number(i.totalAmount || 0).toFixed(2)}</span></div><div class="data-row"><span class="lbl">Paid</span><span class="val">$${Number(i.paidAmount || 0).toFixed(2)}</span></div><div class="data-row total"><span class="lbl">Owing</span><span class="val" style="color:#dc2626">$${Number(i.balance || 0).toFixed(2)}</span></div><div class="section-title" style="margin:10px 0 4px">Payments received</div>${(i.payments || []).length ? i.payments.map(p => `<div class="data-row"><span class="lbl">${escapeHtml(p.createdAt ? new Date(p.createdAt).toLocaleString() : '')} · ${escapeHtml(p.receivedBy || '')}</span><span class="val">$${Number(p.amount || 0).toFixed(2)}</span></div>`).join('') : '<div class="sub">No payments recorded for this invoice.</div>'}</div>`).join('')}`;
+  openModal('Client Ledger · ' + (c.name || 'Client'), body);
+}
+
 // ==================== PENDING (SUPER ADMIN ONLY) — INLINE ACTIONS ====================
 async function renderPending(el) {
-  document.getElementById('headerSub').textContent = 'Pending approvals (Super Admin only)';
+  const role = String(state.user.role || '').toLowerCase();
+  if (role === 'admin') {
+    document.getElementById('headerSub').textContent = 'First-stage review · Admin';
+    const res = await apiGet({ action: 'adminPendingApprovals' });
+    if (!res.success) { el.innerHTML = `<div class="card"><p style="color:#dc2626">${escapeHtml(res.error || 'Could not load approvals')}</p></div>`; return; }
+    const prices = res.pending || [];
+    const reqs = res.requisitions || [];
+    el.innerHTML = `<div class="section-title">Admin Review Queue (${prices.length + reqs.length})</div>
+      <p class="sub" style="margin:0 12px 12px">Approve or decline each request here. Only requests approved by an admin are forwarded to Super Admin.</p>
+      ${prices.map(p => renderPendingPriceCard(p, true)).join('')}
+      ${reqs.map(r => renderPendingRequisitionCard(r, true)).join('')}
+      ${!prices.length && !reqs.length ? '<div class="empty">No requests waiting for admin review.</div>' : ''}`;
+    return;
+  }
+  document.getElementById('headerSub').textContent = 'Final approvals · Super Admin';
   const [priceRes, reqRes] = await Promise.all([
     apiGet({ action: 'pendingPrices' }),
     apiGet({ action: 'pendingRequisitions', user: state.user.username })
@@ -1801,7 +1872,7 @@ async function renderPending(el) {
   `;
 }
 
-function renderPendingPriceCard(p) {
+function renderPendingPriceCard(p, adminStage) {
   const customer = p.customerName || 'Unknown customer';
   const initial = customer && customer[0] ? customer[0].toUpperCase() : '?';
   const assetType = String(p.assetType || '').toLowerCase();
@@ -1811,6 +1882,9 @@ function renderPendingPriceCard(p) {
   const oldAmt = Number(p.oldAmount || 0).toFixed(2);
   const newAmt = Number(p.newAmount || 0).toFixed(2);
   const requester = p.requestedBy || '—';
+  const adminApprover = p.adminApprovedByName || p.adminApprovedBy || '';
+  const adminStamp = adminApprover ? `<div class="who">Admin approved by <b>${escapeHtml(adminApprover)}</b>${p.adminApprovedAt ? ' · ' + escapeHtml(new Date(p.adminApprovedAt).toLocaleString()) : ''}</div>` : '';
+  const approvalLabel = adminStage ? 'Approve for Super Admin' : 'Final Super Admin Approval';
   const safety = escapeHtml(JSON.stringify({ id: p.id }));
   return `
     <div class="pending-card" data-pending-id="${escapeHtml(p.id)}">
@@ -1828,6 +1902,7 @@ function renderPendingPriceCard(p) {
       <div class="pending-line">
         <b>${escapeHtml(p.expenseName || 'Expense')}</b>: $${oldAmt}<span class="arrow">→</span>$${newAmt}
         <div class="who">Requested by <b>${escapeHtml(requester)}</b></div>
+        ${adminStamp}
       </div>
       <div class="pending-tags">
         <span class="pending-tag inv">Invoice #: ${escapeHtml(invoiceNumber)}</span>
@@ -1835,13 +1910,13 @@ function renderPendingPriceCard(p) {
       </div>
       <div class="pending-actions">
         <button class="btn btn-danger" onclick='declinePendingInline(${safety}, this)'>Decline</button>
-        <button class="btn btn-success" onclick='approvePendingInline(${safety}, this)'>Approve</button>
+        <button class="btn btn-success" onclick='approvePendingInline(${safety}, this)'>${approvalLabel}</button>
       </div>
     </div>
   `;
 }
 
-function renderPendingRequisitionCard(r) {
+function renderPendingRequisitionCard(r, adminStage) {
   const initial = '$';
   const name = r.requestedByName || r.requestedBy || '—';
   const account = String(r.account || 'general').toUpperCase();
@@ -1849,6 +1924,9 @@ function renderPendingRequisitionCard(r) {
   const description = r.description || '';
   const dateStr = r.requestDate || r.createdAt ? new Date(r.requestDate || r.createdAt).toLocaleDateString() : '';
   const safety = escapeHtml(JSON.stringify({ id: r.id }));
+  const adminApprover = r.adminApprovedByName || r.adminApprovedBy || '';
+  const adminStamp = adminApprover ? `<div class="who">Admin approved by <b>${escapeHtml(adminApprover)}</b>${r.adminApprovedAt ? ' · ' + escapeHtml(new Date(r.adminApprovedAt).toLocaleString()) : ''}</div>` : '';
+  const approvalLabel = adminStage ? 'Approve for Super Admin' : 'Final Super Admin Approval';
   return `
     <div class="pending-card cash" data-pending-id="${escapeHtml(r.id)}">
       <div class="pending-card-head">
@@ -1863,14 +1941,15 @@ function renderPendingRequisitionCard(r) {
         </div>
       </div>
       <div class="pending-desc">${escapeHtml(description)}</div>
+      ${adminStamp}
       <div class="pending-tags">
         <span class="pending-tag">Account: ${escapeHtml(account)}</span>
         ${dateStr ? `<span class="pending-tag inv">Requested: ${escapeHtml(dateStr)}</span>` : ''}
       </div>
       <div class="pending-actions">
         <button class="btn btn-danger" onclick='declineRequisitionInline(${safety}, this)'>Decline</button>
-        <button class="btn btn-success" onclick='approveRequisitionInline(${safety}, this)'>Approve</button>
-        <button class="btn btn-outline btn-note" onclick='editRequisitionInline(${safety})'>Approve with different amount / note…</button>
+        <button class="btn btn-success" onclick='approveRequisitionInline(${safety}, this)'>${approvalLabel}</button>
+        ${adminStage ? '' : `<button class="btn btn-outline btn-note" onclick='editRequisitionInline(${safety})'>Approve with different amount / note…</button>`}
       </div>
     </div>
   `;
@@ -1880,9 +1959,9 @@ async function approvePendingInline(ref, btn) {
   const id = ref.id;
   setBtnLoading(btn, true);
   await withLoader('Approving price change…', async () => {
-    const res = await apiPost({ action: 'approvePending', idempotencyKey: uid('APR', id), pendingId: id, user: state.user.username });
+    const res = await apiPost({ action: 'approvePending', idempotencyKey: uid('APR', id + ':' + state.user.role + ':' + state.user.username), pendingId: id, user: state.user.username });
     if (!res.success) { toast(res.error || 'Could not approve', 'error'); setBtnLoading(btn, false); return; }
-    toast('Approved', 'success');
+    toast(res.stage === 'admin' ? 'Admin approval recorded; forwarded to Super Admin.' : 'Super Admin approval completed.', 'success');
     loadPage(true);
   });
   setBtnLoading(btn, false);
@@ -1893,7 +1972,7 @@ async function declinePendingInline(ref, btn) {
   if (!confirm('Decline this price change? The invoice will keep the previously approved price and the session will NOT be cancelled.')) return;
   setBtnLoading(btn, true);
   await withLoader('Declining…', async () => {
-    const res = await apiPost({ action: 'declinePending', idempotencyKey: uid('DEC', id), pendingId: id, user: state.user.username });
+    const res = await apiPost({ action: 'declinePending', idempotencyKey: uid('DEC', id + ':' + state.user.role + ':' + state.user.username), pendingId: id, user: state.user.username });
     if (!res.success) { toast(res.error || 'Could not decline', 'error'); setBtnLoading(btn, false); return; }
     toast(res.message || 'Price change declined.', 'success');
     loadPage(true);
@@ -1908,11 +1987,11 @@ async function approveRequisitionInline(ref, btn) {
     const res = await apiPost({
       action: 'approveCashRequisition',
       requisitionId: id,
-      idempotencyKey: uid('REQAPR', id),
+      idempotencyKey: uid('REQAPR', id + ':' + state.user.role + ':' + state.user.username),
       user: state.user.username
     });
     if (!res.success) { toast(res.error || 'Could not approve', 'error'); setBtnLoading(btn, false); return; }
-    toast('Cash requisition approved.', 'success');
+    toast(res.stage === 'admin' ? 'Admin approval recorded; forwarded to Super Admin.' : 'Cash requisition fully approved by Super Admin.', 'success');
     loadPage(true);
   });
   setBtnLoading(btn, false);
@@ -1930,7 +2009,7 @@ async function declineRequisitionInline(ref, btn) {
       action: 'declineCashRequisition',
       requisitionId: id,
       adminNote: adminNote,
-      idempotencyKey: uid('REQDEC', id + ':' + adminNote),
+      idempotencyKey: uid('REQDEC', id + ':' + adminNote + ':' + state.user.role + ':' + state.user.username),
       user: state.user.username
     });
     if (!res.success) { toast(res.error || 'Could not decline', 'error'); setBtnLoading(btn, false); return; }
@@ -1969,7 +2048,7 @@ async function approveRequisitionFromModal(ref, btn) {
       requisitionId: id,
       approvedAmount: approvedAmount,
       adminNote: adminNote,
-      idempotencyKey: uid('REQAPR', id + ':' + approvedAmount),
+      idempotencyKey: uid('REQAPR', id + ':' + approvedAmount + ':' + state.user.role + ':' + state.user.username),
       user: state.user.username
     });
     if (!res.success) { toast(res.error || 'Could not approve', 'error'); setBtnLoading(btn, false); return; }
@@ -1990,7 +2069,7 @@ async function declineRequisitionFromModal(ref, btn) {
       action: 'declineCashRequisition',
       requisitionId: id,
       adminNote: adminNote,
-      idempotencyKey: uid('REQDEC', id + ':' + adminNote),
+      idempotencyKey: uid('REQDEC', id + ':' + adminNote + ':' + state.user.role + ':' + state.user.username),
       user: state.user.username
     });
     if (!res.success) { toast(res.error || 'Could not decline', 'error'); setBtnLoading(btn, false); return; }
@@ -2025,7 +2104,7 @@ async function viewPending(id) {
 async function approvePending(id, btn) {
   setBtnLoading(btn, true);
   await withLoader('Approving…', async () => {
-    const res = await apiPost({ action: 'approvePending', idempotencyKey: uid('APR', id), pendingId: id, user: state.user.username });
+    const res = await apiPost({ action: 'approvePending', idempotencyKey: uid('APR', id + ':' + state.user.role + ':' + state.user.username), pendingId: id, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
     toast('Approved', 'success');
     closeModal();
@@ -2037,7 +2116,7 @@ async function declinePending(id, btn) {
   if (!confirm('Decline this price change? The invoice will keep the previously approved price and the session will NOT be cancelled.')) return;
   setBtnLoading(btn, true);
   await withLoader('Declining…', async () => {
-    const res = await apiPost({ action: 'declinePending', idempotencyKey: uid('DEC', id), pendingId: id, user: state.user.username });
+    const res = await apiPost({ action: 'declinePending', idempotencyKey: uid('DEC', id + ':' + state.user.role + ':' + state.user.username), pendingId: id, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
     toast(res.message || 'Price change declined.', 'success');
     closeModal();

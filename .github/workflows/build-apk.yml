@@ -1,3 +1,4 @@
+
 name: Build Android APK
 
 on:
@@ -22,6 +23,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+
+      - name: Install ImageMagick
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
 
       - name: Prepare web files (icons are generated from logo.png)
         run: |

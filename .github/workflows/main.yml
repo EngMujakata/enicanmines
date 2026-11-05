@@ -1,0 +1,67 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Prepare web files (icons are generated from logo.png)
+        run: |
+          mkdir -p www
+          cp index.html manifest.json sw.js logo.png www/
+          convert logo.png -resize 192x192 www/logo-192.png
+          convert logo.png -resize 512x512 www/logo-512.png
+
+      - name: Create Capacitor Android project
+        run: |
+          npm init -y
+          npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
+          npx cap init "Enican Mines" com.enican.mines --web-dir=www
+          npx cap add android
+          npx cap sync android
+
+      - name: Use logo.png as the app icon
+        run: |
+          RES=android/app/src/main/res
+          make_icons() {
+            DIR=$1; LEGACY=$2; FG=$3
+            INNER=$((FG * 66 / 100))
+            convert logo.png -resize ${LEGACY}x${LEGACY} $RES/$DIR/ic_launcher.png
+            cp $RES/$DIR/ic_launcher.png $RES/$DIR/ic_launcher_round.png
+            convert logo.png -resize ${INNER}x${INNER} -background none -gravity center -extent ${FG}x${FG} $RES/$DIR/ic_launcher_foreground.png
+          }
+          make_icons mipmap-mdpi 48 108
+          make_icons mipmap-hdpi 72 162
+          make_icons mipmap-xhdpi 96 216
+          make_icons mipmap-xxhdpi 144 324
+          make_icons mipmap-xxxhdpi 192 432
+
+      - name: Build APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Enican-Mines-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk

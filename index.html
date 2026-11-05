@@ -50,162 +50,25 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; bac
 input, select, textarea { font-family: inherit; font-size: 16px; }
 
 /* ============================================================
-   META-STYLE SKELETON LOADING OVERLAY
-   Replaces the old loading modal. Visible instantly, dissolved
-   quietly when real content is ready.
+   LIGHTWEIGHT LOADING
+   - thin top progress bar (never blocks the screen)
+   - small inline skeleton only when a page has nothing cached
    ============================================================ */
-#skeletonOverlay {
-  position: fixed;
-  inset: 0;
-  background: #f0f2f5;
-  z-index: 9990;
-  display: none;
-  overflow-y: auto;
-  padding: 14px;
-  opacity: 1;
-  transition: opacity .22s ease;
-}
-#skeletonOverlay.active { display: block; }
-#skeletonOverlay.fading { opacity: 0; pointer-events: none; }
-#skeletonOverlay .skel-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding-bottom: 90px;
-}
-#skeletonOverlay .skel-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 4px;
-}
-#skeletonOverlay .skel-toolbar-text {
-  font-size: 12.5px;
-  color: #65676b;
-  font-weight: 700;
-  letter-spacing: .3px;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-#skeletonOverlay .skel-toolbar-text::before {
-  content: "";
-  width: 14px; height: 14px;
-  border: 2px solid #cfd6e4;
-  border-top-color: var(--primary);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-#skeletonOverlay .skel-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-#skeletonOverlay .skel-stat {
-  background: #fff;
-  border-radius: 12px;
-  padding: 14px;
-  box-shadow: 0 1px 2px rgba(0,0,0,.06);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-}
-#skeletonOverlay .skel-card {
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0,0,0,.06);
-}
-#skeletonOverlay .skel-row {
-  display: flex;
-  align-items: center;
-  padding: 14px 16px;
-  gap: 12px;
-}
-#skeletonOverlay .skel-body {
-  padding: 0 16px 16px;
-}
-#skeletonOverlay .skel-avatar,
-#skeletonOverlay .skel-line,
-#skeletonOverlay .skel-block,
-#skeletonOverlay .skel-chip {
-  position: relative;
-  overflow: hidden;
-  background: var(--skel-base);
-  border-radius: 6px;
-}
-#skeletonOverlay .skel-avatar { width: 42px; height: 42px; border-radius: 50%; flex: none; }
-#skeletonOverlay .skel-line { height: 10px; border-radius: 6px; margin: 6px 0; }
-#skeletonOverlay .skel-line.w1 { width: 40%; }
-#skeletonOverlay .skel-line.w2 { width: 25%; height: 8px; }
-#skeletonOverlay .skel-line.w3 { width: 88%; }
-#skeletonOverlay .skel-line.w4 { width: 62%; }
-#skeletonOverlay .skel-line.center { margin-left: auto; margin-right: auto; }
-#skeletonOverlay .skel-line.w40 { width: 40px; height: 22px; margin: 0; border-radius: 8px; }
-#skeletonOverlay .skel-block { height: 130px; border-radius: 10px; margin-top: 8px; }
-#skeletonOverlay .skel-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 10px;
-}
-#skeletonOverlay .skel-tile {
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid #e6e8eb;
-  padding: 12px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-#skeletonOverlay .skel-tile .skel-line { margin: 0; }
-
-/* Shimmer sweep */
-#skeletonOverlay .shimmer::after,
-.shimmer-sweep::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  transform: translateX(-120%);
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.55) 45%, rgba(255,255,255,.95) 50%, rgba(255,255,255,.55) 55%, transparent 100%);
-  animation: shimmer 1.25s ease-in-out infinite;
-}
-@keyframes shimmer { 100% { transform: translateX(120%); } }
-
-/* Section header skeleton */
-#skeletonOverlay .skel-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 4px 0;
-}
-#skeletonOverlay .skel-heading .skel-line { margin: 0; width: 120px; height: 12px; }
-
-@media (max-width: 700px) {
-  #skeletonOverlay { padding: 10px; }
-  #skeletonOverlay .skel-stats { gap: 8px; }
-  #skeletonOverlay .skel-stat { padding: 10px; }
-  #skeletonOverlay .skel-block { height: 100px; }
-}
-
-/* Small inline skeleton used inside cards when only that section reloads */
-.inline-skel {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-}
-.inline-skel .skel-avatar,
-.inline-skel .skel-line,
-.inline-skel .skel-block { position: relative; overflow: hidden; background: var(--skel-base); }
-.inline-skel .skel-avatar { width: 38px; height: 38px; border-radius: 50%; flex: none; }
-.inline-skel .skel-line { height: 10px; border-radius: 6px; margin: 5px 0; }
-.inline-skel .skel-line.w1 { width: 40%; }
-.inline-skel .skel-line.w2 { width: 25%; height: 8px; }
-.inline-skel .skel-block { height: 110px; border-radius: 10px; flex: 1; }
+#topBar { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 9995; overflow: hidden; opacity: 0; pointer-events: none; transition: opacity .2s; }
+#topBar.on { opacity: 1; }
+#topBar::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: linear-gradient(90deg, transparent, var(--primary), transparent); animation: topbar 1s ease-in-out infinite; }
+@keyframes topbar { 0% { transform: translateX(-100%); } 100% { transform: translateX(260%); } }
+.sk { background: linear-gradient(90deg, #e4e6eb 25%, #f1f3f6 50%, #e4e6eb 75%); background-size: 200% 100%; animation: skm 1.2s linear infinite; border-radius: 6px; }
+@keyframes skm { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.skel-wrap { padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+.skel-wrap .sk-line { height: 12px; }
+.skel-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.skel-wrap .sk-stat { height: 64px; border-radius: 12px; }
+.skel-wrap .sk-card { height: 78px; border-radius: 12px; }
+@media (prefers-reduced-motion: reduce) { .sk, #topBar::before { animation: none; } }
+/* Browser skips layout/paint of off-screen cards (lazy rendering) */
+.tank-card { content-visibility: auto; contain-intrinsic-size: auto 130px; }
+.list-item { content-visibility: auto; contain-intrinsic-size: auto 64px; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -339,6 +202,7 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .card { background: var(--white); border-radius: 14px; padding: 16px; margin: 12px; box-shadow: 0 1px 3px rgba(10,31,68,.06); }
 .card-title { font-size: 15px; font-weight: 700; color: var(--navy); margin: 0 0 12px; display: flex; align-items: center; justify-content: space-between; }
 .section-title { font-size: 13px; font-weight: 700; color: var(--gray-3); text-transform: uppercase; letter-spacing: .5px; margin: 20px 16px 8px; }
+.sub { font-size: 12px; color: var(--gray-3); }
 
 .grid { display: grid; gap: 10px; }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
@@ -381,7 +245,7 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 .account-box { background: linear-gradient(140deg, var(--navy) 0%, var(--navy-light) 100%); color: white; border-radius: 14px; padding: 18px; text-align: left; cursor: pointer; }
 .account-box .label { font-size: 12px; opacity: .85; text-transform: uppercase; letter-spacing: .5px; }
 .account-box .value { font-size: 26px; font-weight: 800; margin-top: 6px; }
-.account-box .sub { font-size: 12px; opacity: .8; margin-top: 4px; }
+.account-box .sub { font-size: 12px; opacity: .8; margin-top: 4px; color: inherit; }
 .account-box.active { outline: 3px solid var(--amber); }
 .account-box.grabber { background: linear-gradient(140deg, #16a34a 0%, #15803d 100%); }
 .account-box.boiler { background: linear-gradient(140deg, #b45309 0%, #92400e 100%); }
@@ -398,6 +262,7 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 
 .search-bar { display: flex; align-items: center; gap: 8px; background: var(--white); border-radius: 12px; padding: 4px 12px; border: 1.5px solid var(--gray-2); }
 .search-bar input { flex: 1; border: none; padding: 10px 0; background: transparent; outline: none; }
+.search-results { max-height: 280px; overflow-y: auto; margin-top: 8px; }
 
 .modal-overlay { position: fixed; inset: 0; background: rgba(5,18,42,.6); display: flex; align-items: flex-end; justify-content: center; z-index: 200; animation: fadeIn .2s; }
 .modal { background: var(--white); border-radius: 20px 20px 0 0; width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; animation: slideUp .25s cubic-bezier(.2,.8,.2,1); }
@@ -516,69 +381,12 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 </head>
 <body>
 
-<!-- ============================================================
-     META-STYLE SKELETON OVERLAY — replaces the old loading modal
-     Shown instantly on page loads; shimmer sweeps while waiting.
-     ============================================================ -->
-<div id="skeletonOverlay" aria-hidden="true">
-  <div class="skel-inner">
-    <div class="skel-toolbar">
-      <div class="skel-toolbar-text" id="skeletonLabel">Loading…</div>
-    </div>
-
-    <div class="skel-heading">
-      <div class="skel-line shimmer"></div>
-    </div>
-    <div class="skel-stats">
-      <div class="skel-stat"><div class="skel-line w40 shimmer"></div><div class="skel-line w2 center shimmer" style="width:60%"></div></div>
-      <div class="skel-stat"><div class="skel-line w40 shimmer"></div><div class="skel-line w2 center shimmer" style="width:60%"></div></div>
-      <div class="skel-stat"><div class="skel-line w40 shimmer"></div><div class="skel-line w2 center shimmer" style="width:60%"></div></div>
-    </div>
-
-    <div class="skel-heading"><div class="skel-line shimmer"></div></div>
-    <div class="skel-card">
-      <div class="skel-row">
-        <div class="skel-avatar shimmer"></div>
-        <div style="flex:1">
-          <div class="skel-line w1 shimmer"></div>
-          <div class="skel-line w2 shimmer"></div>
-        </div>
-      </div>
-      <div class="skel-body">
-        <div class="skel-line w3 shimmer"></div>
-        <div class="skel-line w4 shimmer"></div>
-      </div>
-    </div>
-    <div class="skel-card">
-      <div class="skel-row">
-        <div class="skel-avatar shimmer"></div>
-        <div style="flex:1">
-          <div class="skel-line w1 shimmer"></div>
-          <div class="skel-line w2 shimmer"></div>
-        </div>
-      </div>
-      <div class="skel-body">
-        <div class="skel-line w3 shimmer"></div>
-        <div class="skel-line w4 shimmer"></div>
-      </div>
-    </div>
-
-    <div class="skel-heading"><div class="skel-line shimmer"></div></div>
-    <div class="skel-grid">
-      <div class="skel-tile"><div class="skel-line w1 shimmer"></div><div class="skel-line w2 shimmer"></div></div>
-      <div class="skel-tile"><div class="skel-line w1 shimmer"></div><div class="skel-line w2 shimmer"></div></div>
-      <div class="skel-tile"><div class="skel-line w1 shimmer"></div><div class="skel-line w2 shimmer"></div></div>
-      <div class="skel-tile"><div class="skel-line w1 shimmer"></div><div class="skel-line w2 shimmer"></div></div>
-      <div class="skel-tile"><div class="skel-line w1 shimmer"></div><div class="skel-line w2 shimmer"></div></div>
-      <div class="skel-tile"><div class="skel-line w1 shimmer"></div><div class="skel-line w2 shimmer"></div></div>
-    </div>
-  </div>
-</div>
+<div id="topBar" aria-hidden="true"></div>
 
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">EM</div>
-    <h1 id="loginSystemName">Loading...</h1>
+    <h1 id="loginSystemName">ENICAN MINES</h1>
     <p id="loginSystemSubtitle">Management System</p>
     <div class="field">
       <label>Username</label>
@@ -595,7 +403,7 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 <div id="app" class="app hidden">
   <div class="header">
     <div class="header-left">
-      <div class="system-brand" id="systemBrand">Loading...</div>
+      <div class="system-brand" id="systemBrand">ENICAN MINES</div>
       <div>
         <div class="header-title" id="headerTitle">Dashboard</div>
         <div class="header-sub" id="headerSub">Loading...</div>
@@ -643,7 +451,7 @@ const state = {
   filter: { from: '', to: '', account: 'all' },
   driverTab: 'trips',
   dirty: { load: false, driver: false },
-  systemName: 'Loading...',
+  systemName: 'ENICAN MINES',
   reportInvoicePage: 1,
   reportInvoiceHasNext: false,
   reportInvoices: [],
@@ -651,41 +459,47 @@ const state = {
   superAdminAssignments: [],
   superAdminCompletions: [],
   myAssignmentsBadgeShown: false,
-  superCompletionSeenAt: ''
+  superCompletionSeenAt: '',
+  // --- performance helpers ---
+  apiCache: new Map(),     // short-lived GET cache
+  snapshots: {},           // last rendered HTML per page (instant re-open)
+  reloadQueued: false,
+  tick: 0,
+  lastLoad: 0,
+  silentRender: false,
+  custResults: {},         // customer search results by id
+  driverRep: null,
+  driverShown: { trips: 15, exp: 15 }
 };
 
 const DRAFT_KEY = 'enican_drafts_v1';
 const SESSION_KEY = 'enican_session_v3';
+const SYSNAME_KEY = 'enican_sysname_v1';
 const ASSIGN_POPUP_SEEN_KEY = 'enican_assign_popup_seen_v1';
 const SUPER_COMPLETION_SEEN_KEY = 'enican_super_completion_seen_v1';
+const SNAPSHOT_PAGES = ['dashboard', 'empty', 'debts', 'pending', 'reports'];
+const AUTO_PAGES = ['dashboard', 'empty', 'pending', 'debts'];
+
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function fmtDay(v) { return String(v == null ? '' : v).slice(0, 10); }
 
 function saveDraft() {
   try {
-    const d = {
-      invoiceNumber: state.invoiceNumber || '',
-      customerId: state.selectedCustomer ? state.selectedCustomer.id : '',
-      customerName: state.selectedCustomer ? state.selectedCustomer.name : '',
-      customerPhone: state.selectedCustomer ? state.selectedCustomer.phone : '',
-      selectedAssets: state.selectedAssets || [],
-      selectedOurExpenses: (state.selectedOurExpenses || []).map(e => ({ id:e.id, name:e.name, amountPerUnit:e.amountPerUnit })),
-      selectedExpenses: (state.selectedExpenses || []).map(e => ({
-        expenseId: e.expenseId, expenseName: e.expenseName, amountPerAsset: e.amountPerAsset, description: e.description,
-        _pendingPriceChange: e._pendingPriceChange || null
-      })),
-      assetType: state.assetType || '',
-      driverTrip: {
-        customerId: (document.getElementById('tripCustomer') || {}).value || '',
-        trips: (document.getElementById('tripCount') || {}).value || '',
-        rate: (document.getElementById('tripRate') || {}).value || '',
-        date: (document.getElementById('tripDate') || {}).value || '',
-        notes: (document.getElementById('tripNotes') || {}).value || ''
-      },
-      driverExpense: {
-        desc: (document.getElementById('expDesc') || {}).value || '',
-        amt: (document.getElementById('expAmt') || {}).value || '',
-        date: (document.getElementById('expDate') || {}).value || ''
-      }
-    };
+    const d = loadDraft() || {};
+    d.invoiceNumber = state.invoiceNumber || '';
+    d.customerId = state.selectedCustomer ? state.selectedCustomer.id : '';
+    d.customerName = state.selectedCustomer ? state.selectedCustomer.name : '';
+    d.customerPhone = state.selectedCustomer ? state.selectedCustomer.phone : '';
+    d.selectedAssets = state.selectedAssets || [];
+    d.selectedOurExpenses = (state.selectedOurExpenses || []).map(e => ({ id:e.id, name:e.name, amountPerUnit:e.amountPerUnit }));
+    d.selectedExpenses = (state.selectedExpenses || []).map(e => ({
+      expenseId: e.expenseId, expenseName: e.expenseName, amountPerAsset: e.amountPerAsset, description: e.description,
+      _pendingPriceChange: e._pendingPriceChange || null
+    }));
+    d.assetType = state.assetType || '';
     localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
   } catch (e) {}
 }
@@ -729,6 +543,7 @@ async function loadSystemConfig() {
     const res = await apiGet({ action: 'systemConfig' }, { silent: true });
     if (res && res.success && res.config) {
       state.systemName = res.config.systemName || 'System';
+      try { localStorage.setItem(SYSNAME_KEY, state.systemName); } catch (e) {}
       applySystemName();
     }
   } catch (e) {}
@@ -743,41 +558,54 @@ function applySystemName() {
 }
 
 // ============================================================
-// META-STYLE SKELETON LOADER — replaces the old modal spinner.
-// Shows the shimmer overlay immediately; fades out when ready.
+// LIGHTWEIGHT LOADING
+// A thin progress bar replaces the full-screen overlay so the app
+// never "freezes" while data loads. Pages that were opened before
+// show their last view instantly and refresh quietly in the background.
 // ============================================================
-let _skeletonHideTimer = null;
-
-function showSkeleton(label) {
-  const el = document.getElementById('skeletonOverlay');
-  if (!el) return;
-  if (_skeletonHideTimer) { clearTimeout(_skeletonHideTimer); _skeletonHideTimer = null; }
-  const lbl = document.getElementById('skeletonLabel');
-  if (lbl) lbl.textContent = label || 'Loading…';
-  el.classList.remove('fading');
-  el.classList.add('active');
-  el.setAttribute('aria-hidden', 'false');
+let _progress = 0;
+function startProgress() {
+  _progress++;
+  const b = document.getElementById('topBar');
+  if (b) b.classList.add('on');
 }
-function hideSkeleton() {
-  const el = document.getElementById('skeletonOverlay');
-  if (!el || !el.classList.contains('active')) return;
-  el.classList.add('fading');
-  if (_skeletonHideTimer) clearTimeout(_skeletonHideTimer);
-  _skeletonHideTimer = setTimeout(() => {
-    el.classList.remove('active');
-    el.classList.remove('fading');
-    el.setAttribute('aria-hidden', 'true');
-    _skeletonHideTimer = null;
-  }, 220);
+function endProgress() {
+  _progress = Math.max(0, _progress - 1);
+  if (_progress === 0) {
+    const b = document.getElementById('topBar');
+    if (b) b.classList.remove('on');
+  }
 }
-
-// Kept the same function names so nothing else in the app breaks.
-function showLoader(text) { showSkeleton(text); }
-function hideLoader() { hideSkeleton(); }
+function resetCaches() {
+  state.apiCache.clear();
+  state.snapshots = {};
+  _progress = 0;
+  const b = document.getElementById('topBar');
+  if (b) b.classList.remove('on');
+  const pc = document.getElementById('pageContent');
+  if (pc) pc.innerHTML = '';
+}
+// Same function names as before so nothing else breaks.
+function showSkeleton() { startProgress(); }
+function hideSkeleton() { endProgress(); }
+function showLoader() { startProgress(); }
+function hideLoader() { endProgress(); }
 async function withLoader(text, fn) {
-  showSkeleton(text);
+  startProgress();
   try { return await fn(); }
-  finally { hideSkeleton(); }
+  finally { endProgress(); }
+}
+function skeletonHtml() {
+  return '<div class="skel-wrap">' +
+    '<div class="sk sk-line" style="width:30%"></div>' +
+    '<div class="skel-stats"><div class="sk sk-stat"></div><div class="sk sk-stat"></div><div class="sk sk-stat"></div></div>' +
+    '<div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div>' +
+    '</div>';
+}
+function miniSkeletonHtml(rows) {
+  let h = '<div class="skel-wrap">';
+  for (let i = 0; i < (rows || 2); i++) h += '<div class="sk sk-card"></div>';
+  return h + '</div>';
 }
 
 function setBtnLoading(btn, loading) {
@@ -793,21 +621,36 @@ function toast(msg, type) {
   setTimeout(() => el.remove(), 2600);
 }
 
+/**
+ * GET helper.
+ *  options.silent : do not show the top progress bar
+ *  options.ttl    : cache the successful response for N ms (cache is cleared on any write)
+ */
 async function apiGet(params, options) {
+  options = options || {};
   const p = Object.assign({}, params);
   if (state.token && !p.token) p.token = state.token;
+  const cacheKey = options.ttl ? JSON.stringify(params) : null;
+  if (cacheKey) {
+    const hit = state.apiCache.get(cacheKey);
+    if (hit && hit.exp > Date.now()) return hit.data;
+  }
   const qs = new URLSearchParams(p).toString();
-  const showApiLoader = !state.loading && !(options && options.silent);
-  if (showApiLoader) showSkeleton('Loading…');
+  const show = !options.silent && !state.silentRender;
+  if (show) startProgress();
   try {
     const res = await fetch(WEBAPP_URL + '?' + qs);
     const data = await res.json();
     if (data && data.error && /session (expired|is invalid)/i.test(data.error)) {
       handleAuthFailure();
     }
+    if (cacheKey && data && data.success) {
+      if (state.apiCache.size > 80) state.apiCache.clear();
+      state.apiCache.set(cacheKey, { data, exp: Date.now() + options.ttl });
+    }
     return data;
   } finally {
-    if (showApiLoader) hideSkeleton();
+    if (show) endProgress();
   }
 }
 async function apiPost(body) {
@@ -820,6 +663,7 @@ async function apiPost(body) {
     body: JSON.stringify(payload)
   });
   const result = await res.json();
+  if (result && result.success) state.apiCache.clear();
   if (result && result.error && /session (expired|is invalid)/i.test(result.error)) {
     handleAuthFailure();
   }
@@ -842,7 +686,7 @@ function handleAuthFailure() {
   if (appEl) appEl.classList.add('hidden');
   if (loginEl) loginEl.classList.remove('hidden');
   hideFloatingAssignBadge();
-  hideSkeleton();
+  resetCaches();
   toast('Your session ended. Please sign in again.', 'error');
 }
 function uid(prefix, scope) {
@@ -889,11 +733,11 @@ async function doLogin() {
 function showApp() {
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
+  state.page = 'dashboard';
   buildNav();
   navigate('dashboard');
   startAutoRefresh();
   setTimeout(() => {
-    refreshMyAssignmentsBadge();
     checkMyAssignmentPopup();
   }, 700);
   setTimeout(() => {
@@ -909,7 +753,7 @@ function logout() {
   state.myAssignments = [];
   stopAutoRefresh();
   hideFloatingAssignBadge();
-  hideSkeleton();
+  resetCaches();
   document.getElementById('app').classList.add('hidden');
   document.getElementById('loginScreen').classList.remove('hidden');
   if (token) {
@@ -954,7 +798,7 @@ function buildNav() {
       { id: 'dashboard', label: 'Dashboard', icon: '<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>' },
       { id: 'loadBoiler', label: 'Load', icon: '<path d="M12 5v14"/><path d="M5 12h14"/>' },
       { id: 'empty', label: 'Empty', icon: '<path d="M12 19V5"/><path d="M5 12l7 7 7-7"/>' },
-      { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
+      { id: 'reports', label: 'Requests', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
       { id: 'profile', label: 'Account', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>' }
     ];
   } else {
@@ -962,7 +806,7 @@ function buildNav() {
       { id: 'dashboard', label: 'Dashboard', icon: '<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>' },
       { id: 'loadTank', label: 'Load', icon: '<path d="M12 5v14"/><path d="M5 12h14"/>' },
       { id: 'empty', label: 'Empty', icon: '<path d="M12 19V5"/><path d="M5 12l7 7 7-7"/>' },
-      { id: 'reports', label: 'Reports', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
+      { id: 'reports', label: 'Requests', icon: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M22 20H2"/>' },
       { id: 'profile', label: 'Account', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>' }
     ];
   }
@@ -1098,57 +942,86 @@ function pageHasEditableWork() {
     root.querySelectorAll('input, select, textarea').length > 0;
 }
 
+// Quiet background refresh: only live pages, only every 30s, never while typing.
 function startAutoRefresh() {
   stopAutoRefresh();
   state.refreshTimer = setInterval(() => {
     if (document.visibilityState !== 'visible') return;
     if (state.loading) return;
+    if (!AUTO_PAGES.includes(state.page)) return;
     if (pageHasEditableWork()) return;
+    state.tick++;
     loadPage(true);
-    refreshMyAssignmentsBadge();
-  }, 10000);
+    if (state.tick % 2 === 0) refreshMyAssignmentsBadge();
+  }, 30000);
 }
 function stopAutoRefresh() { if (state.refreshTimer) clearInterval(state.refreshTimer); state.refreshTimer = null; }
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' || !state.user || state.loading) return;
+  if (!AUTO_PAGES.includes(state.page)) return;
+  if (Date.now() - state.lastLoad < 20000) return;
+  if (pageHasEditableWork()) return;
+  loadPage(true);
+});
 function manualRefresh() {
   const btn = document.getElementById('refreshBtn');
   btn.classList.add('spinning');
   setTimeout(() => btn.classList.remove('spinning'), 800);
+  state.apiCache.clear();
   loadPage(false);
   refreshMyAssignmentsBadge();
 }
+function refreshSnapshot(page) {
+  if (!SNAPSHOT_PAGES.includes(page) || state.page !== page) return;
+  const el = document.getElementById('pageContent');
+  if (el) state.snapshots[page] = el.innerHTML;
+}
 
 async function loadPage(silent) {
-  if (state.loading) return;
+  if (state.loading) { state.reloadQueued = silent ? (state.reloadQueued || 'silent') : 'full'; return; }
   state.loading = true;
+  state.silentRender = !!silent;
+  const page = state.page;
   const el = document.getElementById('pageContent');
+  const titleEl = document.getElementById('headerTitle');
+  if (titleEl && PAGE_TITLES[page]) titleEl.textContent = PAGE_TITLES[page];
   const preservedFields = captureEditableState();
-  if (state.page === 'loadTank' || state.page === 'loadBoiler') saveDraft();
-  if (state.page === 'driver') saveDriverDraft();
+  if (page === 'loadTank' || page === 'loadBoiler') saveDraft();
+  if (page === 'driver') saveDriverDraft();
+  let progressOn = false;
   if (!silent) {
-    // Show skeleton immediately (not the old modal). Page content stays in
-    // DOM underneath so it never flashes white between loads.
-    showSkeleton('Loading ' + (PAGE_TITLES[state.page] || '…'));
-    // Clear only after skeleton is visible to avoid flicker.
-    el.innerHTML = '';
+    // Show the last rendered view instantly if we have one; otherwise a small inline skeleton.
+    const snap = state.snapshots[page];
+    el.innerHTML = snap ? snap : skeletonHtml();
+    startProgress(); progressOn = true;
   }
   try {
-    if (state.page === 'dashboard') await renderDashboard(el);
-    else if (state.page === 'loadTank') await renderLoad(el, 'tank');
-    else if (state.page === 'loadBoiler') await renderLoad(el, 'boiler');
-    else if (state.page === 'empty') await renderEmpty(el);
-    else if (state.page === 'reports') await renderReports(el);
-    else if (state.page === 'pending') await renderPending(el);
-    else if (state.page === 'debts') await renderDebts(el);
-    else if (state.page === 'driver') await renderDriver(el);
-    else if (state.page === 'profile') await renderProfile(el);
-    else if (state.page === 'settings') await renderSettings(el);
-    else if (state.page === 'assignments') await renderAssignments(el);
+    if (page === 'dashboard') await renderDashboard(el);
+    else if (page === 'loadTank') await renderLoad(el, 'tank');
+    else if (page === 'loadBoiler') await renderLoad(el, 'boiler');
+    else if (page === 'empty') await renderEmpty(el);
+    else if (page === 'reports') await renderReports(el);
+    else if (page === 'pending') await renderPending(el);
+    else if (page === 'debts') await renderDebts(el);
+    else if (page === 'driver') await renderDriver(el);
+    else if (page === 'profile') await renderProfile(el);
+    else if (page === 'settings') await renderSettings(el);
+    else if (page === 'assignments') await renderAssignments(el);
     restoreEditableState(preservedFields);
+    if (SNAPSHOT_PAGES.includes(page) && state.page === page) state.snapshots[page] = el.innerHTML;
   } catch (e) {
-    el.innerHTML = '<div class="card"><p style="color:red">Error: ' + e.message + '</p></div>';
+    // A failed background refresh must never wipe what the user is looking at.
+    if (!silent) {
+      el.innerHTML = '<div class="card"><p style="color:#dc2626">Error: ' + escapeHtml(e.message) + '</p><button class="btn btn-outline" style="margin-top:12px" onclick="loadPage(false)">Try again</button></div>';
+    }
   } finally {
     state.loading = false;
-    if (!silent) hideSkeleton();
+    state.silentRender = false;
+    state.lastLoad = Date.now();
+    if (progressOn) endProgress();
+    const q = state.reloadQueued;
+    state.reloadQueued = false;
+    if (q) loadPage(q === 'silent');
   }
 }
 
@@ -1182,7 +1055,6 @@ async function renderDashboard(el) {
   `;
   renderTankCardsTo('tankGrid', tanks.items || []);
   renderTankCardsTo('boilerGrid', boilers.items || []);
-  setTimeout(checkSuperAdminCompletionPopup, 900);
 }
 
 function renderTankCardsTo(gridId, items) {
@@ -1202,12 +1074,12 @@ function renderTankCardsTo(gridId, items) {
     return `
       <div class="tank-card" onclick="viewAsset('${a.type || 'tank'}','${a.id}')">
         <div class="tank-header">
-          <div class="tank-title">${a.name || a.id}</div>
+          <div class="tank-title">${escapeHtml(a.name || a.id)}</div>
           <span class="badge ${badgeClass}">${displayStatus}</span>
         </div>
         <div class="tank-body">
-          <div class="tank-field"><div class="tank-field-label">Invoice</div><div class="tank-field-value">${invoice}</div></div>
-          <div class="tank-field"><div class="tank-field-label">Customer</div><div class="tank-field-value">${customer}</div></div>
+          <div class="tank-field"><div class="tank-field-label">Invoice</div><div class="tank-field-value">${escapeHtml(invoice)}</div></div>
+          <div class="tank-field"><div class="tank-field-label">Customer</div><div class="tank-field-value">${escapeHtml(customer)}</div></div>
           ${!isVacant && daysLeft ? `<div class="tank-field"><div class="tank-field-label">Days Left</div><div class="tank-field-value">${daysLeft}</div></div>` : ''}
           ${!isVacant ? `<div class="progress-bar-container"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>` : ''}
         </div>
@@ -1225,16 +1097,16 @@ async function viewAsset(type, id) {
   const invoice = res.invoice;
   const items = res.items || [];
   let body = `
-    <div class="data-row"><span class="lbl">Asset</span><span class="val">${asset.name} (${asset.id})</span></div>
-    <div class="data-row"><span class="lbl">Status</span><span class="val">${asset.status}</span></div>
-    <div class="data-row"><span class="lbl">Capacity</span><span class="val">${asset.capacity}</span></div>
+    <div class="data-row"><span class="lbl">Asset</span><span class="val">${escapeHtml(asset.name)} (${escapeHtml(asset.id)})</span></div>
+    <div class="data-row"><span class="lbl">Status</span><span class="val">${escapeHtml(asset.status)}</span></div>
+    <div class="data-row"><span class="lbl">Capacity</span><span class="val">${escapeHtml(asset.capacity)}</span></div>
   `;
   if (session) {
     const daysLeft = session.endDate ? Math.ceil((new Date(session.endDate) - new Date()) / 86400000) : 0;
     body += `
       <hr style="margin:14px 0;border:none;border-top:1px solid #e2e7f0">
-      <div class="data-row"><span class="lbl">Customer</span><span class="val">${session.customerName}</span></div>
-      <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${session.invoiceNumber || '-'}</span></div>
+      <div class="data-row"><span class="lbl">Customer</span><span class="val">${escapeHtml(session.customerName)}</span></div>
+      <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${escapeHtml(session.invoiceNumber || '-')}</span></div>
       <div class="data-row"><span class="lbl">Started</span><span class="val">${new Date(session.startDate).toLocaleDateString()}</span></div>
       <div class="data-row"><span class="lbl">Ends</span><span class="val">${new Date(session.endDate).toLocaleDateString()}</span></div>
       <div class="data-row"><span class="lbl">Days Left</span><span class="val">${daysLeft > 0 ? daysLeft + ' days' : 'Due'}</span></div>
@@ -1248,7 +1120,7 @@ async function viewAsset(type, id) {
       <div class="data-row"><span class="lbl">Paid</span><span class="val">$${Number(invoice.paidAmount).toFixed(2)}</span></div>
       <div class="data-row"><span class="lbl">Balance</span><span class="val" style="color:${bal>0?'#dc2626':'#16a34a'}">$${bal.toFixed(2)}</span></div>
       <div class="section-title" style="margin:14px 0 6px">Expenses</div>
-      ${items.map(i => `<div class="data-row"><span class="lbl">${i.expenseName} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
+      ${items.map(i => `<div class="data-row"><span class="lbl">${escapeHtml(i.expenseName)} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
       <button class="btn" style="margin-top:14px" onclick="viewOpenSessions('${type}')">View Open Sessions</button>
     `;
   } else {
@@ -1259,7 +1131,7 @@ async function viewAsset(type, id) {
       body += `<button class="btn" onclick="closeModal();navigate('loadBoiler')">Load This Boiler</button>`;
     }
   }
-  openModal(asset.name, body);
+  openModal(escapeHtml(asset.name), body);
 }
 
 async function viewOpenSessions(assetType) {
@@ -1270,10 +1142,10 @@ async function viewOpenSessions(assetType) {
   if (sessions.length === 0) body = '<div class="empty">No open sessions</div>';
   else body = sessions.map(s => `
     <div class="list-item" onclick="viewSession('${s.id}')">
-      <div class="avatar">${s.customerName ? s.customerName[0].toUpperCase() : '?'}</div>
+      <div class="avatar">${s.customerName ? escapeHtml(s.customerName[0].toUpperCase()) : '?'}</div>
       <div class="info">
-        <div class="name">${s.customerName}</div>
-        <div class="sub">${s.assetIds} · ${s.daysLeft > 0 ? s.daysLeft + ' days left' : 'Due'}</div>
+        <div class="name">${escapeHtml(s.customerName)}</div>
+        <div class="sub">${escapeHtml(s.assetIds)} · ${s.daysLeft > 0 ? s.daysLeft + ' days left' : 'Due'}</div>
       </div>
       <div class="amount ${Number(s.balance)>0?'red':'green'}">$${Number(s.balance).toFixed(2)}</div>
     </div>
@@ -1286,15 +1158,15 @@ async function viewSession(id) {
   if (!res.success) return toast(res.error, 'error');
   const { session, invoice, items, payments, customer, daysLeft } = res;
   let body = `
-    <div class="data-row"><span class="lbl">Customer</span><span class="val">${session.customerName}</span></div>
-    <div class="data-row"><span class="lbl">Phone</span><span class="val">${customer ? customer.phone : '-'}</span></div>
-    <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${session.invoiceNumber || '-'}</span></div>
-    <div class="data-row"><span class="lbl">Assets</span><span class="val">${session.assetIds}</span></div>
-    <div class="data-row"><span class="lbl">Created by</span><span class="val">${session.createdBy || '-'}</span></div>
-    <div class="data-row"><span class="lbl">Completed by</span><span class="val">${session.completedBy || '-'}</span></div>
+    <div class="data-row"><span class="lbl">Customer</span><span class="val">${escapeHtml(session.customerName)}</span></div>
+    <div class="data-row"><span class="lbl">Phone</span><span class="val">${customer ? escapeHtml(customer.phone) : '-'}</span></div>
+    <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${escapeHtml(session.invoiceNumber || '-')}</span></div>
+    <div class="data-row"><span class="lbl">Assets</span><span class="val">${escapeHtml(session.assetIds)}</span></div>
+    <div class="data-row"><span class="lbl">Created by</span><span class="val">${escapeHtml(session.createdBy || '-')}</span></div>
+    <div class="data-row"><span class="lbl">Completed by</span><span class="val">${escapeHtml(session.completedBy || '-')}</span></div>
     <div class="data-row"><span class="lbl">Days Left</span><span class="val">${daysLeft > 0 ? daysLeft + ' days' : 'Due'}</span></div>
     <div class="section-title" style="margin:14px 0 6px">Invoice Items</div>
-    ${items.map(i => `<div class="data-row"><span class="lbl">${i.expenseName} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
+    ${items.map(i => `<div class="data-row"><span class="lbl">${escapeHtml(i.expenseName)} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
     <div class="data-row total"><span class="lbl">Total</span><span class="val">$${Number(invoice.totalAmount).toFixed(2)}</span></div>
     <div class="section-title" style="margin:14px 0 6px">Internal Cost (not on invoice)</div>
     <div class="data-row"><span class="lbl">Our session cost</span><span class="val">$${Number(session.ourExpensesTotal||0).toFixed(2)}</span></div>
@@ -1308,23 +1180,26 @@ async function viewSession(id) {
 // ==================== LOAD TANK / BOILER ====================
 async function renderLoad(el, type) {
   document.getElementById('headerSub').textContent = (type === 'boiler' ? 'Boiler' : 'Tank') + ' loading';
-  const [custRes, expRes, ourExpRes, dashRes] = await Promise.all([
-    apiGet({ action: 'listCustomers' }),
-    apiGet({ action: 'expenseTypes', assetType: type }),
-    apiGet({ action: 'ourExpenseTypes', assetType: type }),
-    apiGet({ action: 'dashboard' })
+  // Customers are NOT preloaded any more: they are searched on demand.
+  // Expense lists are cached for 2 minutes; only the vacant list is always fresh.
+  const [expRes, ourExpRes, vacRes] = await Promise.all([
+    apiGet({ action: 'expenseTypes', assetType: type }, { silent: true, ttl: 120000 }),
+    apiGet({ action: 'ourExpenseTypes', assetType: type }, { silent: true, ttl: 120000 }),
+    apiGet({ action: 'vacantAssets', assetType: type }, { silent: true, ttl: 5000 })
   ]);
-  const customers = custRes.customers || [];
-  const allExpenses = (expRes.expenses || []).filter(e => String(e.active).toUpperCase() === 'TRUE' && String(e.assetType || '').toLowerCase() === type);
-  const allOurExpenses = (ourExpRes.expenses || []).filter(e => String(e.active).toUpperCase() === 'TRUE' && String(e.assetType || '').toLowerCase() === type);
-  const assets = (type === 'boiler' ? dashRes.boilers.items : dashRes.tanks.items).filter(a => String(a.status).toLowerCase() === 'vacant');
+  if (!vacRes || !vacRes.success) throw new Error((vacRes && vacRes.error) || 'Could not load available assets');
+  const allExpenses = ((expRes && expRes.expenses) || []).filter(e => String(e.active).toUpperCase() === 'TRUE' && String(e.assetType || '').toLowerCase() === type);
+  const allOurExpenses = ((ourExpRes && ourExpRes.expenses) || []).filter(e => String(e.active).toUpperCase() === 'TRUE' && String(e.assetType || '').toLowerCase() === type);
+  const assets = vacRes.assets || [];
+  const vacantIds = assets.map(a => String(a.id));
 
   const draft = loadDraft() || {};
   const sameType = draft.assetType === type;
   const preservedCustomer = sameType && draft.customerId
-    ? customers.find(c => String(c.id) === String(draft.customerId)) || null
+    ? { id: draft.customerId, name: draft.customerName || 'Customer', phone: draft.customerPhone || '' }
     : state.selectedCustomer;
-  const preservedAssets = sameType && Array.isArray(draft.selectedAssets) ? draft.selectedAssets : (state.selectedAssets || []);
+  const rawAssets = sameType && Array.isArray(draft.selectedAssets) ? draft.selectedAssets : (state.selectedAssets || []);
+  const preservedAssets = rawAssets.filter(id => vacantIds.includes(String(id)));
   const preservedInvoice = sameType && draft.invoiceNumber ? draft.invoiceNumber : (state.invoiceNumber || '');
   const backendExpenseMap = {};
   allExpenses.forEach(e => { backendExpenseMap[String(e.id)] = e; });
@@ -1364,22 +1239,18 @@ async function renderLoad(el, type) {
     <div class="card">
       <div class="card-title">Step 1 · Invoice Number</div>
       <div class="field">
-        <input id="loadInvoiceNum" type="text" placeholder="e.g. INV-2024-001" value="${preservedInvoice}">
+        <input id="loadInvoiceNum" type="text" placeholder="e.g. INV-2024-001" value="${escapeHtml(preservedInvoice)}">
       </div>
     </div>
     <div class="card" id="step1Card">
       <div class="card-title">Step 2 · Select Customer</div>
       <div class="search-bar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8a94a6" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        <input id="custSearch" placeholder="Search customer by name or phone" oninput="filterCustomers(this.value)">
+        <input id="custSearch" placeholder="Type a name or phone to search" oninput="custSearchInput(this,'load')" autocomplete="off">
       </div>
-      ${preservedCustomer ? `<div class="list-item" style="margin-top:12px;border-color:#0641ab;background:#eff6ff">
-        <div class="avatar">${preservedCustomer.name[0].toUpperCase()}</div>
-        <div class="info"><div class="name">${preservedCustomer.name}</div><div class="sub">Selected</div></div>
-        <span class="badge small blue">Selected</span>
-      </div>` : ''}
-      <div id="custList" style="margin-top:12px"></div>
-      <button class="btn btn-outline" style="margin-top:10px" onclick="showAddCustomer()">+ Add New Customer</button>
+      <div id="selectedCustBox">${customerChipHtml(preservedCustomer, 'load')}</div>
+      <div id="custList" class="search-results"><div class="sub" style="padding:8px 2px">Type a name or phone number to find a customer.</div></div>
+      <button class="btn btn-outline" style="margin-top:10px" onclick="showAddCustomer('')">+ Add New Customer</button>
     </div>
     <div class="card ${preservedCustomer ? '' : 'hidden'}" id="step2Card">
       <div class="card-title">Step 3 · Select ${type === 'boiler' ? 'Boilers' : 'Tanks'}</div>
@@ -1402,7 +1273,6 @@ async function renderLoad(el, type) {
   state.selectedOurExpenses = allOurExpenses.map(e => ({ id:e.id, name:e.name, amountPerUnit:Number(e.amountPerUnit)||0, assetType:e.assetType }));
   state.invoiceNumber = preservedInvoice;
   state.availableAssets = assets;
-  state.allCustomers = customers;
   state.assetType = type;
 
   const invInput = document.getElementById('loadInvoiceNum');
@@ -1411,55 +1281,122 @@ async function renderLoad(el, type) {
     saveDraft();
   });
 
-  renderCustomers(customers);
   renderAssets(assets);
   renderExpenses();
   renderOurExpenses();
   updateLoadTotal();
 }
 
-function renderCustomers(customers) {
-  const list = document.getElementById('custList');
-  if (!list) return;
-  if (customers.length === 0) { list.innerHTML = '<div class="empty" style="padding:20px">No customers found</div>'; return; }
-  list.innerHTML = customers.map(c => `
-    <div class="list-item" onclick="selectCustomer('${c.id}')">
-      <div class="avatar">${c.name[0].toUpperCase()}</div>
+// ---------- Customer search picker (shared by Load pages and Driver trips) ----------
+let _custTimer = null, _custSeq = 0;
+
+function customerChipHtml(c, ctx) {
+  if (!c) return '';
+  return `<div class="list-item" style="margin-top:12px;border-color:#0641ab;background:#eff6ff;cursor:default">
+    <div class="avatar">${escapeHtml((c.name || '?')[0].toUpperCase())}</div>
+    <div class="info"><div class="name">${escapeHtml(c.name)}</div><div class="sub">${escapeHtml(c.phone || 'Selected')}</div></div>
+    <button class="btn btn-outline btn-sm" onclick="clearCustomer('${ctx}')">Change</button>
+  </div>`;
+}
+
+function custSearchInput(inp, ctx) {
+  const q = inp.value.trim();
+  const box = document.getElementById(ctx === 'trip' ? 'tripCustList' : 'custList');
+  if (!box) return;
+  clearTimeout(_custTimer);
+  const seq = ++_custSeq;
+  if (!q) {
+    box.innerHTML = '<div class="sub" style="padding:8px 2px">Type a name or phone number to find a customer.</div>';
+    return;
+  }
+  box.innerHTML = '<div class="sub" style="padding:8px 2px">Searching…</div>';
+  _custTimer = setTimeout(async () => {
+    let res;
+    try { res = await apiGet({ action: 'listCustomers', q, limit: 12 }, { silent: true, ttl: 60000 }); }
+    catch (e) { res = { success: false, error: 'Connection error' }; }
+    if (seq !== _custSeq) return;           // a newer keystroke superseded this search
+    const b = document.getElementById(ctx === 'trip' ? 'tripCustList' : 'custList');
+    if (!b) return;
+    if (!res || !res.success) { b.innerHTML = '<div class="sub" style="padding:8px 2px;color:#dc2626">' + escapeHtml((res && res.error) || 'Search failed') + '</div>'; return; }
+    renderCustomerResults(b, res.customers || [], q, ctx);
+  }, 250);
+}
+
+function renderCustomerResults(box, list, q, ctx) {
+  if (!list.length) {
+    box.innerHTML = `<div class="empty" style="padding:14px">No customer matches “${escapeHtml(q)}”.</div>
+      <button class="btn btn-outline" onclick="showAddCustomer(${escapeHtml(JSON.stringify(q))})">+ Add “${escapeHtml(q)}” as a new customer</button>`;
+    return;
+  }
+  list.forEach(c => { state.custResults[String(c.id)] = c; });
+  box.innerHTML = list.map(c => `
+    <div class="list-item" onclick="pickCustomer('${ctx}','${escapeHtml(c.id)}')">
+      <div class="avatar">${escapeHtml((c.name || '?')[0].toUpperCase())}</div>
       <div class="info">
-        <div class="name">${c.name}</div>
-        <div class="sub">${c.phone || ''} ${c.address ? '· ' + c.address : ''}</div>
+        <div class="name">${escapeHtml(c.name)}</div>
+        <div class="sub">${escapeHtml(c.phone || '')}${c.address ? ' · ' + escapeHtml(c.address) : ''}</div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-function filterCustomers(q) {
-  q = q.toLowerCase();
-  const filtered = state.allCustomers.filter(c =>
-    c.name.toLowerCase().includes(q) || String(c.phone || '').includes(q)
-  );
-  renderCustomers(filtered);
-}
-
-async function selectCustomer(id) {
-  const c = state.allCustomers.find(x => String(x.id) === String(id));
+function pickCustomer(ctx, id) {
+  const c = state.custResults[String(id)];
   if (!c) return;
-  state.selectedCustomer = c;
-  toast('Selected: ' + c.name, 'success');
+  if (ctx === 'trip') setTripCustomer(c); else selectCustomer(c);
+}
+
+function selectCustomer(c) {
+  state.selectedCustomer = { id: c.id, name: c.name, phone: c.phone || '', address: c.address || '' };
   saveDraft();
-  const el = document.getElementById('pageContent');
-  await withLoader('Loading customer and assets…', async () => {
-    await renderLoad(el, state.assetType);
-  });
-  setTimeout(() => {
-    const s2 = document.getElementById('step2Card');
-    if (s2) s2.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 100);
+  const box = document.getElementById('selectedCustBox'); if (box) box.innerHTML = customerChipHtml(state.selectedCustomer, 'load');
+  const list = document.getElementById('custList'); if (list) list.innerHTML = '';
+  const s = document.getElementById('custSearch'); if (s) s.value = '';
+  const s1 = document.getElementById('step1'), s2 = document.getElementById('step2');
+  if (s1) s1.className = 'step done';
+  if (s2) s2.className = 'step active';
+  const card = document.getElementById('step2Card');
+  if (card) { card.classList.remove('hidden'); card.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  toast('Selected: ' + c.name, 'success');
+}
+
+function setTripCustomer(c) {
+  const idEl = document.getElementById('tripCustomer'), nameEl = document.getElementById('tripCustomerName');
+  if (idEl) idEl.value = c.id;
+  if (nameEl) nameEl.value = c.name;
+  const box = document.getElementById('tripCustBox'); if (box) box.innerHTML = customerChipHtml({ id: c.id, name: c.name, phone: c.phone }, 'trip');
+  const list = document.getElementById('tripCustList'); if (list) list.innerHTML = '';
+  const s = document.getElementById('tripCustSearch'); if (s) s.value = '';
+  saveDriverDraft();
+  toast('Selected: ' + c.name, 'success');
+}
+
+function clearCustomer(ctx) {
+  if (ctx === 'trip') {
+    const idEl = document.getElementById('tripCustomer'), nameEl = document.getElementById('tripCustomerName');
+    if (idEl) idEl.value = '';
+    if (nameEl) nameEl.value = '';
+    const box = document.getElementById('tripCustBox'); if (box) box.innerHTML = '';
+    saveDriverDraft();
+    const s = document.getElementById('tripCustSearch'); if (s) s.focus();
+    return;
+  }
+  state.selectedCustomer = null;
+  state.selectedAssets = [];
+  saveDraft();
+  const box = document.getElementById('selectedCustBox'); if (box) box.innerHTML = '';
+  const s2 = document.getElementById('step2Card'), s3 = document.getElementById('step3Card');
+  if (s2) s2.classList.add('hidden');
+  if (s3) s3.classList.add('hidden');
+  const a = document.getElementById('step1'), b = document.getElementById('step2'), c = document.getElementById('step3');
+  if (a) a.className = 'step'; if (b) b.className = 'step'; if (c) c.className = 'step';
+  renderAssets(state.availableAssets || []);
+  const s = document.getElementById('custSearch'); if (s) s.focus();
 }
 
 function renderAssets(assets) {
   const list = document.getElementById('assetList');
   if (!list) return;
+  if (!assets.length) { list.innerHTML = '<div class="empty" style="grid-column:1/-1;padding:20px">No vacant assets available right now.</div>'; return; }
   list.innerHTML = assets.map(a => {
     const selected = state.selectedAssets.includes(a.id);
     return `
@@ -1514,8 +1451,8 @@ function renderExpenses() {
   list.innerHTML = state.selectedExpenses.map((e, i) => `
     <div class="check-row">
       <div class="label">
-        <div style="font-weight:600;color:#0641ab">${e.expenseName}</div>
-        <div style="font-size:11px;color:#8a94a6">${e.description || ''}${e._pendingPriceChange ? ' · <span style="color:#d97706">Price change pending approval</span>' : ''}</div>
+        <div style="font-weight:600;color:#0641ab">${escapeHtml(e.expenseName)}</div>
+        <div style="font-size:11px;color:#8a94a6">${escapeHtml(e.description || '')}${e._pendingPriceChange ? ' · <span style="color:#d97706">Price change pending approval</span>' : ''}</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
         <input type="number" value="${e.amountPerAsset}" min="0" step="0.01" style="width:80px;padding:6px;border:1px solid #e2e7f0;border-radius:6px;text-align:right" onchange="changeExpensePrice(${i}, this.value)">
@@ -1531,7 +1468,7 @@ function renderOurExpenses() {
   const list=document.getElementById('ourExpenseList'); if(!list) return;
   const qty=state.selectedAssets.length||1;
   const rows=state.selectedOurExpenses||[];
-  list.innerHTML=rows.length ? rows.map(e=>`<div class="check-row"><div class="label"><div style="font-weight:600;color:#374151">${e.name}</div><div style="font-size:11px;color:#8a94a6">$${Number(e.amountPerUnit).toFixed(2)} per ${String(e.assetType||state.assetType).toUpperCase()} × ${qty}</div></div><div style="font-weight:600;color:#dc2626">-$${(Number(e.amountPerUnit)*qty).toFixed(2)}</div></div>`).join('') : '<div class="empty">No internal expenses configured for this account</div>';
+  list.innerHTML=rows.length ? rows.map(e=>`<div class="check-row"><div class="label"><div style="font-weight:600;color:#374151">${escapeHtml(e.name)}</div><div style="font-size:11px;color:#8a94a6">$${Number(e.amountPerUnit).toFixed(2)} per ${String(e.assetType||state.assetType).toUpperCase()} × ${qty}</div></div><div style="font-weight:600;color:#dc2626">-$${(Number(e.amountPerUnit)*qty).toFixed(2)}</div></div>`).join('') : '<div class="empty">No internal expenses configured for this account</div>';
 }
 
 function changeExpensePrice(i, val) {
@@ -1616,10 +1553,12 @@ async function submitLoad(type, btn) {
   setBtnLoading(btn, false);
 }
 
-function showAddCustomer() {
+function showAddCustomer(prefill) {
+  prefill = String(prefill || '');
+  const looksLikePhone = /^[\d+\s-]{5,}$/.test(prefill);
   const body = `
-    <div class="field"><label>Name</label><input id="newCustName" type="text"></div>
-    <div class="field"><label>Phone</label><input id="newCustPhone" type="tel"></div>
+    <div class="field"><label>Name</label><input id="newCustName" type="text" value="${looksLikePhone ? '' : escapeHtml(prefill)}"></div>
+    <div class="field"><label>Phone</label><input id="newCustPhone" type="tel" value="${looksLikePhone ? escapeHtml(prefill) : ''}"></div>
     <div class="field"><label>Address</label><input id="newCustAddr" type="text"></div>
     <button class="btn" onclick="createCustomer(this)">Create Customer</button>
   `;
@@ -1632,12 +1571,12 @@ async function createCustomer(btn) {
   if (!name) return toast('Name required', 'error');
   setBtnLoading(btn, true);
   await withLoader('Creating customer…', async () => {
-    const res = await apiPost({ action: 'createCustomer', idempotencyKey: uid('CUST', phone || name), name, phone, address, user: state.user.username });
+    const res = await apiPost({ action: 'createCustomer', idempotencyKey: uid('CUST', (phone || name) + ':' + name), name, phone, address, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
-    toast('Customer created', 'success');
+    toast(res.existing ? 'Customer already exists — selected.' : 'Customer created', 'success');
     closeModal();
-    state.allCustomers.push(res.customer);
-    selectCustomer(res.customer.id);
+    if (state.page === 'driver') setTripCustomer(res.customer);
+    else selectCustomer(res.customer);
   });
   setBtnLoading(btn, false);
 }
@@ -1652,10 +1591,10 @@ async function renderEmpty(el) {
     <div class="section-title">Open Sessions (${sessions.length})</div>
     ${sessions.length === 0 ? '<div class="empty">No open sessions</div>' : sessions.map(s => `
       <div class="list-item" onclick="emptySession('${s.id}')">
-        <div class="avatar">${s.customerName ? s.customerName[0].toUpperCase() : '?'}</div>
+        <div class="avatar">${s.customerName ? escapeHtml(s.customerName[0].toUpperCase()) : '?'}</div>
         <div class="info">
-          <div class="name">${s.customerName}</div>
-          <div class="sub">Inv: ${s.invoiceNumber || '—'} · ${s.assetIds} · ${s.daysLeft > 0 ? s.daysLeft + ' days left' : 'Due now'}</div>
+          <div class="name">${escapeHtml(s.customerName)}</div>
+          <div class="sub">Inv: ${escapeHtml(s.invoiceNumber || '—')} · ${escapeHtml(s.assetIds)} · ${s.daysLeft > 0 ? s.daysLeft + ' days left' : 'Due now'}</div>
         </div>
         <div class="amount ${Number(s.balance)>0?'red':'green'}">$${Number(s.balance).toFixed(2)}</div>
       </div>
@@ -1667,13 +1606,13 @@ async function emptySession(id) {
   if (!res.success) return toast(res.error, 'error');
   const { session, invoice, items, payments, customer, daysLeft } = res;
   let body = `
-    <div class="data-row"><span class="lbl">Customer</span><span class="val">${session.customerName}</span></div>
-    <div class="data-row"><span class="lbl">Phone</span><span class="val">${customer ? customer.phone : '-'}</span></div>
-    <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${session.invoiceNumber || '-'}</span></div>
-    <div class="data-row"><span class="lbl">Assets</span><span class="val">${session.assetIds}</span></div>
+    <div class="data-row"><span class="lbl">Customer</span><span class="val">${escapeHtml(session.customerName)}</span></div>
+    <div class="data-row"><span class="lbl">Phone</span><span class="val">${customer ? escapeHtml(customer.phone) : '-'}</span></div>
+    <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${escapeHtml(session.invoiceNumber || '-')}</span></div>
+    <div class="data-row"><span class="lbl">Assets</span><span class="val">${escapeHtml(session.assetIds)}</span></div>
     <div class="data-row"><span class="lbl">Days Left</span><span class="val">${daysLeft > 0 ? daysLeft + ' days' : 'Due'}</span></div>
     <div class="section-title" style="margin:14px 0 6px">Items</div>
-    ${items.map(i => `<div class="data-row"><span class="lbl">${i.expenseName} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
+    ${items.map(i => `<div class="data-row"><span class="lbl">${escapeHtml(i.expenseName)} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
     <div class="data-row total"><span class="lbl">Total</span><span class="val">$${Number(invoice.totalAmount).toFixed(2)}</span></div>
     <div class="data-row"><span class="lbl">Paid</span><span class="val">$${Number(invoice.paidAmount).toFixed(2)}</span></div>
     <div class="data-row total"><span class="lbl">Balance Due</span><span class="val" style="color:#dc2626">$${Number(invoice.balance).toFixed(2)}</span></div>
@@ -1687,7 +1626,7 @@ async function emptySession(id) {
       <button class="btn btn-outline" onclick="submitPayment('${invoice.id}','${session.id}', this)">Record Payment Only</button>
     </div>
   `;
-  openModal('Empty Asset · ' + session.customerName, body);
+  openModal('Empty Asset · ' + escapeHtml(session.customerName), body);
 }
 async function emptySessionNow(invoiceId, sessionId, btn) {
   const input = document.getElementById('payAmount');
@@ -1724,7 +1663,7 @@ async function submitPayment(invoiceId, sessionId, btn) {
     toast(res.fullyPaid ? 'Fully paid. Tank emptied.' : 'Payment recorded', 'success');
     generateReceiptPDF(res.receipt);
     closeModal();
-    if (state.page === 'empty') loadPage();
+    if (state.page === 'empty') loadPage(true);
   });
   setBtnLoading(btn, false);
 }
@@ -1741,16 +1680,16 @@ function generateReceiptPDF(receipt) {
       th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e2e7f0; font-size: 12px; }
       th { background: #f4f6fa; }
     </style></head><body>
-      <h1>${state.systemName}</h1>
+      <h1>${escapeHtml(state.systemName)}</h1>
       <div class="sub">Payment Receipt</div>
-      <div class="row"><span>Receipt No.</span><span>${receipt.paymentId}</span></div>
+      <div class="row"><span>Receipt No.</span><span>${escapeHtml(receipt.paymentId)}</span></div>
       <div class="row"><span>Date</span><span>${new Date(receipt.date).toLocaleString()}</span></div>
-      <div class="row"><span>Customer</span><span>${receipt.customer ? receipt.customer.name : '-'}</span></div>
-      <div class="row"><span>Phone</span><span>${receipt.customer ? receipt.customer.phone : '-'}</span></div>
-      <div class="row"><span>Assets</span><span>${receipt.session ? receipt.session.assetIds : '-'}</span></div>
+      <div class="row"><span>Customer</span><span>${receipt.customer ? escapeHtml(receipt.customer.name) : '-'}</span></div>
+      <div class="row"><span>Phone</span><span>${receipt.customer ? escapeHtml(receipt.customer.phone) : '-'}</span></div>
+      <div class="row"><span>Assets</span><span>${receipt.session ? escapeHtml(receipt.session.assetIds) : '-'}</span></div>
       <table>
         <tr><th>Item</th><th>Qty</th><th>Amount</th></tr>
-        ${receipt.items.map(i => `<tr><td>${i.expenseName}</td><td>${i.quantity}</td><td>$${Number(i.total).toFixed(2)}</td></tr>`).join('')}
+        ${receipt.items.map(i => `<tr><td>${escapeHtml(i.expenseName)}</td><td>${i.quantity}</td><td>$${Number(i.total).toFixed(2)}</td></tr>`).join('')}
       </table>
       <div class="row"><span>Invoice Total</span><span>$${Number(receipt.total).toFixed(2)}</span></div>
       <div class="row"><span>Amount Paid Now</span><span>$${Number(receipt.amount).toFixed(2)}</span></div>
@@ -1760,6 +1699,7 @@ function generateReceiptPDF(receipt) {
     </body></html>
   `;
   const w = window.open('', '_blank');
+  if (!w) return toast('Please allow pop-ups to print the receipt.', 'error');
   w.document.write(html);
   w.document.close();
   setTimeout(() => w.print(), 300);
@@ -1780,16 +1720,16 @@ async function downloadStatement(sessionId) {
       th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e2e7f0; font-size: 12px; }
       th { background: #f4f6fa; }
     </style></head><body>
-      <h1>${state.systemName}</h1>
+      <h1>${escapeHtml(state.systemName)}</h1>
       <div class="sub">Client Statement</div>
-      <div class="row"><span>Customer</span><span>${session.customerName}</span></div>
-      <div class="row"><span>Phone</span><span>${customer ? customer.phone : '-'}</span></div>
-      <div class="row"><span>Address</span><span>${customer ? customer.address : '-'}</span></div>
-      <div class="row"><span>Invoice #</span><span>${session.invoiceNumber || '-'}</span></div>
-      <div class="row"><span>Assets</span><span>${session.assetIds}</span></div>
+      <div class="row"><span>Customer</span><span>${escapeHtml(session.customerName)}</span></div>
+      <div class="row"><span>Phone</span><span>${customer ? escapeHtml(customer.phone) : '-'}</span></div>
+      <div class="row"><span>Address</span><span>${customer ? escapeHtml(customer.address) : '-'}</span></div>
+      <div class="row"><span>Invoice #</span><span>${escapeHtml(session.invoiceNumber || '-')}</span></div>
+      <div class="row"><span>Assets</span><span>${escapeHtml(session.assetIds)}</span></div>
       <table>
         <tr><th>Expense</th><th>Qty</th><th>Unit</th><th>Total</th></tr>
-        ${items.map(i => `<tr><td>${i.expenseName}</td><td>${i.quantity}</td><td>$${Number(i.amountPerAsset).toFixed(2)}</td><td>$${Number(i.total).toFixed(2)}</td></tr>`).join('')}
+        ${items.map(i => `<tr><td>${escapeHtml(i.expenseName)}</td><td>${i.quantity}</td><td>$${Number(i.amountPerAsset).toFixed(2)}</td><td>$${Number(i.total).toFixed(2)}</td></tr>`).join('')}
       </table>
       <div class="row"><span>Total</span><span>$${Number(invoice.totalAmount).toFixed(2)}</span></div>
       <div class="row"><span>Paid</span><span>$${Number(invoice.paidAmount).toFixed(2)}</span></div>
@@ -1799,6 +1739,7 @@ async function downloadStatement(sessionId) {
     </body></html>
   `;
   const w = window.open('', '_blank');
+  if (!w) return toast('Please allow pop-ups to download the statement.', 'error');
   w.document.write(html);
   w.document.close();
   setTimeout(() => w.print(), 300);
@@ -1824,7 +1765,7 @@ async function showClientDebt(customerId) {
     <div class="data-row"><span class="lbl">Total paid</span><span class="val" style="color:#16a34a">$${Number(res.totalPaid || 0).toFixed(2)}</span></div>
     <div class="data-row total"><span class="lbl">Still owing</span><span class="val" style="color:#dc2626">$${Number(res.totalOwing || 0).toFixed(2)}</span></div>
     ${invoices.map(i => `<div class="card" style="margin-top:12px"><div class="card-title">Invoice ${escapeHtml(i.invoiceNumber || i.id || '—')}</div><div class="data-row"><span class="lbl">Assets</span><span class="val">${escapeHtml(i.assetIds || '—')}</span></div><div class="data-row"><span class="lbl">Invoice total</span><span class="val">$${Number(i.totalAmount || 0).toFixed(2)}</span></div><div class="data-row"><span class="lbl">Paid</span><span class="val">$${Number(i.paidAmount || 0).toFixed(2)}</span></div><div class="data-row total"><span class="lbl">Owing</span><span class="val" style="color:#dc2626">$${Number(i.balance || 0).toFixed(2)}</span></div><div class="section-title" style="margin:10px 0 4px">Payments received</div>${(i.payments || []).length ? i.payments.map(p => `<div class="data-row"><span class="lbl">${escapeHtml(p.createdAt ? new Date(p.createdAt).toLocaleString() : '')} · ${escapeHtml(p.receivedBy || '')}</span><span class="val">$${Number(p.amount || 0).toFixed(2)}</span></div>`).join('') : '<div class="sub">No payments recorded for this invoice.</div>'}</div>`).join('')}`;
-  openModal('Client Ledger · ' + (c.name || 'Client'), body);
+  openModal('Client Ledger · ' + escapeHtml(c.name || 'Client'), body);
 }
 
 // ==================== PENDING (SUPER ADMIN ONLY) — INLINE ACTIONS ====================
@@ -1855,15 +1796,11 @@ async function renderPending(el) {
   const pending = priceRes.pending || [];
   const requisitions = reqRes.requisitions || [];
   const total = pending.length + requisitions.length;
-  // update super menu badge
   const menuCount = document.getElementById('superMenuPendingCount');
   if (menuCount) {
     if (total > 0) { menuCount.textContent = total; menuCount.classList.remove('hidden'); }
     else menuCount.classList.add('hidden');
   }
-  // Render each pending price change as an inline actionable card.
-  // Shows customer name, invoice #, tank/boiler #, price change, requester.
-  // Decline / Approve buttons are visible immediately — no click to open.
   el.innerHTML = `
     <div class="section-title">Pending Approvals (${total})</div>
     ${total === 0 ? '<div class="empty">No pending approvals</div>' : ''}
@@ -1889,7 +1826,7 @@ function renderPendingPriceCard(p, adminStage) {
   return `
     <div class="pending-card" data-pending-id="${escapeHtml(p.id)}">
       <div class="pending-card-head">
-        <div class="pending-avatar">${initial}</div>
+        <div class="pending-avatar">${escapeHtml(initial)}</div>
         <div class="pending-info">
           <div class="pending-customer">${escapeHtml(customer)}</div>
           <div class="pending-type">Price Change · ${escapeHtml(assetLabel)}</div>
@@ -2021,7 +1958,6 @@ async function declineRequisitionInline(ref, btn) {
 
 async function editRequisitionInline(ref) {
   const id = ref.id;
-  // Fetch the current amount from the rendered card
   const card = document.querySelector(`.pending-card[data-pending-id="${cssEscape(id)}"]`);
   const initialAmount = card ? (card.querySelector('.pending-amount div:last-child') || {}).textContent : '';
   const cleanAmt = String(initialAmount || '').replace(/[^0-9.\-]/g, '');
@@ -2086,13 +2022,13 @@ async function viewPending(id) {
   if (!res.success) return toast(res.error, 'error');
   const { pending, invoice, items, customer } = res;
   let body = `
-    <div class="data-row"><span class="lbl">Customer</span><span class="val">${pending.customerName}</span></div>
-    <div class="data-row"><span class="lbl">Requested by</span><span class="val">${pending.requestedBy}</span></div>
-    <div class="data-row"><span class="lbl">Expense</span><span class="val">${pending.expenseName}</span></div>
+    <div class="data-row"><span class="lbl">Customer</span><span class="val">${escapeHtml(pending.customerName)}</span></div>
+    <div class="data-row"><span class="lbl">Requested by</span><span class="val">${escapeHtml(pending.requestedBy)}</span></div>
+    <div class="data-row"><span class="lbl">Expense</span><span class="val">${escapeHtml(pending.expenseName)}</span></div>
     <div class="data-row"><span class="lbl">Old Price</span><span class="val">$${Number(pending.oldAmount).toFixed(2)}</span></div>
     <div class="data-row total"><span class="lbl">New Price</span><span class="val" style="color:#dc2626">$${Number(pending.newAmount).toFixed(2)}</span></div>
     <div class="section-title" style="margin:14px 0 6px">Invoice Preview</div>
-    ${items.map(i => `<div class="data-row"><span class="lbl">${i.expenseName} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
+    ${items.map(i => `<div class="data-row"><span class="lbl">${escapeHtml(i.expenseName)} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
     <div class="data-row total"><span class="lbl">Invoice Total</span><span class="val">$${Number(invoice.totalAmount).toFixed(2)}</span></div>
     <div style="display:flex;gap:8px;margin-top:16px">
       <button class="btn btn-danger" onclick="declinePending('${pending.id}', this)">Decline</button>
@@ -2125,30 +2061,93 @@ async function declinePending(id, btn) {
   setBtnLoading(btn, false);
 }
 
+// ==================== SHARED "MY ASSIGNMENTS / MY REQUISITIONS" (lazy) ====================
+function myAssignmentsHtml(list, showEmpty) {
+  if (!list.length) {
+    return showEmpty ? '<div class="section-title">My Assignments (0)</div><div class="empty">No incomplete assignments. You are all caught up! 🎉</div>' : '';
+  }
+  return `<div class="section-title">My Assignments (${list.length})</div>` + list.map(a => `
+    <div class="list-item" onclick="showMyAssignment('${escapeHtml(a.id)}')">
+      <div class="avatar">✓</div>
+      <div class="info">
+        <div class="name">${escapeHtml(a.title)}</div>
+        <div class="sub">Due ${formatAssignmentDate(a.dueDate)} · ${assignmentDueLabel(a.dueDate)}</div>
+      </div>
+      <span class="badge small ${assignmentDueClass(a.dueDate)}">Open</span>
+    </div>`).join('');
+}
+function myRequisitionsHtml(list) {
+  if (!list.length) return '';
+  const shown = list.slice(0, 10);
+  return `<div class="section-title">My Cash Requisitions (${list.length}${list.length > shown.length ? ', latest 10 shown' : ''})</div>` + shown.map(r => {
+    const st = (r.status || '').toLowerCase();
+    const cls = st === 'approved' ? 'approved' : (st === 'declined' ? 'declined' : '');
+    const note = r.adminNote ? `<div class="requisition-note ${cls}"><b>Admin note:</b> ${escapeHtml(r.adminNote)}</div>` : '';
+    const edited = (r.originalAmount !== undefined && r.originalAmount !== '' && Number(r.originalAmount) !== Number(r.amount))
+      ? `<div style="font-size:11px;color:#8a94a6;margin-top:2px">Approved amount adjusted from $${Number(r.originalAmount).toFixed(2)}</div>`
+      : '';
+    return `<div class="list-item" style="align-items:flex-start;flex-direction:column">
+      <div style="display:flex;width:100%;gap:12px;align-items:center">
+        <div class="avatar">$</div>
+        <div class="info"><div class="name">${escapeHtml(r.description)}</div><div class="sub">${escapeHtml(r.account)} · ${new Date(r.requestDate||r.createdAt).toLocaleDateString()} · <b style="text-transform:capitalize">${escapeHtml(r.status)}</b></div>${edited}</div>
+        <div class="amount ${st==='declined'?'red':'green'}">$${Number(r.amount).toFixed(2)}</div>
+      </div>
+      ${note}
+    </div>`;
+  }).join('');
+}
+// Fills a placeholder container AFTER the page is already visible, so the page never waits for these.
+async function loadMyExtras(containerId, showEmptyAssignments) {
+  const box = document.getElementById(containerId);
+  if (!box) return;
+  box.innerHTML = miniSkeletonHtml(1);
+  const [rq, as] = await Promise.all([
+    apiGet({ action: 'myRequisitions', user: state.user.username }, { silent: true }),
+    apiGet({ action: 'myAssignments' }, { silent: true })
+  ]);
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  const assignments = (as && as.success && as.assignments) || [];
+  const reqs = (rq && rq.success && rq.requisitions) || [];
+  if (as && as.success) { state.myAssignments = assignments; updateFloatingBadge(assignments.length); }
+  c.innerHTML = myAssignmentsHtml(assignments, !!showEmptyAssignments) + myRequisitionsHtml(reqs);
+  refreshSnapshot(state.page);
+}
+
 // ==================== REPORTS ====================
 async function renderReports(el) {
   document.getElementById('headerSub').textContent = 'Reports & Analytics';
-  if (state.user.role === 'driver') return renderDriver(el);
+  const role = String(state.user.role || '').toLowerCase();
+  if (role === 'driver') return renderDriver(el);
+  const isAdmin = role === 'admin' || role === 'super admin';
+
+  // Loaders / boiler operators have no financial reports: show their requests instead.
+  if (!isAdmin) {
+    document.getElementById('headerSub').textContent = 'My requests & tasks';
+    el.innerHTML = `
+      <div class="card">
+        <div class="card-title">Cash Requisition</div>
+        <p class="sub" style="margin-bottom:12px">Need cash for your work? Send a request for approval.</p>
+        <button class="btn" onclick="showCashRequisitionModal()">Cash Requisition</button>
+      </div>
+      <div id="reportExtras"></div>`;
+    loadMyExtras('reportExtras', false);
+    return;
+  }
+
   const from = state.filter.from || '';
   const to = state.filter.to || '';
   const account = state.filter.account || 'all';
   state.reportInvoicePage = 1;
   state.reportInvoices = [];
-  const [repRes, invRes, myReqRes, myAssignRes] = await Promise.all([
-    apiGet({ action: 'reports', from, to, account }),
-    apiGet({ action: 'completedInvoices', from, to, account, page: 1, pageSize: 10 }),
-    apiGet({ action: 'myRequisitions', user: state.user.username }, { silent: true }),
-    apiGet({ action: 'myAssignments' }, { silent: true })
-  ]);
-  if (!repRes.success) return toast(repRes.error || 'Could not load reports', 'error');
+  state.reportInvoiceHasNext = false;
+  // Only the summary blocks the page. Invoices + my requests load lazily below.
+  const repRes = await apiGet({ action: 'reports', from, to, account });
+  if (!repRes.success) throw new Error(repRes.error || 'Could not load reports');
   const monthly = repRes.monthly;
   const overall = repRes.overall;
-  const invoices = invRes.invoices || [];
-  const myReqs = (myReqRes && myReqRes.requisitions) || [];
-  const myAssignments = (myAssignRes && myAssignRes.assignments) || [];
-  state.reportInvoices = invoices;
-  state.reportInvoiceHasNext = !!invRes.hasNext;
   const showAccount = account;
+  const acc = account === 'boiler' ? 'boiler' : 'tank';
   el.innerHTML = `
     <div class="card">
       <div class="card-title">Filter by Period</div>
@@ -2178,49 +2177,45 @@ async function renderReports(el) {
         <button class="btn" onclick="showCashRequisitionModal()">Cash Requisition</button>
       </div>
     </div>
-    ${myAssignments.length ? `
-      <div class="section-title">My Assignments (${myAssignments.length})</div>
-      ${myAssignments.map(a => `<div class="list-item" onclick="showMyAssignment('${a.id}')"><div class="avatar">✓</div><div class="info"><div class="name">${a.title}</div><div class="sub">Due ${formatAssignmentDate(a.dueDate)} · ${assignmentDueLabel(a.dueDate)}</div></div><span class="badge small ${assignmentDueClass(a.dueDate)}">Open</span></div>`).join('')}
-    ` : ''}
-    ${myReqs.length ? `
-      <div class="section-title">My Cash Requisitions (${myReqs.length})</div>
-      ${myReqs.map(r => {
-        const st = (r.status || '').toLowerCase();
-        const cls = st === 'approved' ? 'approved' : (st === 'declined' ? 'declined' : '');
-        const note = r.adminNote ? `<div class="requisition-note ${cls}"><b>Admin note:</b> ${r.adminNote}</div>` : '';
-        const edited = (r.originalAmount !== undefined && r.originalAmount !== '' && Number(r.originalAmount) !== Number(r.amount))
-          ? `<div style="font-size:11px;color:#8a94a6;margin-top:2px">Approved amount adjusted from $${Number(r.originalAmount).toFixed(2)}</div>`
-          : '';
-        return `<div class="list-item" style="align-items:flex-start;flex-direction:column">
-          <div style="display:flex;width:100%;gap:12px;align-items:center">
-            <div class="avatar">$</div>
-            <div class="info"><div class="name">${r.description}</div><div class="sub">${r.account} · ${new Date(r.requestDate||r.createdAt).toLocaleDateString()} · <b style="text-transform:capitalize">${r.status}</b></div>${edited}</div>
-            <div class="amount ${st==='declined'?'red':'green'}">$${Number(r.amount).toFixed(2)}</div>
-          </div>
-          ${note}
-        </div>`;
-      }).join('')}
-    ` : ''}
+    <div id="reportExtras"></div>
     ${account === 'grabber' ? renderGrabberReport(monthly) : `
       <div class="card" style="margin-top:16px">
         <div class="card-title">${account==='boiler'?'Boiler':'Tank'} Account Details</div>
-        <div class="data-row"><span class="lbl">Revenue</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].revenue.toFixed(2)}</span></div>
-        <div class="data-row"><span class="lbl">Client Cost Expenses</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].clientCosts.toFixed(2)}</span></div>
-        <div class="data-row"><span class="lbl">Our Internal Expenses</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].ourExpenses.toFixed(2)}</span></div>
-        <div class="data-row"><span class="lbl">Cash Requisitions</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].requisitions.toFixed(2)}</span></div>
-        <div class="data-row"><span class="lbl">Total Costs</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].expenses.toFixed(2)}</span></div>
-        <div class="data-row total"><span class="lbl">Profit</span><span class="val">$${monthly[account==='boiler'?'boiler':'tank'].profit.toFixed(2)}</span></div>
+        <div class="data-row"><span class="lbl">Revenue</span><span class="val">$${monthly[acc].revenue.toFixed(2)}</span></div>
+        <div class="data-row"><span class="lbl">Client Cost Expenses</span><span class="val">$${monthly[acc].clientCosts.toFixed(2)}</span></div>
+        <div class="data-row"><span class="lbl">Our Internal Expenses</span><span class="val">$${monthly[acc].ourExpenses.toFixed(2)}</span></div>
+        <div class="data-row"><span class="lbl">Cash Requisitions</span><span class="val">$${monthly[acc].requisitions.toFixed(2)}</span></div>
+        <div class="data-row"><span class="lbl">Total Costs</span><span class="val">$${monthly[acc].expenses.toFixed(2)}</span></div>
+        <div class="data-row total"><span class="lbl">Profit</span><span class="val">$${monthly[acc].profit.toFixed(2)}</span></div>
       </div>`}
-    <div class="section-title">Completed Invoices — latest 10 of ${invRes.total||0}</div>
-    <div id="completedInvoicesList">${renderInvoiceRows(invoices)}</div>
-    <div id="invoicePager" style="margin:10px 12px 18px;display:${invRes.hasNext?'block':'none'}">
+    <div class="section-title" id="invoicesTitle">Completed Invoices</div>
+    <div id="completedInvoicesList">${miniSkeletonHtml(3)}</div>
+    <div id="invoicePager" style="margin:10px 12px 18px;display:none">
       <button class="btn btn-outline" onclick="loadMoreInvoices(this)">Next 10</button>
     </div>
   `;
+  // Lazy sections: do not await, the page is already usable.
+  loadReportInvoices();
+  loadMyExtras('reportExtras', false);
+}
+async function loadReportInvoices() {
+  const page = state.page;
+  const res = await apiGet({ action: 'completedInvoices', from: state.filter.from || '', to: state.filter.to || '', account: state.filter.account || 'all', page: 1, pageSize: 10 }, { silent: true });
+  const list = document.getElementById('completedInvoicesList');
+  if (!list) return;
+  if (!res || !res.success) { list.innerHTML = '<div class="empty">Could not load invoices. Pull refresh to retry.</div>'; return; }
+  state.reportInvoices = res.invoices || [];
+  state.reportInvoiceHasNext = !!res.hasNext;
+  list.innerHTML = renderInvoiceRows(state.reportInvoices);
+  const title = document.getElementById('invoicesTitle');
+  if (title) title.textContent = 'Completed Invoices — latest 10 of ' + (res.total || 0);
+  const pager = document.getElementById('invoicePager');
+  if (pager) pager.style.display = res.hasNext ? 'block' : 'none';
+  if (state.page === page) refreshSnapshot(page);
 }
 function renderInvoiceRows(invoices) {
   if (!invoices.length) return '<div class="empty">No completed invoices for this period</div>';
-  return invoices.map(inv => `<div class="list-item" onclick="viewInvoice('${inv.id}')"><div class="avatar">${inv.customerName?inv.customerName[0].toUpperCase():'?'}</div><div class="info"><div class="name">${inv.customerName||'-'}</div><div class="sub">Inv: ${inv.invoiceNumber||inv.id} · ${inv.assetIds||''} · ${inv.completedAt?new Date(inv.completedAt).toLocaleDateString():''} · ${inv.completedBy||'-'}</div></div><div class="amount">$${Number(inv.totalAmount).toFixed(2)}</div></div>`).join('');
+  return invoices.map(inv => `<div class="list-item" onclick="viewInvoice('${inv.id}')"><div class="avatar">${inv.customerName?escapeHtml(inv.customerName[0].toUpperCase()):'?'}</div><div class="info"><div class="name">${escapeHtml(inv.customerName||'-')}</div><div class="sub">Inv: ${escapeHtml(inv.invoiceNumber||inv.id)} · ${escapeHtml(inv.assetIds||'')} · ${inv.completedAt?new Date(inv.completedAt).toLocaleDateString():''} · ${escapeHtml(inv.completedBy||'-')}</div></div><div class="amount">$${Number(inv.totalAmount).toFixed(2)}</div></div>`).join('');
 }
 async function loadMoreInvoices(btn) {
   if (!state.reportInvoiceHasNext) return;
@@ -2232,10 +2227,7 @@ async function loadMoreInvoices(btn) {
   state.reportInvoiceHasNext = !!res.hasNext;
   state.reportInvoices = state.reportInvoices.concat(res.invoices || []);
   const list = document.getElementById('completedInvoicesList');
-  if (list) {
-    if (state.reportInvoices.length === res.invoices.length) list.innerHTML = renderInvoiceRows(res.invoices);
-    else list.insertAdjacentHTML('beforeend', renderInvoiceRows(res.invoices));
-  }
+  if (list) list.insertAdjacentHTML('beforeend', renderInvoiceRows(res.invoices || []));
   const pager = document.getElementById('invoicePager');
   if (pager) pager.style.display = state.reportInvoiceHasNext ? 'block' : 'none';
   setBtnLoading(btn, false);
@@ -2260,6 +2252,7 @@ async function submitCashRequisition(btn) {
     if (!res.success) return toast(res.error, 'error');
     toast('Cash requisition sent to Super Admin for approval.', 'success');
     closeModal();
+    if (state.page === 'reports') loadMyExtras('reportExtras', false);
   });
   setBtnLoading(btn, false);
 }
@@ -2283,7 +2276,9 @@ async function loadFinancialStatement(btn, download) {
 function openFinancialStatement(st, download) {
   const rows = st.rows || [];
   window._enicanLastStatement = st;
-  const html = `<div class="data-row"><span class="lbl">Period</span><span class="val">${st.from||'All time'} → ${st.to||'Today'}</span></div><div class="data-row"><span class="lbl">Account</span><span class="val">${st.account}</span></div><div class="data-row"><span class="lbl">Revenue</span><span class="val" style="color:#16a34a">$${Number(st.revenue).toFixed(2)}</span></div>${Number(st.grabberRevenue||0)>0&&st.account!=='grabber'?`<div class="data-row"><span class="lbl">Grabber Revenue (informational)</span><span class="val">$${Number(st.grabberRevenue).toFixed(2)}</span></div>`:''}<div class="data-row"><span class="lbl">Expenses</span><span class="val" style="color:#dc2626">$${Number(st.expenses).toFixed(2)}</span></div><div class="data-row total"><span class="lbl">Gross Profit</span><span class="val">$${Number(st.profit).toFixed(2)}</span></div><div class="section-title" style="margin:16px 0 8px">Income & Expenses</div>${rows.length?`<div style="overflow-x:auto"><table class="statement-table"><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Account</th><th>Amount</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.date}</td><td>${r.type==='income'?'Income':'Expense'}</td><td>${r.description}</td><td>${r.account}</td><td>$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty" style="padding:24px">No transactions for this period.</div>'}<div style="margin-top:14px"><button class="btn" onclick="printFinancialStatement(window._enicanLastStatement)">Download Statement as PDF</button></div>`;
+  // Long statements: only the first 100 rows are drawn in the modal (the PDF still contains everything).
+  const shown = rows.slice(0, 100);
+  const html = `<div class="data-row"><span class="lbl">Period</span><span class="val">${st.from||'All time'} → ${st.to||'Today'}</span></div><div class="data-row"><span class="lbl">Account</span><span class="val">${escapeHtml(st.account)}</span></div><div class="data-row"><span class="lbl">Revenue</span><span class="val" style="color:#16a34a">$${Number(st.revenue).toFixed(2)}</span></div>${Number(st.grabberRevenue||0)>0&&st.account!=='grabber'?`<div class="data-row"><span class="lbl">Grabber Revenue (informational)</span><span class="val">$${Number(st.grabberRevenue).toFixed(2)}</span></div>`:''}<div class="data-row"><span class="lbl">Expenses</span><span class="val" style="color:#dc2626">$${Number(st.expenses).toFixed(2)}</span></div><div class="data-row total"><span class="lbl">Gross Profit</span><span class="val">$${Number(st.profit).toFixed(2)}</span></div><div class="section-title" style="margin:16px 0 8px">Income & Expenses</div>${rows.length?`<div style="overflow-x:auto"><table class="statement-table"><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Account</th><th>Amount</th></tr></thead><tbody>${shown.map(r=>`<tr><td>${escapeHtml(r.date)}</td><td>${r.type==='income'?'Income':'Expense'}</td><td>${escapeHtml(r.description)}</td><td>${escapeHtml(r.account)}</td><td>$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table></div>${rows.length>shown.length?`<div class="sub" style="margin-top:8px">Showing first ${shown.length} of ${rows.length} rows. Download the PDF for the full statement.</div>`:''}`:'<div class="empty" style="padding:24px">No transactions for this period.</div>'}<div style="margin-top:14px"><button class="btn" onclick="printFinancialStatement(window._enicanLastStatement)">Download Statement as PDF</button></div>`;
   openModal('Enican Mines System — Statement', html);
   if (download) setTimeout(() => printFinancialStatement(st), 250);
 }
@@ -2291,7 +2286,7 @@ function printFinancialStatement(st) {
   const rows = st.rows || [];
   const w = window.open('', '_blank');
   if (!w) return toast('Please allow pop-ups to download the statement.', 'error');
-  w.document.write(`<html><head><title>${state.systemName} Statement</title><style>body{font-family:Arial,sans-serif;padding:28px;color:#0f172a}h1{color:#0641ab;margin-bottom:2px}.sub{color:#64748b;font-size:12px;margin-bottom:18px}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.box{border:1px solid #dbe3ee;border-radius:8px;padding:10px}.box b{display:block;margin-top:4px;font-size:18px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#f4f6fa}.right{text-align:right}.expense{color:#dc2626}.income{color:#15803d}</style></head><body><h1>${state.systemName}</h1><div class="sub">Enican Mines System · Financial Statement · ${st.from||'All time'} to ${st.to||'Today'} · ${st.account}</div><div class="summary"><div class="box">Revenue<b>$${Number(st.revenue).toFixed(2)}</b></div><div class="box">Expenses<b>$${Number(st.expenses).toFixed(2)}</b></div><div class="box">Gross Profit<b>$${Number(st.profit).toFixed(2)}</b></div></div><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Account</th><th class="right">Amount</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.date}</td><td class="${r.type}">${r.type}</td><td>${r.category}</td><td>${r.description}</td><td>${r.account}</td><td class="right">$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table><script>setTimeout(()=>window.print(),250)<\/script></body></html>`);
+  w.document.write(`<html><head><title>${escapeHtml(state.systemName)} Statement</title><style>body{font-family:Arial,sans-serif;padding:28px;color:#0f172a}h1{color:#0641ab;margin-bottom:2px}.sub{color:#64748b;font-size:12px;margin-bottom:18px}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.box{border:1px solid #dbe3ee;border-radius:8px;padding:10px}.box b{display:block;margin-top:4px;font-size:18px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px;border-bottom:1px solid #e2e8f0;text-align:left}th{background:#f4f6fa}.right{text-align:right}.expense{color:#dc2626}.income{color:#15803d}</style></head><body><h1>${escapeHtml(state.systemName)}</h1><div class="sub">Enican Mines System · Financial Statement · ${st.from||'All time'} to ${st.to||'Today'} · ${escapeHtml(st.account)}</div><div class="summary"><div class="box">Revenue<b>$${Number(st.revenue).toFixed(2)}</b></div><div class="box">Expenses<b>$${Number(st.expenses).toFixed(2)}</b></div><div class="box">Gross Profit<b>$${Number(st.profit).toFixed(2)}</b></div></div><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Account</th><th class="right">Amount</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${escapeHtml(r.date)}</td><td class="${r.type}">${r.type}</td><td>${escapeHtml(r.category)}</td><td>${escapeHtml(r.description)}</td><td>${escapeHtml(r.account)}</td><td class="right">$${Number(r.amount).toFixed(2)}</td></tr>`).join('')}</tbody></table><script>setTimeout(()=>window.print(),250)<\/script></body></html>`);
   w.document.close();
 }
 function renderGrabberReport(monthly) {
@@ -2307,10 +2302,12 @@ function renderGrabberReport(monthly) {
 function updateFilter() {
   state.filter.from = document.getElementById('rFrom').value;
   state.filter.to = document.getElementById('rTo').value;
+  state.snapshots.reports = null;
   loadPage();
 }
 function selectAccount(acc) {
   state.filter.account = state.filter.account === acc ? 'all' : acc;
+  state.snapshots.reports = null;
   loadPage();
 }
 async function viewInvoice(id) {
@@ -2318,91 +2315,79 @@ async function viewInvoice(id) {
   if (!res.success) return toast(res.error, 'error');
   const { invoice, items, payments, session, customer } = res;
   let body = `
-    <div class="data-row"><span class="lbl">Customer</span><span class="val">${invoice.customerName}</span></div>
-    <div class="data-row"><span class="lbl">Phone</span><span class="val">${customer ? customer.phone : '-'}</span></div>
-    <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${invoice.invoiceNumber || invoice.id}</span></div>
-    <div class="data-row"><span class="lbl">Assets</span><span class="val">${invoice.assetIds}</span></div>
+    <div class="data-row"><span class="lbl">Customer</span><span class="val">${escapeHtml(invoice.customerName)}</span></div>
+    <div class="data-row"><span class="lbl">Phone</span><span class="val">${customer ? escapeHtml(customer.phone) : '-'}</span></div>
+    <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${escapeHtml(invoice.invoiceNumber || invoice.id)}</span></div>
+    <div class="data-row"><span class="lbl">Assets</span><span class="val">${escapeHtml(invoice.assetIds)}</span></div>
     <div class="data-row"><span class="lbl">Created</span><span class="val">${new Date(invoice.createdAt).toLocaleDateString()}</span></div>
     <div class="data-row"><span class="lbl">Completed</span><span class="val">${invoice.completedAt ? new Date(invoice.completedAt).toLocaleDateString() : '-'}</span></div>
-    <div class="data-row"><span class="lbl">Created by</span><span class="val">${session && session.createdBy ? session.createdBy : '-'}</span></div>
-    <div class="data-row"><span class="lbl">Completed by</span><span class="val">${session && session.completedBy ? session.completedBy : '-'}</span></div>
+    <div class="data-row"><span class="lbl">Created by</span><span class="val">${session && session.createdBy ? escapeHtml(session.createdBy) : '-'}</span></div>
+    <div class="data-row"><span class="lbl">Completed by</span><span class="val">${session && session.completedBy ? escapeHtml(session.completedBy) : '-'}</span></div>
     <div class="section-title" style="margin:14px 0 6px">Items</div>
-    ${items.map(i => `<div class="data-row"><span class="lbl">${i.expenseName} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
+    ${items.map(i => `<div class="data-row"><span class="lbl">${escapeHtml(i.expenseName)} × ${i.quantity}</span><span class="val">$${Number(i.total).toFixed(2)}</span></div>`).join('')}
     <div class="data-row total"><span class="lbl">Total</span><span class="val">$${Number(invoice.totalAmount).toFixed(2)}</span></div>
     <div class="data-row"><span class="lbl">Paid</span><span class="val">$${Number(invoice.paidAmount).toFixed(2)}</span></div>
     <div class="section-title" style="margin:14px 0 6px">Payments</div>
-    ${payments.map(p => `<div class="data-row"><span class="lbl">${new Date(p.createdAt).toLocaleDateString()} · ${p.receivedBy}</span><span class="val">$${Number(p.amount).toFixed(2)}</span></div>`).join('') || '<div style="color:#8a94a6;font-size:12px">No payments</div>'}
+    ${payments.map(p => `<div class="data-row"><span class="lbl">${new Date(p.createdAt).toLocaleDateString()} · ${escapeHtml(p.receivedBy)}</span><span class="val">$${Number(p.amount).toFixed(2)}</span></div>`).join('') || '<div style="color:#8a94a6;font-size:12px">No payments</div>'}
   `;
   openModal('Invoice Details', body);
 }
 
 // ==================== DRIVER ====================
+function driverFormHtml(tab) {
+  const draft = loadDraft() || {};
+  if (tab === 'expense') {
+    const de = draft.driverExpense || {};
+    return `
+      <div class="card">
+        <div class="card-title">Log an Expense</div>
+        <div class="field"><label>Description</label><input id="expDesc" type="text" value="${escapeHtml(de.desc || '')}" oninput="saveDriverDraft()"></div>
+        <div class="field"><label>Amount</label><input id="expAmt" type="number" step="0.01" min="0" value="${escapeHtml(de.amt || '')}" oninput="saveDriverDraft()"></div>
+        <div class="field"><label>Date</label><input id="expDate" type="date" value="${escapeHtml(de.date || todayStr())}" oninput="saveDriverDraft()"></div>
+        <button class="btn" onclick="submitDriverExpense(this)">Log Expense</button>
+      </div>`;
+  }
+  const dt = draft.driverTrip || {};
+  const chosen = dt.customerId ? { id: dt.customerId, name: dt.customerName || 'Customer', phone: '' } : null;
+  return `
+    <div class="card">
+      <div class="card-title">Log a Trip</div>
+      <div class="field"><label>Customer</label>
+        <div class="search-bar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8a94a6" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="tripCustSearch" placeholder="Type a name or phone to search" oninput="custSearchInput(this,'trip')" autocomplete="off">
+        </div>
+        <input type="hidden" id="tripCustomer" value="${escapeHtml(dt.customerId || '')}">
+        <input type="hidden" id="tripCustomerName" value="${escapeHtml(dt.customerName || '')}">
+        <div id="tripCustBox">${customerChipHtml(chosen, 'trip')}</div>
+        <div id="tripCustList" class="search-results"></div>
+        <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="showAddCustomer('')">+ Add New Customer</button>
+      </div>
+      <div class="field"><label>Number of Trips</label><input id="tripCount" type="number" min="1" value="${escapeHtml(dt.trips || '1')}" oninput="saveDriverDraft()"></div>
+      <div class="field"><label>Amount per Trip</label><input id="tripRate" type="number" min="0" step="0.01" value="${escapeHtml(dt.rate || '200')}" oninput="saveDriverDraft()"></div>
+      <div class="field"><label>Date</label><input id="tripDate" type="date" value="${escapeHtml(dt.date || todayStr())}" oninput="saveDriverDraft()"></div>
+      <div class="field"><label>Notes</label><input id="tripNotes" type="text" value="${escapeHtml(dt.notes || '')}" oninput="saveDriverDraft()"></div>
+      <button class="btn" onclick="submitTrip(this)">Log Trip</button>
+    </div>`;
+}
+
 async function renderDriver(el) {
   document.getElementById('headerSub').textContent = 'Driver · Trips & Expenses';
   const from = state.filter.from || '';
   const to = state.filter.to || '';
-  const [repRes, custRes, myReqRes, myAssignRes] = await Promise.all([
-    apiGet({ action: 'driverReport', driver: state.user.username, from, to }),
-    apiGet({ action: 'listCustomers' }),
-    apiGet({ action: 'myRequisitions', user: state.user.username }, { silent: true }),
-    apiGet({ action: 'myAssignments' }, { silent: true })
-  ]);
-  const rep = repRes;
-  const customers = custRes.customers || [];
-  const myReqs = (myReqRes && myReqRes.requisitions) || [];
-  const myAssignments = (myAssignRes && myAssignRes.assignments) || [];
-  state.allCustomers = customers;
-
-  const draft = loadDraft() || {};
-  const dt = draft.driverTrip || {};
-  const de = draft.driverExpense || {};
-  const curr = document.activeElement;
-  const isTypingTrip = curr && ['tripCustomer','tripCount','tripRate','tripDate','tripNotes'].includes(curr.id);
-  const isTypingExp = curr && ['expDesc','expAmt','expDate'].includes(curr.id);
-  const trip = isTypingTrip ? {
-    customerId: (document.getElementById('tripCustomer')||{}).value || dt.customerId || '',
-    trips: (document.getElementById('tripCount')||{}).value || dt.trips || '1',
-    rate: (document.getElementById('tripRate')||{}).value || dt.rate || '50',
-    date: (document.getElementById('tripDate')||{}).value || dt.date || new Date().toISOString().slice(0,10),
-    notes: (document.getElementById('tripNotes')||{}).value || dt.notes || ''
-  } : {
-    customerId: dt.customerId || '',
-    trips: dt.trips || '1',
-    rate: dt.rate || '200',
-    date: dt.date || new Date().toISOString().slice(0,10),
-    notes: dt.notes || ''
-  };
-  const exp = isTypingExp ? {
-    desc: (document.getElementById('expDesc')||{}).value || de.desc || '',
-    amt: (document.getElementById('expAmt')||{}).value || de.amt || '',
-    date: (document.getElementById('expDate')||{}).value || de.date || new Date().toISOString().slice(0,10)
-  } : {
-    desc: de.desc || '',
-    amt: de.amt || '',
-    date: de.date || new Date().toISOString().slice(0,10)
-  };
+  // Only the driver report blocks the page. Customers are searched on demand;
+  // assignments + cash requisitions load lazily after the page is visible.
+  const rep = await apiGet({ action: 'driverReport', driver: state.user.username, from, to });
+  if (!rep.success) throw new Error(rep.error || 'Could not load driver report');
+  state.driverRep = rep;
+  state.driverShown = { trips: 15, exp: 15 };
 
   el.innerHTML = `
     <div class="tabs">
-      <button class="tab ${state.driverTab === 'trips' ? 'active' : ''}" onclick="driverTab('trips', this)">Log Trip</button>
-      <button class="tab ${state.driverTab === 'expense' ? 'active' : ''}" onclick="driverTab('expense', this)">Log Expense</button>
+      <button class="tab ${state.driverTab === 'trips' ? 'active' : ''}" data-tab="trips" onclick="driverTab('trips')">Log Trip</button>
+      <button class="tab ${state.driverTab === 'expense' ? 'active' : ''}" data-tab="expense" onclick="driverTab('expense')">Log Expense</button>
     </div>
-    <div id="driverTabContent">
-      <div class="card">
-        <div class="card-title">Log a Trip</div>
-        <div class="field"><label>Customer</label>
-          <select id="tripCustomer" onchange="saveDriverDraft()">
-            <option value="">-- Select customer --</option>
-            ${customers.map(c => `<option value="${c.id}" ${String(trip.customerId)===String(c.id)?'selected':''}>${c.name}</option>`).join('')}
-          </select>
-        </div>
-        <div class="field"><label>Number of Trips</label><input id="tripCount" type="number" min="1" value="${trip.trips}" oninput="saveDriverDraft()"></div>
-        <div class="field"><label>Amount per Trip</label><input id="tripRate" type="number" min="0" step="0.01" value="${trip.rate}" oninput="saveDriverDraft()"></div>
-        <div class="field"><label>Date</label><input id="tripDate" type="date" value="${trip.date}" oninput="saveDriverDraft()"></div>
-        <div class="field"><label>Notes</label><input id="tripNotes" type="text" value="${trip.notes}" oninput="saveDriverDraft()"></div>
-        <button class="btn" onclick="submitTrip(this)">Log Trip</button>
-      </div>
-    </div>
+    <div id="driverTabContent">${driverFormHtml(state.driverTab)}</div>
     <div class="card">
       <div class="card-title">Period Filter</div>
       <div class="grid grid-2">
@@ -2412,116 +2397,101 @@ async function renderDriver(el) {
     </div>
     <div class="card">
       <div class="card-title">Summary (selected period)</div>
-      <div class="data-row"><span class="lbl">Revenue</span><span class="val" style="color:#16a34a">$${rep.totalRevenue.toFixed(2)}</span></div>
-      <div class="data-row"><span class="lbl">Expenses</span><span class="val" style="color:#dc2626">$${rep.totalExpenses.toFixed(2)}</span></div>
-      <div class="data-row total"><span class="lbl">Profit</span><span class="val">$${rep.profit.toFixed(2)}</span></div>
+      <div class="data-row"><span class="lbl">Revenue</span><span class="val" style="color:#16a34a">$${Number(rep.totalRevenue).toFixed(2)}</span></div>
+      <div class="data-row"><span class="lbl">Expenses</span><span class="val" style="color:#dc2626">$${Number(rep.totalExpenses).toFixed(2)}</span></div>
+      <div class="data-row total"><span class="lbl">Profit</span><span class="val">$${Number(rep.profit).toFixed(2)}</span></div>
     </div>
-    ${myAssignments.length ? `
-      <div class="section-title">My Assignments (${myAssignments.length})</div>
-      ${myAssignments.map(a => `<div class="list-item" onclick="showMyAssignment('${a.id}')"><div class="avatar">✓</div><div class="info"><div class="name">${a.title}</div><div class="sub">Due ${formatAssignmentDate(a.dueDate)} · ${assignmentDueLabel(a.dueDate)}</div></div><span class="badge small ${assignmentDueClass(a.dueDate)}">Open</span></div>`).join('')}
-    ` : ''}
-    <div class="section-title">Trips (${rep.trips.length})</div>
-    ${rep.trips.slice().reverse().map(t => `
-      <div class="list-item">
+    <div id="driverExtras"></div>
+    <div id="driverLists"></div>
+  `;
+  renderDriverLists();
+  loadMyExtras('driverExtras', false);   // lazy
+}
+function renderDriverLists() {
+  const rep = state.driverRep;
+  const box = document.getElementById('driverLists');
+  if (!rep || !box) return;
+  const trips = rep.trips.slice().reverse();
+  const exps = rep.expenses.slice().reverse();
+  const tShown = trips.slice(0, state.driverShown.trips);
+  const eShown = exps.slice(0, state.driverShown.exp);
+  box.innerHTML = `
+    <div class="section-title">Trips (${trips.length})</div>
+    ${tShown.map(t => `
+      <div class="list-item" style="cursor:default">
         <div class="info">
-          <div class="name">${t.customerName}</div>
-          <div class="sub">${t.trips} trips × $${t.amountPerTrip} · ${t.tripDate}</div>
+          <div class="name">${escapeHtml(t.customerName)}</div>
+          <div class="sub">${t.trips} trips × $${t.amountPerTrip} · ${escapeHtml(fmtDay(t.tripDate))}</div>
         </div>
         <div class="amount green">$${Number(t.totalAmount).toFixed(2)}</div>
-      </div>
-    `).join('') || '<div class="empty">No trips</div>'}
-    <div class="section-title">Expenses (${rep.expenses.length})</div>
-    ${rep.expenses.slice().reverse().map(e => `
-      <div class="list-item">
+      </div>`).join('') || '<div class="empty">No trips</div>'}
+    ${trips.length > tShown.length ? `<div style="margin:0 12px 12px"><button class="btn btn-outline" onclick="showMoreDriver('trips')">Show more (${trips.length - tShown.length} left)</button></div>` : ''}
+    <div class="section-title">Expenses (${exps.length})</div>
+    ${eShown.map(e => `
+      <div class="list-item" style="cursor:default">
         <div class="info">
-          <div class="name">${e.description}</div>
-          <div class="sub">${e.expenseDate}</div>
+          <div class="name">${escapeHtml(e.description)}</div>
+          <div class="sub">${escapeHtml(fmtDay(e.expenseDate))}</div>
         </div>
         <div class="amount red">-$${Number(e.amount).toFixed(2)}</div>
-      </div>
-    `).join('') || '<div class="empty">No expenses</div>'}
-    ${myReqs.length ? `
-      <div class="section-title">My Cash Requisitions (${myReqs.length})</div>
-      ${myReqs.map(r => {
-        const st = (r.status || '').toLowerCase();
-        const cls = st === 'approved' ? 'approved' : (st === 'declined' ? 'declined' : '');
-        const note = r.adminNote ? `<div class="requisition-note ${cls}"><b>Admin note:</b> ${r.adminNote}</div>` : '';
-        return `<div class="list-item" style="align-items:flex-start;flex-direction:column">
-          <div style="display:flex;width:100%;gap:12px;align-items:center">
-            <div class="avatar">$</div>
-            <div class="info"><div class="name">${r.description}</div><div class="sub">${r.account} · ${new Date(r.requestDate||r.createdAt).toLocaleDateString()} · <b style="text-transform:capitalize">${r.status}</b></div></div>
-            <div class="amount ${st==='declined'?'red':'green'}">$${Number(r.amount).toFixed(2)}</div>
-          </div>
-          ${note}
-        </div>`;
-      }).join('')}
-    ` : ''}
+      </div>`).join('') || '<div class="empty">No expenses</div>'}
+    ${exps.length > eShown.length ? `<div style="margin:0 12px 12px"><button class="btn btn-outline" onclick="showMoreDriver('exp')">Show more (${exps.length - eShown.length} left)</button></div>` : ''}
   `;
-  if (state.driverTab === 'expense') {
-    const tabBtn = el.querySelector('.tabs .tab:nth-child(2)');
-    if (tabBtn) driverTab('expense', tabBtn);
-  }
+}
+function showMoreDriver(kind) {
+  state.driverShown[kind] += 20;
+  renderDriverLists();
 }
 function saveDriverDraft() {
   try {
     const d = loadDraft() || {};
     const tripCustomer = document.getElementById('tripCustomer');
+    const tripCustomerName = document.getElementById('tripCustomerName');
     const tripCount = document.getElementById('tripCount');
     const tripRate = document.getElementById('tripRate');
     const tripDate = document.getElementById('tripDate');
     const tripNotes = document.getElementById('tripNotes');
     if (tripCustomer || tripCount || tripRate || tripDate || tripNotes) {
+      const prev = d.driverTrip || {};
       d.driverTrip = {
-        customerId: tripCustomer ? tripCustomer.value : (d.driverTrip || {}).customerId || '',
-        trips: tripCount ? tripCount.value : (d.driverTrip || {}).trips || '',
-        rate: tripRate ? tripRate.value : (d.driverTrip || {}).rate || '',
-        date: tripDate ? tripDate.value : (d.driverTrip || {}).date || '',
-        notes: tripNotes ? tripNotes.value : (d.driverTrip || {}).notes || ''
+        customerId: tripCustomer ? tripCustomer.value : prev.customerId || '',
+        customerName: tripCustomerName ? tripCustomerName.value : prev.customerName || '',
+        trips: tripCount ? tripCount.value : prev.trips || '',
+        rate: tripRate ? tripRate.value : prev.rate || '',
+        date: tripDate ? tripDate.value : prev.date || '',
+        notes: tripNotes ? tripNotes.value : prev.notes || ''
       };
     }
     const expDesc = document.getElementById('expDesc');
     const expAmt = document.getElementById('expAmt');
     const expDate = document.getElementById('expDate');
     if (expDesc || expAmt || expDate) {
+      const prevE = d.driverExpense || {};
       d.driverExpense = {
-        desc: expDesc ? expDesc.value : (d.driverExpense || {}).desc || '',
-        amt: expAmt ? expAmt.value : (d.driverExpense || {}).amt || '',
-        date: expDate ? expDate.value : (d.driverExpense || {}).date || ''
+        desc: expDesc ? expDesc.value : prevE.desc || '',
+        amt: expAmt ? expAmt.value : prevE.amt || '',
+        date: expDate ? expDate.value : prevE.date || ''
       };
     }
     localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
   } catch (e) {}
 }
-function driverTab(tab, btn) {
-  state.driverTab = tab;
+// Switching tabs is now instant (no reload, no network).
+function driverTab(tab) {
   saveDriverDraft();
-  document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  const el = document.getElementById('driverTabContent');
-  if (tab === 'trips') {
-    loadPage();
-  } else if (tab === 'expense') {
-    const draft = loadDraft() || {};
-    const de = draft.driverExpense || {};
-    el.innerHTML = `
-      <div class="card">
-        <div class="card-title">Log an Expense</div>
-        <div class="field"><label>Description</label><input id="expDesc" type="text" value="${de.desc || ''}" oninput="saveDriverDraft()"></div>
-        <div class="field"><label>Amount</label><input id="expAmt" type="number" step="0.01" min="0" value="${de.amt || ''}" oninput="saveDriverDraft()"></div>
-        <div class="field"><label>Date</label><input id="expDate" type="date" value="${de.date || new Date().toISOString().slice(0,10)}" oninput="saveDriverDraft()"></div>
-        <button class="btn" onclick="submitDriverExpense(this)">Log Expense</button>
-      </div>
-    `;
-  }
+  state.driverTab = tab;
+  document.querySelectorAll('.tabs .tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  const box = document.getElementById('driverTabContent');
+  if (box) box.innerHTML = driverFormHtml(tab);
 }
 async function submitTrip(btn) {
-  const customerId = document.getElementById('tripCustomer').value;
-  const customer = (state.allCustomers || []).find(c => String(c.id) === String(customerId));
+  const customerId = (document.getElementById('tripCustomer') || {}).value || '';
+  const customerName = (document.getElementById('tripCustomerName') || {}).value || '';
   const trips = Number(document.getElementById('tripCount').value);
   const rate = Number(document.getElementById('tripRate').value);
   const tripDate = document.getElementById('tripDate').value;
   const notes = document.getElementById('tripNotes').value;
-  if (!customerId) return toast('Select a customer', 'error');
+  if (!customerId) return toast('Search and select a customer', 'error');
   if (!trips || trips <= 0) return toast('Enter number of trips', 'error');
   setBtnLoading(btn, true);
   await withLoader('Logging trip…', async () => {
@@ -2529,12 +2499,12 @@ async function submitTrip(btn) {
       action: 'logTrip',
       idempotencyKey: uid('TRIP', customerId + ':' + trips + ':' + rate + ':' + tripDate),
       user: state.user.username,
-      customerId, customerName: customer ? customer.name : '', trips, amountPerTrip: rate, tripDate, notes
+      customerId, customerName, trips, amountPerTrip: rate, tripDate, notes
     });
     if (!res.success) { toast(res.error, 'error'); setBtnLoading(btn, false); return; }
     toast('Trip logged', 'success');
-    try { const d = loadDraft() || {}; d.driverTrip = {}; localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch(e){}
-    loadPage();
+    try { const d = loadDraft() || {}; d.driverTrip = { rate: String(rate) }; localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch(e){}
+    loadPage(true);
   });
   setBtnLoading(btn, false);
 }
@@ -2554,7 +2524,7 @@ async function submitDriverExpense(btn) {
     if (!res.success) { toast(res.error, 'error'); setBtnLoading(btn, false); return; }
     toast('Expense logged', 'success');
     try { const d = loadDraft() || {}; d.driverExpense = {}; localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch(e){}
-    loadPage();
+    loadPage(true);
   });
   setBtnLoading(btn, false);
 }
@@ -2567,49 +2537,19 @@ function driverFilter() {
 // ==================== PROFILE ====================
 async function renderProfile(el) {
   const u = state.user;
-  const myReqRes = await apiGet({ action: 'myRequisitions', user: u.username }, { silent: true });
-  const myReqs = (myReqRes && myReqRes.requisitions) || [];
-  const assignmentRes = await apiGet({ action: 'myAssignments' }, { silent: true });
-  const myAssignments = (assignmentRes && assignmentRes.assignments) || [];
-  state.myAssignments = myAssignments;
-  updateFloatingBadge(myAssignments.length);
+  // Page shows immediately; assignments and requisitions fill in afterwards.
   el.innerHTML = `
     <div class="card" style="text-align:center">
-      <div class="avatar" style="width:70px;height:70px;font-size:28px;margin:0 auto 10px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:700">${u.fullName ? u.fullName[0].toUpperCase() : u.username[0].toUpperCase()}</div>
-      <h2 style="margin:0;color:#0641ab">${u.fullName || u.username}</h2>
-      <p style="color:#8a94a6;margin:4px 0 0;text-transform:capitalize">${u.role}</p>
+      <div class="avatar" style="width:70px;height:70px;font-size:28px;margin:0 auto 10px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:700">${escapeHtml(u.fullName ? u.fullName[0].toUpperCase() : u.username[0].toUpperCase())}</div>
+      <h2 style="margin:0;color:#0641ab">${escapeHtml(u.fullName || u.username)}</h2>
+      <p style="color:#8a94a6;margin:4px 0 0;text-transform:capitalize">${escapeHtml(u.role)}</p>
     </div>
-    ${myReqs.length ? `
-      <div class="section-title">My Cash Requisitions (${myReqs.length})</div>
-      ${myReqs.map(r => {
-        const st = (r.status || '').toLowerCase();
-        const cls = st === 'approved' ? 'approved' : (st === 'declined' ? 'declined' : '');
-        const note = r.adminNote ? `<div class="requisition-note ${cls}"><b>Admin note:</b> ${r.adminNote}</div>` : '';
-        return `<div class="list-item" style="align-items:flex-start;flex-direction:column">
-          <div style="display:flex;width:100%;gap:12px;align-items:center">
-            <div class="avatar">$</div>
-            <div class="info"><div class="name">${r.description}</div><div class="sub">${r.account} · ${new Date(r.requestDate||r.createdAt).toLocaleDateString()} · <b style="text-transform:capitalize">${r.status}</b></div></div>
-            <div class="amount ${st==='declined'?'red':'green'}">$${Number(r.amount).toFixed(2)}</div>
-          </div>
-          ${note}
-        </div>`;
-      }).join('')}
-    ` : ''}
     <div class="card">
       <button class="btn btn-danger" onclick="logout()">Sign Out</button>
     </div>
-    <div class="section-title">My Assignments (${myAssignments.length})</div>
-    ${myAssignments.length ? myAssignments.map(a => `
-      <div class="list-item" onclick="showMyAssignment('${a.id}')">
-        <div class="avatar">✓</div>
-        <div class="info">
-          <div class="name">${a.title}</div>
-          <div class="sub">Due ${formatAssignmentDate(a.dueDate)} · ${assignmentDueLabel(a.dueDate)}</div>
-        </div>
-        <span class="badge small ${assignmentDueClass(a.dueDate)}">Open</span>
-      </div>
-    `).join('') : '<div class="empty">No incomplete assignments. You are all caught up! 🎉</div>'}
+    <div id="profileExtras"></div>
   `;
+  loadMyExtras('profileExtras', true);
 }
 
 // ==================== SETTINGS ====================
@@ -2634,7 +2574,7 @@ async function renderSettings(el) {
   el.innerHTML = `
     <div class="section-title">Account</div>
     <div class="card">
-      <div class="data-row"><span class="lbl">Signed in as</span><span class="val">${state.user.fullName || state.user.username} (${state.user.role})</span></div>
+      <div class="data-row"><span class="lbl">Signed in as</span><span class="val">${escapeHtml(state.user.fullName || state.user.username)} (${escapeHtml(state.user.role)})</span></div>
       <button class="btn btn-danger" style="margin-top:12px" onclick="logout()">Sign Out</button>
     </div>
 
@@ -2659,13 +2599,13 @@ async function renderSettings(el) {
     <div class="card">
       <div class="card-title">Existing Users (${users.length})</div>
       ${users.map(u => `
-        <div class="list-item">
-          <div class="avatar">${(u.fullName || u.username)[0].toUpperCase()}</div>
+        <div class="list-item" style="cursor:default">
+          <div class="avatar">${escapeHtml((u.fullName || u.username)[0].toUpperCase())}</div>
           <div class="info">
-            <div class="name">${u.fullName || u.username}</div>
-            <div class="sub">@${u.username} · ${String(u.active).toUpperCase() === 'TRUE' || u.active === true ? 'Active' : 'Inactive'}</div>
+            <div class="name">${escapeHtml(u.fullName || u.username)}</div>
+            <div class="sub">@${escapeHtml(u.username)} · ${String(u.active).toUpperCase() === 'TRUE' || u.active === true ? 'Active' : 'Inactive'}</div>
           </div>
-          <select onchange="changeUserRole('${u.username}', this.value)" style="padding:6px;border-radius:8px;border:1px solid var(--border-color);font-size:12px;">
+          <select onchange="changeUserRole('${escapeHtml(u.username)}', this.value)" style="padding:6px;border-radius:8px;border:1px solid var(--border-color);font-size:12px;">
             <option value="loader" ${u.role==='loader'?'selected':''}>Loader</option>
             <option value="boiler" ${u.role==='boiler'?'selected':''}>Boiler</option>
             <option value="driver" ${u.role==='driver'?'selected':''}>Driver</option>
@@ -2695,9 +2635,9 @@ async function renderSettings(el) {
     <div class="card">
       <div class="card-title">Existing Expenses (${expenses.length})</div>
       ${expenses.map(e => `
-        <div class="list-item">
+        <div class="list-item" style="cursor:default">
           <div class="info">
-            <div class="name">${e.name}</div>
+            <div class="name">${escapeHtml(e.name)}</div>
             <div class="sub">Client $${Number(e.amount).toFixed(2)} · Cost $${Number(e.costAmount !== '' ? e.costAmount : e.amount).toFixed(2)} · ${(e.assetType || 'tank').toUpperCase()}</div>
           </div>
           <span class="badge small blue">${(e.assetType || 'tank').toUpperCase()}</span>
@@ -2715,7 +2655,7 @@ async function renderSettings(el) {
     </div>
     <div class="card">
       <div class="card-title">Existing Internal Expenses (${ourExpenses.length})</div>
-      ${ourExpenses.map(e => `<div class="list-item"><div class="info"><div class="name">${e.name}</div><div class="sub">$${Number(e.amountPerUnit).toFixed(2)} per ${(e.assetType||'tank').toUpperCase()}</div></div><span class="badge small blue">INTERNAL</span></div>`).join('') || '<div class="empty">No internal expenses defined yet</div>'}
+      ${ourExpenses.map(e => `<div class="list-item" style="cursor:default"><div class="info"><div class="name">${escapeHtml(e.name)}</div><div class="sub">$${Number(e.amountPerUnit).toFixed(2)} per ${(e.assetType||'tank').toUpperCase()}</div></div><span class="badge small blue">INTERNAL</span></div>`).join('') || '<div class="empty">No internal expenses defined yet</div>'}
     </div>
 
     <div class="section-title">Fleet Overview</div>
@@ -2733,7 +2673,7 @@ async function changeUserRole(username, newRole) {
     const res = await apiPost({ action: 'updateUserRole', idempotencyKey: uid('ROLE', username + ':' + newRole), username, newRole, user: state.user.username });
     if (!res.success) return toast(res.error, 'error');
     toast('Role updated', 'success');
-    loadPage();
+    loadPage(true);
   });
 }
 async function addNewExpense(btn) {
@@ -2750,7 +2690,7 @@ async function addNewExpense(btn) {
     const res = await apiPost({ action: 'createExpenseType', idempotencyKey: uid('EXP', name + ':' + amount + ':' + assetType), name, amount, costAmount, assetType, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
     toast('Expense added', 'success');
-    loadPage();
+    loadPage(true);
   });
   setBtnLoading(btn, false);
 }
@@ -2765,7 +2705,7 @@ async function addOurExpense(btn) {
     const res = await apiPost({ action: 'createOurExpenseType', idempotencyKey: uid('OEXP', name + ':' + amountPerUnit + ':' + assetType), name, amountPerUnit, assetType, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
     toast('Internal expense added', 'success');
-    loadPage();
+    loadPage(true);
   });
   setBtnLoading(btn, false);
 }
@@ -2780,7 +2720,7 @@ async function createUser(btn) {
     const res = await apiPost({ action: 'createUser', idempotencyKey: uid('USER', username), username, password, role, fullName, user: state.user.username });
     if (!res.success) { toast(res.error, 'error'); return; }
     toast('User created', 'success');
-    loadPage();
+    loadPage(true);
   });
   setBtnLoading(btn, false);
 }
@@ -2872,7 +2812,7 @@ async function openMyAssignmentsFromBadge() {
   const body = `
     <div class="section-title" style="margin-top:0">Open (${list.length})</div>
     ${list.map(a => `
-      <div class="assignment-card ${assignmentDueClass(a.dueDate) === 'red' ? 'overdue' : ''}" onclick="showMyAssignment('${a.id}')">
+      <div class="assignment-card ${assignmentDueClass(a.dueDate) === 'red' ? 'overdue' : ''}" onclick="showMyAssignment('${escapeHtml(a.id)}')">
         <div class="assignment-title">${escapeHtml(a.title)}</div>
         <div class="assignment-meta">
           <span>📅 Due ${formatAssignmentDate(a.dueDate)}</span>
@@ -2892,7 +2832,6 @@ async function showMyAssignment(id) {
   if (!res.success) return toast(res.error || 'Could not load assignment', 'error');
   const a = (res.assignments || []).find(x => String(x.id) === String(id));
   if (!a) return toast('Assignment is already completed or no longer available.', 'error');
-  const overdue = assignmentDueClass(a.dueDate) === 'red';
   const body = `
     <div class="data-row"><span class="lbl">Task</span><span class="val">${escapeHtml(a.title)}</span></div>
     <div class="data-row"><span class="lbl">Assigned by</span><span class="val">${escapeHtml(a.assignedByName || a.assignedBy)}</span></div>
@@ -2904,7 +2843,7 @@ async function showMyAssignment(id) {
         <div class="desc-body">${escapeHtml(a.description || 'No further description provided.')}</div>
       </div>
     </div>
-    <button class="btn btn-success" style="margin-top:8px" onclick="completeMyAssignment('${a.id}', this)">Mark as Completed</button>
+    <button class="btn btn-success" style="margin-top:8px" onclick="completeMyAssignment('${escapeHtml(a.id)}', this)">Mark as Completed</button>
   `;
   openModal('My Assignment', body);
 }
@@ -2983,7 +2922,7 @@ function showAssignmentPopupModal(a) {
           <div class="desc-lbl">Instructions</div>
           <div class="desc-body">${escapeHtml(a.description || 'No further description provided.')}</div>
         </div>
-        <button class="btn btn-success" onclick="completeFromPopup('${a.id}', this)">Completed</button>
+        <button class="btn btn-success" onclick="completeFromPopup('${escapeHtml(a.id)}', this)">Completed</button>
       </div>
     </div>
   `;
@@ -3094,13 +3033,14 @@ async function renderAssignments(el) {
   const all = assignmentsRes.assignments || [];
   const open = all.filter(a => String(a.status).toLowerCase() !== 'completed');
   const completed = all.filter(a => String(a.status).toLowerCase() === 'completed');
+  const completedShown = completed.slice(0, 20);
 
   el.innerHTML = `
     <div class="section-title">New Assignment</div>
     <div class="card">
       <div class="field"><label>Task title</label><input id="taskTitle" type="text" placeholder="e.g. Inspect Tank Area"></div>
       <div class="field"><label>Task description / instructions</label><textarea id="taskDescription" rows="5" placeholder="Describe everything the user must do..."></textarea></div>
-      <div class="field"><label>Assign user</label><select id="taskAssignee"><option value="">Select user account</option>${users.map(u=>`<option value="${u.username}">${escapeHtml(u.fullName||u.username)} (@${escapeHtml(u.username)})</option>`).join('')}</select></div>
+      <div class="field"><label>Assign user</label><select id="taskAssignee"><option value="">Select user account</option>${users.map(u=>`<option value="${escapeHtml(u.username)}">${escapeHtml(u.fullName||u.username)} (@${escapeHtml(u.username)})</option>`).join('')}</select></div>
       <div class="field"><label>Due date</label><input id="taskDueDate" type="date"></div>
       <button class="btn" onclick="createAssignmentFromUI(this)">Assign Task</button>
     </div>
@@ -3118,8 +3058,8 @@ async function renderAssignments(el) {
         <div class="assignment-desc">${escapeHtml(a.description || '')}</div>
       </div>
     `).join('') : '<div class="empty">No open assignments.</div>'}
-    <div class="section-title">Completed Assignments (${completed.length})</div>
-    ${completed.length ? completed.map(a => {
+    <div class="section-title">Completed Assignments (${completed.length}${completed.length > completedShown.length ? ', latest 20 shown' : ''})</div>
+    ${completedShown.length ? completedShown.map(a => {
       const late = String(a.completionStatus).toLowerCase() === 'late';
       return `
         <div class="assignment-card ${late ? 'late-done' : 'on-time-done'}">
@@ -3157,7 +3097,7 @@ async function createAssignmentFromUI(btn) {
     });
     if (!res.success) return toast(res.error || 'Could not assign task', 'error');
     toast('Assignment created', 'success');
-    loadPage();
+    loadPage(true);
   });
   setBtnLoading(btn, false);
 }
@@ -3243,15 +3183,18 @@ async function installPWA(){
 }
 
 // ==================== INIT ====================
-
-(async function init() {
-  await loadSystemConfig();
+// No blocking network call before the app appears: the system name is cached locally
+// and refreshed in the background, and a saved session opens the app immediately.
+(function init() {
+  try { const n = localStorage.getItem(SYSNAME_KEY); if (n) state.systemName = n; } catch (e) {}
+  applySystemName();
   const session = loadSession();
   if (session && session.user) {
     state.user = session.user;
     state.token = session.token || null;
     showApp();
   }
+  loadSystemConfig();
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
   }

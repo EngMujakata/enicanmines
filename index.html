@@ -49,7 +49,7 @@ body { padding-bottom: 80px; }
 button { font-family: inherit; cursor: pointer; border: none; outline: none; background: none; }
 input, select, textarea { font-family: inherit; font-size: 16px; }
 /* Removes the 300ms tap delay so buttons and menus react at once */
-button, .list-item, .nav-item, .tank-card, .asset-card, .account-box, .tab, .super-menu-panel button { touch-action: manipulation; }
+button, .list-item, .nav-item, .tank-card, .asset-card, .account-box, .tab, .chip, .super-menu-panel button { touch-action: manipulation; }
 
 /* ============================================================
    LOADING FEEDBACK
@@ -386,6 +386,16 @@ button, .list-item, .nav-item, .tank-card, .asset-card, .account-box, .tab, .sup
   .nav-item { padding:4px 2px; }
   .nav-item svg { width:18px; height:18px; }
 }
+
+/* ===== DRIVER ACCOUNT REPORT ===== */
+.chips { display:flex; flex-wrap:wrap; gap:8px; }
+.chip { padding:9px 14px; border-radius:999px; background:var(--gray); color:var(--gray-3); font-size:13px; font-weight:700; border:1.5px solid var(--gray-2); }
+.chip.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+.chip:active { transform:scale(.96); }
+.acct-stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin:0 12px; }
+.acct-stats .stat-box { box-shadow:var(--shadow-sm); }
+.acct-stats .stat-box .sub { margin-top:2px; font-size:11px; }
+.month-table-wrap { overflow-x:auto; }
 </style>
 </head>
 <body>
@@ -480,8 +490,8 @@ const state = {
   lastLoad: 0,
   silentRender: false,
   custResults: {},         // customer search results by id
-  driverRep: null,
-  driverShown: { trips: 15, exp: 15 }
+  acct: { preset: 'this', from: '', to: '', rep: null, seq: 0, shown: { trips: 15, exp: 15 } },   // driver Account report
+  driverRows: []           // admin: per-driver rows of the Grabber report
 };
 
 const DRAFT_KEY = 'enican_drafts_v1';
@@ -610,6 +620,8 @@ function endBusy() {
 function resetCaches() {
   state.apiCache.clear();
   state.snapshots = {};
+  state.acct = { preset: 'this', from: '', to: '', rep: null, seq: 0, shown: { trips: 15, exp: 15 } };
+  state.driverRows = [];
   _progress = 0;
   _busy = 0;
   const b = document.getElementById('topBar');
@@ -974,7 +986,7 @@ const PAGE_TITLES = {
   reports: 'Reports',
   pending: 'Approvals',
   debts: 'Client Balances Owing',
-  driver: 'Driver Trips',
+  driver: 'Log Trips',
   profile: 'Account',
   settings: 'Settings',
   assignments: 'Assignments'
@@ -2286,7 +2298,7 @@ async function renderReports(el) {
       </div>
     </div>
     <div id="reportExtras"></div>
-    ${account === 'grabber' ? renderGrabberReport(monthly) : `
+    ${account === 'grabber' ? renderGrabberReport(monthly) + '<div id="grabberDrivers">' + miniSkeletonHtml(2) + '</div>' : `
       <div class="card" style="margin-top:16px">
         <div class="card-title">${account==='boiler'?'Boiler':'Tank'} Account Details</div>
         <div class="data-row"><span class="lbl">Revenue</span><span class="val">$${monthly[acc].revenue.toFixed(2)}</span></div>
@@ -2305,6 +2317,7 @@ async function renderReports(el) {
   // Lazy sections: do not await, the page is already usable.
   loadReportInvoices();
   loadMyExtras('reportExtras', false);
+  if (account === 'grabber') loadGrabberDrivers();
 }
 async function loadReportInvoices() {
   const page = state.page;
@@ -2454,7 +2467,9 @@ function viewInvoice(id) {
   });
 }
 
-// ==================== DRIVER ====================
+// ==================== DRIVER · TRIPS PAGE (log only) ====================
+// This page only LOGS trips and expenses. No lists, no totals, nothing is pulled from the server here.
+// Everything a driver wants to look back on lives on the Account page.
 function driverFormHtml(tab) {
   const draft = loadDraft() || {};
   if (tab === 'expense') {
@@ -2493,77 +2508,15 @@ function driverFormHtml(tab) {
 }
 
 async function renderDriver(el) {
-  const tk = loadToken();
-  document.getElementById('headerSub').textContent = 'Driver · Trips & Expenses';
-  const from = state.filter.from || '';
-  const to = state.filter.to || '';
-  // Only the driver report blocks the page. Customers are searched on demand;
-  // assignments + cash requisitions load lazily after the page is visible.
-  const rep = await apiGet({ action: 'driverReport', driver: state.user.username, from, to });
-  if (isStale(tk)) return;
-  if (!rep.success) throw new Error(rep.error || 'Could not load driver report');
-  state.driverRep = rep;
-  state.driverShown = { trips: 15, exp: 15 };
-
+  document.getElementById('headerSub').textContent = 'Log trips & expenses';
   el.innerHTML = `
     <div class="tabs">
       <button class="tab ${state.driverTab === 'trips' ? 'active' : ''}" data-tab="trips" onclick="driverTab('trips')">Log Trip</button>
       <button class="tab ${state.driverTab === 'expense' ? 'active' : ''}" data-tab="expense" onclick="driverTab('expense')">Log Expense</button>
     </div>
     <div id="driverTabContent">${driverFormHtml(state.driverTab)}</div>
-    <div class="card">
-      <div class="card-title">Period Filter</div>
-      <div class="grid grid-2">
-        <div class="field"><label>From</label><input type="date" id="dFrom" value="${from}" onchange="driverFilter()"></div>
-        <div class="field"><label>To</label><input type="date" id="dTo" value="${to}" onchange="driverFilter()"></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">Summary (selected period)</div>
-      <div class="data-row"><span class="lbl">Revenue</span><span class="val" style="color:#16a34a">$${Number(rep.totalRevenue).toFixed(2)}</span></div>
-      <div class="data-row"><span class="lbl">Expenses</span><span class="val" style="color:#dc2626">$${Number(rep.totalExpenses).toFixed(2)}</span></div>
-      <div class="data-row total"><span class="lbl">Profit</span><span class="val">$${Number(rep.profit).toFixed(2)}</span></div>
-    </div>
-    <div id="driverExtras"></div>
-    <div id="driverLists"></div>
+    <p class="sub" style="margin:4px 16px 0;text-align:center">Your trips, expenses and profit are on the Account page.</p>
   `;
-  renderDriverLists();
-  loadMyExtras('driverExtras', false);   // lazy
-}
-function renderDriverLists() {
-  const rep = state.driverRep;
-  const box = document.getElementById('driverLists');
-  if (!rep || !box) return;
-  const trips = rep.trips.slice().reverse();
-  const exps = rep.expenses.slice().reverse();
-  const tShown = trips.slice(0, state.driverShown.trips);
-  const eShown = exps.slice(0, state.driverShown.exp);
-  box.innerHTML = `
-    <div class="section-title">Trips (${trips.length})</div>
-    ${tShown.map(t => `
-      <div class="list-item" style="cursor:default">
-        <div class="info">
-          <div class="name">${escapeHtml(t.customerName)}</div>
-          <div class="sub">${t.trips} trips × $${t.amountPerTrip} · ${escapeHtml(fmtDay(t.tripDate))}</div>
-        </div>
-        <div class="amount green">$${Number(t.totalAmount).toFixed(2)}</div>
-      </div>`).join('') || '<div class="empty">No trips</div>'}
-    ${trips.length > tShown.length ? `<div style="margin:0 12px 12px"><button class="btn btn-outline" onclick="showMoreDriver('trips')">Show more (${trips.length - tShown.length} left)</button></div>` : ''}
-    <div class="section-title">Expenses (${exps.length})</div>
-    ${eShown.map(e => `
-      <div class="list-item" style="cursor:default">
-        <div class="info">
-          <div class="name">${escapeHtml(e.description)}</div>
-          <div class="sub">${escapeHtml(fmtDay(e.expenseDate))}</div>
-        </div>
-        <div class="amount red">-$${Number(e.amount).toFixed(2)}</div>
-      </div>`).join('') || '<div class="empty">No expenses</div>'}
-    ${exps.length > eShown.length ? `<div style="margin:0 12px 12px"><button class="btn btn-outline" onclick="showMoreDriver('exp')">Show more (${exps.length - eShown.length} left)</button></div>` : ''}
-  `;
-}
-function showMoreDriver(kind) {
-  state.driverShown[kind] += 20;
-  renderDriverLists();
 }
 function saveDriverDraft() {
   try {
@@ -2627,7 +2580,9 @@ async function submitTrip(btn) {
     if (!res.success) { toast(res.error, 'error'); return; }
     toast('Trip logged', 'success');
     try { const d = loadDraft() || {}; d.driverTrip = { rate: String(rate) }; localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch(e){}
-    loadPage(true);
+    state.acct.rep = null;   // Account report is out of date now
+    const box = document.getElementById('driverTabContent');
+    if (box && state.page === 'driver') box.innerHTML = driverFormHtml(state.driverTab);   // clean form, nothing reloaded
   });
   setBtnLoading(btn, false);
 }
@@ -2647,32 +2602,224 @@ async function submitDriverExpense(btn) {
     if (!res.success) { toast(res.error, 'error'); return; }
     toast('Expense logged', 'success');
     try { const d = loadDraft() || {}; d.driverExpense = {}; localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch(e){}
-    loadPage(true);
+    state.acct.rep = null;
+    const box = document.getElementById('driverTabContent');
+    if (box && state.page === 'driver') box.innerHTML = driverFormHtml(state.driverTab);
   });
   setBtnLoading(btn, false);
 }
-function driverFilter() {
-  state.filter.from = document.getElementById('dFrom').value;
-  state.filter.to = document.getElementById('dTo').value;
-  loadPage();
-}
 
-// ==================== PROFILE ====================
+// ==================== PROFILE / ACCOUNT ====================
+function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function acctRange(p) {
+  const now = new Date(), y = now.getFullYear(), m = now.getMonth();
+  if (p === 'last') return { from: ymd(new Date(y, m - 1, 1)), to: ymd(new Date(y, m, 0)) };
+  if (p === 'three') return { from: ymd(new Date(y, m - 2, 1)), to: ymd(new Date(y, m + 1, 0)) };
+  if (p === 'year') return { from: ymd(new Date(y, 0, 1)), to: ymd(new Date(y, 11, 31)) };
+  return { from: ymd(new Date(y, m, 1)), to: ymd(new Date(y, m + 1, 0)) };   // this month
+}
+function dayLabel(s) {
+  if (!s) return '';
+  const d = new Date(String(s).slice(0, 10) + 'T00:00:00');
+  return Number.isFinite(d.getTime()) ? d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : String(s);
+}
+function monthLabel(ym) {
+  const parts = String(ym).split('-');
+  const d = new Date(Number(parts[0]), Number(parts[1]) - 1, 1);
+  return Number.isFinite(d.getTime()) ? d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) : ym;
+}
+function money(n) { return '$' + Number(n || 0).toFixed(2); }
+
 async function renderProfile(el) {
   const u = state.user;
-  // Page shows immediately; assignments and requisitions fill in afterwards.
-  el.innerHTML = `
+  const isDriver = String(u.role || '').toLowerCase() === 'driver';
+  const head = `
     <div class="card" style="text-align:center">
       <div class="avatar" style="width:70px;height:70px;font-size:28px;margin:0 auto 10px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:700">${escapeHtml(u.fullName ? u.fullName[0].toUpperCase() : u.username[0].toUpperCase())}</div>
       <h2 style="margin:0;color:#0641ab">${escapeHtml(u.fullName || u.username)}</h2>
       <p style="color:#8a94a6;margin:4px 0 0;text-transform:capitalize">${escapeHtml(u.role)}</p>
-    </div>
+    </div>`;
+  const signOut = `<div class="card"><button class="btn btn-danger" onclick="logout()">Sign Out</button></div>`;
+  if (!isDriver) {
+    // Page shows immediately; assignments and requisitions fill in afterwards.
+    el.innerHTML = head + signOut + '<div id="profileExtras"></div>';
+    loadMyExtras('profileExtras', true);
+    return;
+  }
+  const a = state.acct;
+  if (!a.from && a.preset !== 'all') { const r = acctRange(a.preset); a.from = r.from; a.to = r.to; }
+  document.getElementById('headerSub').textContent = 'My trips, expenses & profit';
+  el.innerHTML = head + `
     <div class="card">
-      <button class="btn btn-danger" onclick="logout()">Sign Out</button>
+      <div class="card-title">My Report</div>
+      <div class="chips">
+        <button class="chip ${a.preset === 'this' ? 'active' : ''}" data-p="this" onclick="acctPreset('this')">This month</button>
+        <button class="chip ${a.preset === 'last' ? 'active' : ''}" data-p="last" onclick="acctPreset('last')">Last month</button>
+        <button class="chip ${a.preset === 'three' ? 'active' : ''}" data-p="three" onclick="acctPreset('three')">Last 3 months</button>
+        <button class="chip ${a.preset === 'year' ? 'active' : ''}" data-p="year" onclick="acctPreset('year')">This year</button>
+      </div>
+      <div class="grid grid-2" style="margin-top:12px">
+        <div class="field"><label>From</label><input type="date" id="acctFrom" value="${escapeHtml(a.from)}"></div>
+        <div class="field"><label>To</label><input type="date" id="acctTo" value="${escapeHtml(a.to)}"></div>
+      </div>
+      <button class="btn" onclick="acctApplyCustom(this)">Show these dates</button>
     </div>
-    <div id="profileExtras"></div>
-  `;
+    <div id="acctReport">${a.rep ? '' : miniSkeletonHtml(3)}</div>
+    <div id="profileExtras"></div>` + signOut;
+  if (a.rep) renderAcctReport();
+  loadDriverAccount(false);          // lazy: the page is already usable
   loadMyExtras('profileExtras', true);
+}
+
+function acctMarkChips() {
+  document.querySelectorAll('.chips .chip').forEach(c => c.classList.toggle('active', c.dataset.p === state.acct.preset));
+}
+function acctPreset(p) {
+  const r = acctRange(p);
+  const a = state.acct;
+  a.preset = p; a.from = r.from; a.to = r.to; a.shown = { trips: 15, exp: 15 };
+  const f = document.getElementById('acctFrom'), t = document.getElementById('acctTo');
+  if (f) f.value = a.from;
+  if (t) t.value = a.to;
+  acctMarkChips();
+  return loadDriverAccount(true);
+}
+function acctApplyCustom(btn) {
+  const from = (document.getElementById('acctFrom') || {}).value || '';
+  const to = (document.getElementById('acctTo') || {}).value || '';
+  if (!from || !to) return toast('Pick both a From and a To date.', 'error');
+  if (from > to) return toast('The From date cannot be after the To date.', 'error');
+  const a = state.acct;
+  a.preset = 'custom'; a.from = from; a.to = to; a.shown = { trips: 15, exp: 15 };
+  acctMarkChips();
+  return loadDriverAccount(true);
+}
+
+// block = true  : person tapped a filter -> running line + blocks repeat taps until it finishes
+// block = false : first load of the page    -> running line only, menu stays usable
+async function loadDriverAccount(block) {
+  const a = state.acct;
+  const seq = ++a.seq;
+  const run = async () => {
+    const box0 = document.getElementById('acctReport');
+    if (box0 && !a.rep) box0.innerHTML = miniSkeletonHtml(3);
+    let res;
+    try { res = await apiGet({ action: 'driverReport', from: a.from, to: a.to }, { ttl: 20000 }); }
+    catch (e) { res = { success: false, error: netErrMsg(e) }; }
+    if (seq !== a.seq) return;                    // a newer tap replaced this request
+    const box = document.getElementById('acctReport');
+    if (!box) return;                             // person already left the page
+    if (!res || !res.success) {
+      box.innerHTML = '<div class="card"><p style="color:#dc2626">' + escapeHtml((res && res.error) || 'Could not load your report.') + '</p><button class="btn btn-outline" style="margin-top:12px" onclick="loadDriverAccount(true)">Try again</button></div>';
+      return;
+    }
+    a.rep = res;
+    renderAcctReport();
+  };
+  if (block) { startProgress(); startBusy(); try { await run(); } finally { endBusy(); endProgress(); } }
+  else await run();
+}
+
+function renderAcctReport() {
+  const a = state.acct, rep = a.rep, box = document.getElementById('acctReport');
+  if (!rep || !box) return;
+  const trips = rep.trips || [], exps = rep.expenses || [];
+  const tShown = trips.slice(0, a.shown.trips), eShown = exps.slice(0, a.shown.exp);
+  const months = Object.keys(rep.monthly || {}).sort().reverse();
+  const profit = Number(rep.profit || 0);
+  const range = (a.from || a.to) ? dayLabel(a.from) + ' – ' + dayLabel(a.to) : 'All time';
+  box.innerHTML = `
+    <div class="section-title">${escapeHtml(range)}</div>
+    <div class="acct-stats">
+      <div class="stat-box"><div class="label">Trips done</div><div class="value">${Number(rep.tripCount || 0)}</div><div class="sub">${Number(rep.tripEntries || 0)} log entr${Number(rep.tripEntries || 0) === 1 ? 'y' : 'ies'}</div></div>
+      <div class="stat-box green"><div class="label">Trip income</div><div class="value">${money(rep.totalRevenue)}</div></div>
+      <div class="stat-box red"><div class="label">My expenses</div><div class="value">${money(rep.totalExpenses)}</div></div>
+      <div class="stat-box ${profit >= 0 ? 'green' : 'red'}"><div class="label">My profit</div><div class="value">${money(profit)}</div></div>
+    </div>
+    ${months.length > 1 ? `
+    <div class="section-title">By month</div>
+    <div class="card" style="margin-top:0"><div class="month-table-wrap"><table class="statement-table"><thead><tr><th>Month</th><th>Trips</th><th>Income</th><th>Expenses</th><th>Profit</th></tr></thead><tbody>
+      ${months.map(m => { const x = rep.monthly[m]; const pr = (x.revenue || 0) - (x.expenses || 0); return `<tr><td>${escapeHtml(monthLabel(m))}</td><td>${Number(x.trips || 0)}</td><td>${money(x.revenue)}</td><td>${money(x.expenses)}</td><td style="color:${pr >= 0 ? '#16a34a' : '#dc2626'};font-weight:700">${money(pr)}</td></tr>`; }).join('')}
+    </tbody></table></div></div>` : ''}
+    <div class="section-title">My Trips (${trips.length})</div>
+    ${tShown.map(t => `
+      <div class="list-item" style="cursor:default">
+        <div class="info">
+          <div class="name">${escapeHtml(t.customerName)}</div>
+          <div class="sub">${Number(t.trips)} trip${Number(t.trips) === 1 ? '' : 's'} × ${money(t.amountPerTrip)} · ${escapeHtml(dayLabel(t.tripDate))}${t.notes ? ' · ' + escapeHtml(t.notes) : ''}</div>
+        </div>
+        <div class="amount green">${money(t.totalAmount)}</div>
+      </div>`).join('') || '<div class="empty">No trips in this period</div>'}
+    ${trips.length > tShown.length ? `<div style="margin:0 12px 12px"><button class="btn btn-outline" onclick="showMoreAcct('trips')">Show more (${trips.length - tShown.length} left)</button></div>` : ''}
+    <div class="section-title">My Expenses (${exps.length})</div>
+    ${eShown.map(e => `
+      <div class="list-item" style="cursor:default">
+        <div class="info">
+          <div class="name">${escapeHtml(e.description)}</div>
+          <div class="sub">${escapeHtml(dayLabel(e.expenseDate))}</div>
+        </div>
+        <div class="amount red">-${money(e.amount)}</div>
+      </div>`).join('') || '<div class="empty">No expenses in this period</div>'}
+    ${exps.length > eShown.length ? `<div style="margin:0 12px 12px"><button class="btn btn-outline" onclick="showMoreAcct('exp')">Show more (${exps.length - eShown.length} left)</button></div>` : ''}
+  `;
+}
+function showMoreAcct(kind) {
+  state.acct.shown[kind] += 20;
+  renderAcctReport();
+}
+
+// ---------- Admin / Super admin: every driver together (Reports > Grabber Account) ----------
+async function loadGrabberDrivers() {
+  const page = state.page;
+  startProgress();
+  let res;
+  try { res = await apiGet({ action: 'driverReport', driver: 'all', from: state.filter.from || '', to: state.filter.to || '' }, { silent: true }); }
+  catch (e) { res = null; }
+  finally { endProgress(); }
+  const box = document.getElementById('grabberDrivers');
+  if (!box) return;
+  if (!res || !res.success) { box.innerHTML = '<div class="empty">Could not load driver accounts.</div>'; return; }
+  const ds = res.drivers || [];
+  state.driverRows = ds;
+  box.innerHTML = `
+    <div class="section-title">Driver Accounts</div>
+    <p class="sub" style="margin:0 14px 8px">Each driver's profit = trips less their own expenses. The Grabber Account above also deducts approved cash requisitions. Tap a driver to see the trips and expenses.</p>
+    ${ds.length ? ds.map((d, i) => `
+      <div class="card" style="margin:8px 12px;cursor:pointer" onclick="viewDriverDetail(${i})">
+        <div class="card-title" style="margin-bottom:6px"><span>${escapeHtml(d.fullName || d.username)}</span><span style="color:${d.profit >= 0 ? '#16a34a' : '#dc2626'}">${money(d.profit)}</span></div>
+        <div class="data-row"><span class="lbl">Trips done</span><span class="val">${Number(d.tripCount)} (${Number(d.tripEntries)} entries)</span></div>
+        <div class="data-row"><span class="lbl">Trip income</span><span class="val">${money(d.revenue)}</span></div>
+        <div class="data-row"><span class="lbl">Expenses</span><span class="val">${money(d.expenses)}</span></div>
+      </div>`).join('') + `
+      <div class="card" style="margin:8px 12px"><div class="data-row"><span class="lbl">All drivers · trips done</span><span class="val">${Number(res.tripCount || 0)}</span></div>
+        <div class="data-row"><span class="lbl">All drivers · income</span><span class="val">${money(res.totalRevenue)}</span></div>
+        <div class="data-row"><span class="lbl">All drivers · expenses</span><span class="val">${money(res.totalExpenses)}</span></div>
+        <div class="data-row total"><span class="lbl">All drivers · profit</span><span class="val" style="color:${res.profit >= 0 ? '#16a34a' : '#dc2626'}">${money(res.profit)}</span></div></div>`
+      : '<div class="empty">No driver activity for this period</div>'}
+  `;
+  refreshSnapshot(page);
+}
+function viewDriverDetail(i) {
+  const d = (state.driverRows || [])[i];
+  if (!d) return;
+  return guarded('driverdetail:' + d.username, async () => {
+    const res = await apiGet({ action: 'driverReport', driver: d.username, from: state.filter.from || '', to: state.filter.to || '' });
+    if (!res.success) return toast(res.error || 'Could not load driver', 'error');
+    const trips = (res.trips || []).slice(0, 100), exps = (res.expenses || []).slice(0, 100);
+    const body = `
+      <div class="data-row"><span class="lbl">Period</span><span class="val">${escapeHtml(state.filter.from ? dayLabel(state.filter.from) : 'All time')} → ${escapeHtml(state.filter.to ? dayLabel(state.filter.to) : 'Today')}</span></div>
+      <div class="data-row"><span class="lbl">Trips done</span><span class="val">${Number(res.tripCount || 0)}</span></div>
+      <div class="data-row"><span class="lbl">Trip income</span><span class="val" style="color:#16a34a">${money(res.totalRevenue)}</span></div>
+      <div class="data-row"><span class="lbl">Expenses</span><span class="val" style="color:#dc2626">${money(res.totalExpenses)}</span></div>
+      <div class="data-row total"><span class="lbl">Profit</span><span class="val">${money(res.profit)}</span></div>
+      <div class="section-title" style="margin:14px 0 6px">Trips (${(res.trips || []).length})</div>
+      ${trips.map(t => `<div class="data-row"><span class="lbl">${escapeHtml(dayLabel(t.tripDate))} · ${escapeHtml(t.customerName)} · ${Number(t.trips)} × ${money(t.amountPerTrip)}</span><span class="val">${money(t.totalAmount)}</span></div>`).join('') || '<div class="sub">No trips</div>'}
+      <div class="section-title" style="margin:14px 0 6px">Expenses (${(res.expenses || []).length})</div>
+      ${exps.map(e => `<div class="data-row"><span class="lbl">${escapeHtml(dayLabel(e.expenseDate))} · ${escapeHtml(e.description)}</span><span class="val">-${money(e.amount)}</span></div>`).join('') || '<div class="sub">No expenses</div>'}
+      ${(res.trips || []).length > 100 || (res.expenses || []).length > 100 ? '<div class="sub" style="margin-top:8px">Showing the latest 100 of each.</div>' : ''}
+    `;
+    openModal('Driver · ' + escapeHtml(d.fullName || d.username), body);
+  });
 }
 
 // ==================== SETTINGS ====================

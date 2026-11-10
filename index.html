@@ -1873,15 +1873,69 @@ function showClientDebt(customerId) {
   return guarded('debt:' + customerId, async () => {
     const res = await apiGet({action:'clientBalanceDetails', id:customerId});
     if (!res.success) return toast(res.error || 'Could not load client ledger.', 'error');
+    state.debtLedger = res;
     const c = res.customer || {};
     const invoices = res.invoices || [];
     const body = `<div class="data-row"><span class="lbl">Client</span><span class="val">${escapeHtml(c.name || '')}</span></div>
       <div class="data-row"><span class="lbl">Phone</span><span class="val">${escapeHtml(c.phone || '—')}</span></div>
       <div class="data-row"><span class="lbl">Total paid</span><span class="val" style="color:#16a34a">$${Number(res.totalPaid || 0).toFixed(2)}</span></div>
       <div class="data-row total"><span class="lbl">Still owing</span><span class="val" style="color:#dc2626">$${Number(res.totalOwing || 0).toFixed(2)}</span></div>
-      ${invoices.map(i => `<div class="card" style="margin-top:12px"><div class="card-title">Invoice ${escapeHtml(i.invoiceNumber || i.id || '—')}</div><div class="data-row"><span class="lbl">Assets</span><span class="val">${escapeHtml(i.assetIds || '—')}</span></div><div class="data-row"><span class="lbl">Invoice total</span><span class="val">$${Number(i.totalAmount || 0).toFixed(2)}</span></div><div class="data-row"><span class="lbl">Paid</span><span class="val">$${Number(i.paidAmount || 0).toFixed(2)}</span></div><div class="data-row total"><span class="lbl">Owing</span><span class="val" style="color:#dc2626">$${Number(i.balance || 0).toFixed(2)}</span></div><div class="section-title" style="margin:10px 0 4px">Payments received</div>${(i.payments || []).length ? i.payments.map(p => `<div class="data-row"><span class="lbl">${escapeHtml(p.createdAt ? new Date(p.createdAt).toLocaleString() : '')} · ${escapeHtml(p.receivedBy || '')}</span><span class="val">$${Number(p.amount || 0).toFixed(2)}</span></div>`).join('') : '<div class="sub">No payments recorded for this invoice.</div>'}</div>`).join('')}`;
+      ${invoices.map(i => `<div class="card" style="margin-top:12px"><div class="card-title">Invoice ${escapeHtml(i.invoiceNumber || i.id || '—')}</div><div class="data-row"><span class="lbl">Assets</span><span class="val">${escapeHtml(i.assetIds || '—')}</span></div><div class="data-row"><span class="lbl">Invoice total</span><span class="val">$${Number(i.totalAmount || 0).toFixed(2)}</span></div><div class="data-row"><span class="lbl">Paid</span><span class="val">$${Number(i.paidAmount || 0).toFixed(2)}</span></div><div class="data-row total"><span class="lbl">Owing</span><span class="val" style="color:#dc2626">$${Number(i.balance || 0).toFixed(2)}</span></div>${Number(i.balance || 0) > 0.005 && !['declined','reversed','cancelled','canceled','void'].includes(String(i.status || '').toLowerCase()) ? `<button class="btn btn-success" style="margin-top:10px" onclick="showReceiveOwingPayment('${escapeHtml(i.id)}')">Receive Payment</button>` : ''}<div class="section-title" style="margin:10px 0 4px">Payments received</div>${(i.payments || []).length ? i.payments.map(p => `<div class="data-row"><span class="lbl">${escapeHtml(p.createdAt ? new Date(p.createdAt).toLocaleString() : '')} · ${escapeHtml(p.receivedBy || '')}</span><span class="val">$${Number(p.amount || 0).toFixed(2)}</span></div>`).join('') : '<div class="sub">No payments recorded for this invoice.</div>'}</div>`).join('')}`;
     openModal('Client Ledger · ' + escapeHtml(c.name || 'Client'), body);
   });
+}
+
+// ==================== RECEIVE PAYMENT ON OWING (FULL OR PART) ====================
+function showReceiveOwingPayment(invoiceId) {
+  const led = state.debtLedger || {};
+  const inv = (led.invoices || []).find(i => String(i.id) === String(invoiceId));
+  if (!inv) return toast('Invoice not found. Please reopen the client ledger.', 'error');
+  const bal = Number(inv.balance || 0);
+  const cid = led.customer ? String(led.customer.id).replace(/'/g, '') : '';
+  openModal('Receive Payment', `
+    <div class="data-row"><span class="lbl">Client</span><span class="val">${escapeHtml((led.customer || {}).name || '')}</span></div>
+    <div class="data-row"><span class="lbl">Invoice #</span><span class="val">${escapeHtml(inv.invoiceNumber || inv.id)}</span></div>
+    <div class="data-row"><span class="lbl">Invoice total</span><span class="val">$${Number(inv.totalAmount || 0).toFixed(2)}</span></div>
+    <div class="data-row"><span class="lbl">Already paid</span><span class="val">$${Number(inv.paidAmount || 0).toFixed(2)}</span></div>
+    <div class="data-row total"><span class="lbl">Balance owing</span><span class="val" style="color:#dc2626">$${bal.toFixed(2)}</span></div>
+    <div class="field" style="margin-top:14px">
+      <label>Amount received now</label>
+      <input id="owePayAmt" type="number" step="0.01" min="0.01" max="${bal.toFixed(2)}" value="${bal.toFixed(2)}">
+      <div class="sub">Pay the full balance, or enter a smaller amount for a part payment. The rest stays owing.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+      <button class="btn btn-outline" onclick="showClientDebt('${cid}')">Back</button>
+      <button class="btn btn-success" onclick="submitOwingPayment('${escapeHtml(inv.id)}', this)">Record Payment</button>
+    </div>`);
+}
+
+async function submitOwingPayment(invoiceId, btn) {
+  const led = state.debtLedger || {};
+  const inv = (led.invoices || []).find(i => String(i.id) === String(invoiceId));
+  if (!inv) return toast('Invoice not found. Please reopen the client ledger.', 'error');
+  const amount = Math.round(Number((document.getElementById('owePayAmt') || {}).value) * 100) / 100;
+  const bal = Number(inv.balance || 0);
+  if (!Number.isFinite(amount) || amount <= 0) return toast('Enter a valid amount.', 'error');
+  if (amount > bal + 0.005) return toast('Amount cannot be more than the $' + bal.toFixed(2) + ' owing.', 'error');
+  const customerId = led.customer ? String(led.customer.id) : '';
+  let done = false;
+  setBtnLoading(btn, true);
+  await withLoader('Recording payment…', async () => {
+    const res = await apiPost({
+      action: 'receiveOwingPayment',
+      idempotencyKey: uid('OWEPAY', invoiceId + ':' + amount),
+      invoiceId, sessionId: inv.sessionId, amount,
+      user: state.user.username
+    });
+    if (!res.success) { toast(res.error || 'Could not record payment', 'error'); return; }
+    done = true;
+    toast(res.settled ? 'Payment received. Invoice fully settled.' : 'Part payment recorded. $' + Number(res.balance).toFixed(2) + ' still owing.', 'success');
+    closeModal();
+    if (res.receipt) generateReceiptPDF(res.receipt);
+    if (state.page === 'debts') loadPage(true);
+  });
+  setBtnLoading(btn, false);
+  if (done && customerId) showClientDebt(customerId);
 }
 
 // ==================== PENDING (SUPER ADMIN ONLY) — INLINE ACTIONS ====================

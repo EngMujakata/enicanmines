@@ -965,6 +965,7 @@ function navigate(page) {
   const wasLoad = (state.page === 'loadTank' || state.page === 'loadBoiler');
   const willBeLoad = (page === 'loadTank' || page === 'loadBoiler');
   if (wasLoad && !willBeLoad) {
+    state.assetType = '';
     state.selectedCustomer = null;
     state.selectedAssets = [];
     state.selectedExpenses = [];
@@ -1074,7 +1075,7 @@ async function loadPage(silent) {
   const titleEl = document.getElementById('headerTitle');
   if (titleEl && PAGE_TITLES[page]) titleEl.textContent = PAGE_TITLES[page];
   const preservedFields = captureEditableState();
-  if (page === 'loadTank' || page === 'loadBoiler') saveDraft();
+  if ((page === 'loadTank' && state.assetType === 'tank') || (page === 'loadBoiler' && state.assetType === 'boiler')) saveDraft();
   if (page === 'driver') saveDriverDraft();
   const stale = () => seq !== state.loadSeq || state.page !== page;
   let progressOn = false;
@@ -1306,7 +1307,7 @@ async function renderLoad(el, type) {
   const preservedInvoice = sameType && draft.invoiceNumber ? draft.invoiceNumber : (state.invoiceNumber || '');
   const backendExpenseMap = {};
   allExpenses.forEach(e => { backendExpenseMap[String(e.id)] = e; });
-  const hasDraftExpenseState = sameType && Array.isArray(draft.selectedExpenses);
+  const hasDraftExpenseState = sameType && Array.isArray(draft.selectedExpenses) && draft.selectedExpenses.length > 0;
   const hasCurrentExpenseState = sameType && Array.isArray(state.selectedExpenses) && state.selectedExpenses.length > 0;
   const sourceExpenses = hasDraftExpenseState ? draft.selectedExpenses : (hasCurrentExpenseState ? state.selectedExpenses : null);
   const validSavedExpenses = Array.isArray(sourceExpenses)
